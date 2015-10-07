@@ -1,6 +1,6 @@
 ## SynapsePayRest-Ruby
 
-Simple API wrapper for SynapsePay REST V3 API.  This wrapper aims to handle the headers for each API request and appropriate error handling,.
+Simple API wrapper for SynapsePay REST V3 API.  This wrapper aims to handle the headers for each API request and appropriate error handling.
 
 
 ## Code Example
