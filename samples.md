@@ -1,7 +1,7 @@
 
 ## Initialization
 
-```python
+```ruby
 from SynapsePay import Client
 
 options = {
