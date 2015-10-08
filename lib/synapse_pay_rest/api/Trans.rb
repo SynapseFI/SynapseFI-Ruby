@@ -1,49 +1,51 @@
-class Trans
+module SynapsePayRest
+	class Trans
 
-	attr_accessor :client
+		attr_accessor :client
 
-	def initialize(client)
-		@client = client
-	end
-
-	def create_transaction_path(node_id: , trans_id: nil)
-		path = '/users/' + @client.user_id + '/nodes/' + node_id + '/trans'
-		if trans_id
-			path += '/%s' %trans_id
+		def initialize(client)
+			@client = client
 		end
-		return path
-	end
 
-	def create(node_id: , payload: )
-		path = create_transaction_path(node_id: node_id)
-		response = @client.post(path, payload)
-		return response
-	end
-
-	def update(node_id: , trans_id: , payload: )
-		path = create_transaction_path(node_id: node_id, trans_id: trans_id)
-		response = @client.patch(path, payload)
-		return response
-	end
-
-	def get(node_id: , trans_id: nil, page: nil)
-		if trans_id
-			path = create_transaction_path(node_id: node_id, trans_id: trans_id)
-			response = @client.get(path)
-			return response
-		else
-			path = create_transaction_path(node_id: node_id)
-			if page
-				path += '?page=%d' %page
+		def create_transaction_path(node_id: , trans_id: nil)
+			path = '/users/' + @client.user_id + '/nodes/' + node_id + '/trans'
+			if trans_id
+				path += '/%s' %trans_id
 			end
-			response = @client.get(path)
+			return path
+		end
+
+		def create(node_id: , payload: )
+			path = create_transaction_path(node_id: node_id)
+			response = @client.post(path, payload)
 			return response
 		end
-	end
 
-	def delete(node_id: , trans_id: )
-		path = create_transaction_path(node_id: node_id, trans_id: trans_id)
-		response = @client.delete(path)
-		return response
+		def update(node_id: , trans_id: , payload: )
+			path = create_transaction_path(node_id: node_id, trans_id: trans_id)
+			response = @client.patch(path, payload)
+			return response
+		end
+
+		def get(node_id: , trans_id: nil, page: nil)
+			if trans_id
+				path = create_transaction_path(node_id: node_id, trans_id: trans_id)
+				response = @client.get(path)
+				return response
+			else
+				path = create_transaction_path(node_id: node_id)
+				if page
+					path += '?page=%d' %page
+				end
+				response = @client.get(path)
+				return response
+			end
+		end
+
+		def delete(node_id: , trans_id: )
+			path = create_transaction_path(node_id: node_id, trans_id: trans_id)
+			response = @client.delete(path)
+			return response
+		end
 	end
 end
