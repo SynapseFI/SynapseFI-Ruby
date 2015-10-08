@@ -2,7 +2,7 @@
 ## Initialization
 
 ```ruby
-from SynapsePay import Client
+require 'synapse_pay_rest'
 
 options = {
 	'ouath_key' => USER_OAUTH KEY, # Optional
@@ -10,12 +10,12 @@ options = {
 	'client_id' =>  YOUR_CLIENT_ID,
 	'client_secret' =>  YOUR_CLIENT_SECRET,
 	'ip_address' =>  USER_IP_ADDRESS,
-	'development_mode' =>  True #True will ping sandbox.synapsepay.com while False will ping synapsepay.com
+	'development_mode' =>  true #true will ping sandbox.synapsepay.com while false will ping synapsepay.com
 }
 
 USER_ID = ID_OF_USER # Optional
 
-client = SynapsePayClient.new options, USER_ID
+client = SynapsePayRest::Client.new options, USER_ID
 
 ```
 
@@ -28,21 +28,21 @@ client = SynapsePayClient.new options, USER_ID
 create_payload = {
 	"logins" =>  [
 		{
-			"email" =>  "pythonTest@synapsepay.com",
+			"email" =>  "rubyTest@synapsepay.com",
 			"password" =>  "test1234",
-			"read_only" => False
+			"read_only" => false
 		}
 	],
 	"phone_numbers" =>  [
 		"901.111.1111"
 	],
 	"legal_names" =>  [
-		"PYTHON TEST USER"
+		"RUBY TEST USER"
 	],
 	"extra" =>  {
 		"note" =>  "Interesting user",
 		"supp_id" =>  "122eddfgbeafrfvbbb",
-		"is_business" =>  False
+		"is_business" =>  false
 	}
 }
 
@@ -132,8 +132,8 @@ synapse_node_response = client.node.add(payload: synapse_node_payload)
 acct_rout_payload = {
 	"type" => "ACH-US",
 	"info" => {
-		"nickname" => "Python Library Savings Account",
-		"name_on_account" => "Python Library",
+		"nickname" => "Ruby Library Savings Account",
+		"name_on_account" => "Ruby Library",
 		"account_num" => "72347235423",
 		"routing_num" => "051000017",
 		"type" => "PERSONAL",
