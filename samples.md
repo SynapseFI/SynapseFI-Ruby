@@ -102,6 +102,10 @@ kba_payload = {
 
 kba_response = client.user.answer_kba(payload: kba_payload)
 
+# Attach a file
+
+file_response = client.user.attach_file(file_path: 'PATH_TO_FILE')
+
 ```
 
 
@@ -113,7 +117,7 @@ kba_response = client.user.answer_kba(payload: kba_payload)
 
 nodes_response = client.node.get()
 
-# Add Synapse Node
+# Add SYNAPSE-US Node
 
 synapse_node_payload = {
 	"type" => "SYNAPSE-US",
@@ -127,7 +131,7 @@ synapse_node_payload = {
 
 synapse_node_response = client.node.add(payload: synapse_node_payload)
 
-# Add ACH Node through Account and Routing Number Details
+# Add ACH-US Node through Account and Routing Number Details
 
 acct_rout_payload = {
 	"type" => "ACH-US",
@@ -147,7 +151,7 @@ acct_rout_payload = {
 acct_rout_response = client.node.add(payload: acct_rout_payload)
 
 
-# Verify Micro-Deposits on ACH Node
+# Verify ACH-US Node via Micro-Deposits
 
 micro_payload = {
 	"micro" => [0.1,0.1]
@@ -155,7 +159,7 @@ micro_payload = {
 
 micro_response = client.node.verify(node_id: NODE_ID, payload: micro_payload)
 
-# Add ACH node through account login
+# Add ACH-US node through account login
 
 login_payload = {
 	"type" => "ACH-US",
@@ -169,7 +173,7 @@ login_payload = {
 login_response = client.node.add(payload: login_payload)
 
 
-# Verify Login Node
+# Verify ACH-US Node via MFA
 
 mfa_payload = {
 	"access_token" => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
