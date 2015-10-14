@@ -6,7 +6,7 @@ require_relative "synapse_pay_rest/api/Node"
 require_relative "synapse_pay_rest/api/Trans"
 
 module SynapsePayRest
-	class SynapsePayClient
+	class Client
 
 		attr_accessor :client
 		attr_accessor :user

@@ -1,5 +1,6 @@
 require 'mime-types'
 require 'base64'
+require 'open-uri'
 
 module SynapsePayRest
 	class User
@@ -80,12 +81,12 @@ module SynapsePayRest
 			return response
 		end
 
-		def attach_file(file)
+		def attach_file(file_path: )
 			path = create_user_path(user_id: @client.user_id)
-			file_type = MIME::Types.type_for(file.path).first.content_type
+			file_contents = open(file_path) { |f| f.read }
+			file_type = MIME::Types.type_for(file_path).first.content_type
 			mime_padding = 'data:' + file_type + ';base64,'
-			content = file.read
-			encoded = Base64.encode64(content)
+			encoded = Base64.encode64(file_contents)
 			base64_attachment = mime_padding + encoded
 			payload = {
 				'doc' => {

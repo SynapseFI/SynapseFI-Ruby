@@ -10,7 +10,7 @@ module SynapsePayRest
 		def create_transaction_path(node_id: , trans_id: nil)
 			path = '/users/' + @client.user_id + '/nodes/' + node_id + '/trans'
 			if trans_id
-				path += '/%s' %trans_id
+				path += '/' + trans_id
 			end
 			return path
 		end

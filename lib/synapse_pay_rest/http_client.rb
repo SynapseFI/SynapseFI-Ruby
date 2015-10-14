@@ -70,6 +70,7 @@ module SynapsePayRest
 					payload.to_json,
 					@headers)
 			rescue Exception => e
+				puts url
 				return JSON.parse(e.response)
 			end
 			return JSON.parse(response)
