@@ -13,7 +13,7 @@ module SynapsePayRest
 		attr_accessor :nodes
 		attr_accessor :trans
 
-		def initialize(options: , user_id: nil)
+		def initialize(options: raise("options is required"), user_id: nil)
 			base_url = 'https://synapsepay.com/api/3'
 			if options.has_key?('development_mode')
 				if options['development_mode']

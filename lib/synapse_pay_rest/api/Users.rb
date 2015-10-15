@@ -19,7 +19,7 @@ module SynapsePayRest
 			return path
 		end
 
-		def refresh(payload: )
+		def refresh(payload: raise("payload is required"))
 			path = '/oauth/%s' % @client.user_id
 			response = @client.post(path, payload)
 			if response.has_key?('oauth_key')
@@ -57,31 +57,31 @@ module SynapsePayRest
 			return response
 		end
 
-		def update(payload: )
+		def update(payload: raise("payload is required"))
 			path = create_user_path(user_id: @client.user_id)
 			response = @client.patch(path, payload)
 			return response
 		end
 
-		def create(payload: )
+		def create(payload: raise("payload is required"))
 			path = create_user_path()
 			response = @client.post(path, payload)
 			return response
 		end
 
-		def add_doc(payload: )
+		def add_doc(payload: raise("payload is required"))
 			path = create_user_path(user_id: @client.user_id)
 			response = @client.patch(path, payload)
 			return response
 		end
 
-		def answer_kba(payload: )
+		def answer_kba(payload: raise("payload is required"))
 			path = create_user_path(user_id: @client.user_id)
 			response = @client.patch(path, payload)
 			return response
 		end
 
-		def attach_file(file_path: )
+		def attach_file(file_path: raise("file_path is required"))
 			path = create_user_path(user_id: @client.user_id)
 			file_contents = open(file_path) { |f| f.read }
 			file_type = MIME::Types.type_for(file_path).first.content_type

@@ -15,7 +15,7 @@ module SynapsePayRest
 			return path
 		end
 
-		def add(payload: )
+		def add(payload: raise("payload is required"))
 			path = create_node_path()
 			response = @client.post(path, payload)
 			return response
@@ -34,7 +34,7 @@ module SynapsePayRest
 			return response
 		end
 
-		def verify(node_id: nil, payload: )
+		def verify(node_id: nil, payload: raise("payload is required"))
 			if node_id
 				path = create_node_path(node_id: node_id)
 				response = @client.patch(path, payload)
@@ -46,7 +46,7 @@ module SynapsePayRest
 			end
 		end
 
-		def delete(node_id: )
+		def delete(node_id: raise("node_id is required"))
 			path = create_node_path(node_id: node_id)
 			response = @client.delete(path)
 			return response

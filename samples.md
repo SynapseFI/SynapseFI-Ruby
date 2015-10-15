@@ -15,7 +15,7 @@ options = {
 
 USER_ID = ID_OF_USER # Optional
 
-client = SynapsePayRest::Client.new options, USER_ID
+client = SynapsePayRest::Client.new options: options, user_id: USER_ID
 
 ```
 
