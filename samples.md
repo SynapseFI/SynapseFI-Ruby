@@ -78,7 +78,7 @@ update_payload = {
 client.users.update(payload: update_payload)
 
 
-# Add KYC Information
+# Add Document
 
 ssn_payload = {
 		"doc" => {
