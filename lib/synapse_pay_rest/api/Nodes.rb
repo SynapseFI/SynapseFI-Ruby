@@ -1,5 +1,5 @@
 module SynapsePayRest
-	class Node
+	class Nodes
 
 		attr_accessor :client
 

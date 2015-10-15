@@ -3,7 +3,7 @@ require 'base64'
 require 'open-uri'
 
 module SynapsePayRest
-	class User
+	class Users
 
 		attr_accessor :client
 

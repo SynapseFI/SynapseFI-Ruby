@@ -23,7 +23,13 @@ client = SynapsePayRest::Client.new options, USER_ID
 
 ```ruby
 
-#Create a User
+
+# Get All Users
+
+users_response = client.users.get()
+
+
+# Create User
 
 create_payload = {
 	"logins" =>  [
@@ -46,23 +52,30 @@ create_payload = {
 	}
 }
 
-create_response = client.user.create(payload: create_payload)
+create_response = client.users.create(payload: create_payload)
+
 
 # Get User
 
-user_response = client.user.get(user_id: USER_ID)
+user_response = client.users.get(user_id: USER_ID)
 
-# Get All Users
 
-users_response = client.user.get()
+# Update a User
 
-# Get Oauth Key
-
-oauth_payload = {
-	"refresh_token" =>  USER_REFRESH_TOKEN
+update_payload = {
+	"refresh_token" => "REFRESH_TOKEN",
+	"update":{
+		"login" => {
+			"email" => "test2ruby@email.com",
+			"password" => "test1234",
+			"read_only" => true
+		},
+		"phone_number" => "9019411111",
+		"legal_name" => "Some new name"
+	}
 }
 
-oauth_response = client.user.refresh(payload: oauth_payload)
+client.users.update(payload: update_payload)
 
 
 # Add KYC Information
@@ -82,7 +95,7 @@ ssn_payload = {
 	}
 }
 
-ssn_response = client.user.add_doc(payload: ssn_payload)
+ssn_response = client.users.add_doc(payload: ssn_payload)
 
 
 # Answer KBA Questions
@@ -100,11 +113,21 @@ kba_payload = {
 	}
 }
 
-kba_response = client.user.answer_kba(payload: kba_payload)
+kba_response = client.users.answer_kba(payload: kba_payload)
+
 
 # Attach a file
 
-file_response = client.user.attach_file(file_path: 'PATH_TO_FILE')
+file_response = client.users.attach_file(file_path: 'PATH_TO_FILE')
+
+
+# Refresh User
+
+oauth_payload = {
+	"refresh_token" =>  USER_REFRESH_TOKEN
+}
+
+oauth_response = client.users.refresh(payload: oauth_payload)
 
 ```
 
@@ -113,9 +136,11 @@ file_response = client.user.attach_file(file_path: 'PATH_TO_FILE')
 
 ```ruby
 
+
 # Get All Nodes
 
-nodes_response = client.node.get()
+nodes_response = client.nodes.get()
+
 
 # Add SYNAPSE-US Node
 
@@ -129,7 +154,32 @@ synapse_node_payload = {
 	}
 }
 
-synapse_node_response = client.node.add(payload: synapse_node_payload)
+synapse_node_response = client.nodes.add(payload: synapse_node_payload)
+
+
+# Add ACH-US node through account login
+
+login_payload = {
+	"type" => "ACH-US",
+	"info" => {
+		"bank_id" => "synapse_good",
+		"bank_pw" => "test1234",
+		"bank_name" => "fake"
+	}
+}
+
+login_response = client.nodes.add(payload: login_payload)
+
+
+# Verify ACH-US Node via MFA
+
+mfa_payload = {
+	"access_token" => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
+	"mfa_answer" => "test_answer"
+}
+
+mfa_response = client.nodes.verify(payload: mfa_payload)
+
 
 # Add ACH-US Node through Account and Routing Number Details
 
@@ -148,7 +198,7 @@ acct_rout_payload = {
 	}
 }
 
-acct_rout_response = client.node.add(payload: acct_rout_payload)
+acct_rout_response = client.nodes.add(payload: acct_rout_payload)
 
 
 # Verify ACH-US Node via Micro-Deposits
@@ -157,40 +207,23 @@ micro_payload = {
 	"micro" => [0.1,0.1]
 }
 
-micro_response = client.node.verify(node_id: NODE_ID, payload: micro_payload)
-
-# Add ACH-US node through account login
-
-login_payload = {
-	"type" => "ACH-US",
-	"info" => {
-		"bank_id" => "synapse_good",
-		"bank_pw" => "test1234",
-		"bank_name" => "fake"
-	}
-}
-
-login_response = client.node.add(payload: login_payload)
-
-
-# Verify ACH-US Node via MFA
-
-mfa_payload = {
-	"access_token" => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
-	"mfa_answer" => "test_answer"
-}
-
-mfa_response = client.node.verify(payload: mfa_payload)
+micro_response = client.nodes.verify(node_id: NODE_ID, payload: micro_payload)
 
 # Delete a Node
 
-delete_response = client.node.delete(node_id: NODE_ID)
+delete_response = client.nodes.delete(node_id: NODE_ID)
 
 ```
 
 ## Transaction API Calls
 
 ```ruby
+
+
+# Get All Transactions
+
+transactions_response = client.trans.get(node_id: NODE_ID)
+
 
 #Create a Transaction
 
@@ -221,13 +254,10 @@ trans_payload = {
 
 create_response = client.trans.create(node_id: NODE_ID, payload: trans_payload)
 
+
 # Get a Transaction
 
 transaction_response = client.trans.get(node_id: NODE_ID, trans_id: TRANS_ID)
-
-# Get All Transactions
-
-transactions_response = client.trans.get(node_id: NODE_ID)
 
 
 # Update Transaction
@@ -237,6 +267,7 @@ update_payload = {
 }
 
 update_response = client.trans.update(node_id: NODE_ID, trans_id: TRANS_ID, payload: update_payload)
+
 
 # Delete Transaction
 
