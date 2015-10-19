@@ -1,11 +1,9 @@
-# Basic wrapper around the the requests library.
-require_relative "synapse_pay_rest/http_client"
-# Assign all the api classes
-require_relative "synapse_pay_rest/api/Users"
-require_relative "synapse_pay_rest/api/Nodes"
-require_relative "synapse_pay_rest/api/Trans"
-
 module SynapsePayRest
+  autoload :HTTPClient, 'synapse_pay_rest/http_client'
+  autoload :Users,      'synapse_pay_rest/api/users'
+  autoload :Nodes,      'synapse_pay_rest/api/nodes'
+  autoload :Trans,      'synapse_pay_rest/api/trans'
+
   class Client
 
     attr_accessor :client
