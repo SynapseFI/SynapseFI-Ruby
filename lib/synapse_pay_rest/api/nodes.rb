@@ -8,48 +8,31 @@ module SynapsePayRest
     end
 
     def create_node_path(node_id: nil)
-      path = '/users/%s' % @client.user_id + '/nodes'
-      if node_id
-        path += '/%s' %node_id
-      end
-      return path
+      path = ['/users', client.user_id, 'nodes' ]
+      path << node_id if node_id
+      return path.join('/')
     end
 
     def add(payload: raise("payload is required"))
       path = create_node_path()
-      response = @client.post(path, payload)
-      return response
+      client.post(path, payload)
     end
 
     def get(node_id: nil, page: nil)
-      if node_id
-        path = create_node_path(node_id: node_id)
-      else
-        path = create_node_path()
-      end
-      if page
-        path += '?page=%s' %page
-      end
-      response = @client.get(path)
-      return response
+      # If node_id is nil then create_node_path will handlie it just fine
+      path = create_node_path(node_id: node_id)
+      path += "?page=#{page}" if page
+      client.get(path)
     end
 
     def verify(node_id: nil, payload: raise("payload is required"))
-      if node_id
-        path = create_node_path(node_id: node_id)
-        response = @client.patch(path, payload)
-        return response
-      else
-        path = create_node_path()
-        response = @client.post(path, payload)
-        return response
-      end
+      path = create_node_path(node_id: node_id)
+      client.patch(path, payload)
     end
 
     def delete(node_id: raise("node_id is required"))
       path = create_node_path(node_id: node_id)
-      response = @client.delete(path)
-      return response
+      client.delete(path)
     end
   end
 end
