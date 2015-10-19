@@ -5,19 +5,14 @@ module SynapsePayRest
   autoload :Trans,      'synapse_pay_rest/api/trans'
 
   class Client
-
-    attr_accessor :client
-    attr_accessor :users
-    attr_accessor :nodes
-    attr_accessor :trans
+    attr_accessor :client, :users, :nodes, :trans
 
     def initialize(options: raise("options is required"), user_id: nil)
-      base_url = 'https://synapsepay.com/api/3'
-      if options.has_key?('development_mode')
-        if options['development_mode']
-          base_url = 'https://sandbox.synapsepay.com/api/3'
-        end
-      end
+      base_url = if options['development_mode']
+                   'https://sandbox.synapsepay.com/api/3'
+                 else
+                   'https://synapsepay.com/api/3'
+                 end
 
       @client = HTTPClient.new options, base_url, user_id: user_id
       @users = Users.new @client

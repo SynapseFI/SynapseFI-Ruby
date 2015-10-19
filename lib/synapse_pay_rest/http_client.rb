@@ -3,18 +3,19 @@ require 'rest-client'
 module SynapsePayRest
   class HTTPClient
 
-    attr_accessor :base_url
-    attr_accessor :options
-    attr_accessor :headers
-    attr_accessor :user_id
+    attr_accessor :base_url, :options, :headers, :user_id
 
+    # By the way, this is a really badly designed initializer
+    # If the "options" are truely optional, then Ruby lets the last
+    # argument be a hash. But in this case, these are not options so
+    # much as required configurations. Should just be called config
+    # And why is that in front of the base_url?
     def initialize(options, base_url, user_id: nil)
       @options = options
-      user = '|%s' %options['fingerprint']
-      if options.has_key?('oauth_key')
-        user = '%s|%s' % [options['oauth_key'], options['fingerprint']]
-      end
-      gateway = '%s|%s' % [options['client_id'], options['client_secret']]
+
+      user    = "#{options['oauth_key']}|#{options['fingerprint']}"
+      gateway = "#{options['client_id']}|#{options['client_secret']}"
+
       @headers = {
         :content_type => :json,
         :accept => :json,
@@ -28,74 +29,53 @@ module SynapsePayRest
     end
 
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
-      if user_id
-        @user_id = user_id
-      end
-      if oauth_key and !fingerprint
-        @headers['X-SP-USER'] = '%s|%s' % [oauth_key, @options['fingerprint']]
-      elsif oauth_key and fingerprint
-        @headers['X-SP-USER'] = '%s|%s' % [oauth_key, fingerprint]
-      end
+      self.user_id  = user_id if user_id
 
-      if client_id and !client_secret
-        @headers['X-SP-GATEWAY'] = '%s|%s' % [client_id, @options['client_secret']]
-      elsif client_id and client_secret
-        @headers['X-SP-GATEWAY'] = '%s|%s' % [client_id, client_secret]
-      elsif !client_id and client_secret
-        @headers['X-SP-GATEWAY'] = '%s|%s' % [@options['client_id'], client_secret]
-      end
+      fingerprint   ||= options['fingerprint']
+      client_id     ||= options['client_id']
+      client_secret ||= options['client_secret']
 
-      if ip_address
-        @headers['X-SP-USER-IP'] = ip_address
-      end
+      headers['X-SP-USER']    = "#{oauth_key}|#{fingerprint}"
+      headers['X-SP-GATEWAY'] = "#{client_id}|#{client_secret}"
+      headers['X-SP-USER-IP'] = ip_address if ip_address
     end
 
 
     def post(path, payload)
-      url = base_url + path
-      response = begin
-                   RestClient.post(url,
-                                   payload.to_json,
-                                   @headers)
-                 rescue Exception => e
-                   return JSON.parse(e.response)
-                 end
-      return JSON.parse(response)
+      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, headers) }
+      JSON.parse(response)
     end
 
     def patch(path, payload)
-      url = base_url + path
-      response = begin
-                   RestClient.patch(url,
-                                    payload.to_json,
-                                    @headers)
-                 rescue Exception => e
-                   puts url
-                   return JSON.parse(e.response)
-                 end
-      return JSON.parse(response)
+      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, headers) }
+      JSON.parse(response)
     end
 
     def get(path)
-      url = base_url + path
-      response = begin
-                   RestClient.get(url,
-                                  @headers)
-                 rescue Exception => e
-                   return JSON.parse(e.response)
-                 end
-      return JSON.parse(response)
+      response = with_error_handling { RestClient.get(full_url(path), headers) }
+      JSON.parse(response)
     end
 
     def delete(path)
-      url = base_url + path
-      response = begin
-                   RestClient.delete(url,
-                                     @headers)
-                 rescue Exception => e
-                   return JSON.parse(e.response)
-                 end
-      return JSON.parse(response)
+      response = with_error_handling { RestClient.delete(full_url(path), headers) }
+      JSON.parse(response)
+    end
+
+    private
+
+    def full_url(path)
+      "#{base_url}#{path}"
+    end
+
+    def with_error_handling
+      yield
+    rescue Exception => e
+      # By the way, this is a really bad idea.
+      # See: https://www.relishapp.com/womply/ruby-style-guide/docs/exceptions
+      # The exceptions should be enumerated. Not all exceptions are going
+      # to be parsable by JSON. The only one that should be captured are the
+      # are the HTTP Client responses.
+      return e.response
     end
   end
 end
