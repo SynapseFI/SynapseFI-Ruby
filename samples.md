@@ -5,7 +5,7 @@
 require 'synapse_pay_rest'
 
 options = {
-	'ouath_key' => USER_OAUTH KEY, # Optional
+	'oauth_key' => USER_OAUTH KEY, # Optional
 	'fingerprint' => USER_FINGERPRINT,
 	'client_id' =>  YOUR_CLIENT_ID,
 	'client_secret' =>  YOUR_CLIENT_SECRET,
