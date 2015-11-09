@@ -1,5 +1,6 @@
 # Basic wrapper around the the requests library.
 require_relative "synapse_pay_rest/http_client"
+require_relative "synapse_pay_rest/error"
 # Assign all the api classes
 require_relative "synapse_pay_rest/api/Users"
 require_relative "synapse_pay_rest/api/Nodes"
