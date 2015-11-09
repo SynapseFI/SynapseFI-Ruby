@@ -9,9 +9,18 @@ Gem::Specification.new do |s|
   s.description = "A simple ruby wrapper for the SynapsePay v3 Rest API"
   s.authors     = ["Thomas Hipps"]
   s.email       = 'thomas@synapsepay.com'
-  s.require_paths = ["lib"]
-  s.files       = Dir.glob("{lib}/**/*")
   s.homepage    = 'https://rubygems.org/gems/synapse_pay_rest'
   s.license     = 'MIT'
+
+  s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  s.bindir        = "exe"
+  s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  s.require_paths = ["lib"]
+
+  s.add_development_dependency "bundler", "~> 1.10"
+  s.add_development_dependency "rake", "~> 10.0"
+  s.add_development_dependency "minitest"
+  s.add_development_dependency "minitest-reporters"
+
   s.add_dependency "rest-client"
 end
