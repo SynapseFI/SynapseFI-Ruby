@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = 'synapse_pay_rest'
-  s.version     = '0.0.10'
+  s.version     = '0.0.12'
   s.date        = %q{2015-10-03}
   s.summary     = "SynapsePay v3 Rest API Wrapper"
   s.description = "A simple ruby wrapper for the SynapsePay v3 Rest API"
