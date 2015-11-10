@@ -1,8 +1,9 @@
+require "synapse_pay_rest/http_client"
+require "synapse_pay_rest/api/users"
+require "synapse_pay_rest/api/nodes"
+require "synapse_pay_rest/api/trans"
+
 module SynapsePayRest
-  autoload :HTTPClient, 'synapse_pay_rest/http_client'
-  autoload :Users,      'synapse_pay_rest/api/users'
-  autoload :Nodes,      'synapse_pay_rest/api/nodes'
-  autoload :Trans,      'synapse_pay_rest/api/trans'
 
   class Client
     attr_accessor :client, :users, :nodes, :trans

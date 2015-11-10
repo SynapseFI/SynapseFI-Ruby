@@ -27,7 +27,7 @@ module SynapsePayRest
     end
 
     def get(options = {})
-      path = create_user_path(user_id: user_id)
+      path = create_user_path(user_id: options['user_id'] if options['user_id'])
 
       if options[:user_id]
         response = client.get(path)
