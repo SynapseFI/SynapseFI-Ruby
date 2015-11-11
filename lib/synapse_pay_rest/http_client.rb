@@ -101,12 +101,12 @@ module SynapsePayRest
     end
 
     def handle_timeout_error()
-      return {'success' => false, 'reason' => 'Handle'}.to_json
+      return {'success' => false, 'reason' => 'A timeout has occurred.'}.to_json
     end
 
 
-    def handle_method_not_allowed()
-      return {'success' => false, 'reason' => 'The method is not allowed. Check your id parameters.'}.to_json
+    def handle_unknown_error()
+      return {'success' => false, 'reason' => 'Unknown error in library. Contact synapsepay.'}.to_json
     end
   end
 end
