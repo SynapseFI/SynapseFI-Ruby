@@ -26,8 +26,8 @@ module SynapsePayRest
       return response
     end
 
-    def get(options = {})
-      path = create_user_path(user_id: options['user_id'] if options['user_id'])
+    def get(user_id: nil, options: {})
+      path = create_user_path(user_id: user_id)
 
       if options[:user_id]
         response = client.get(path)
@@ -54,7 +54,9 @@ module SynapsePayRest
 
     def create(payload: raise("payload is required"))
       path = create_user_path()
-      client.post(path, payload)
+      response = client.post(path, payload)
+      client.update_headers(user_id: response['_id']) if response['_id']
+      return response
     end
 
     def add_doc(payload: raise("payload is required"))
@@ -69,7 +71,7 @@ module SynapsePayRest
 
     def attach_file(file_path: raise("file_path is required"))
       path = create_user_path(user_id: @client.user_id)
-      file_contents = File.read(file_path)
+      file_contents = open(file_path) { |f| f.read }
       file_type = MIME::Types.type_for(file_path).first.content_type
       mime_padding = "data:#{file_type};base64,"
       encoded = Base64.encode64(file_contents)
