@@ -27,7 +27,7 @@ module SynapsePayRest
 
     def verify(node_id: nil, payload: raise("payload is required"))
       path = create_node_path(node_id: node_id)
-      client.patch(path, payload)
+      client.post(path, payload)
     end
 
     def delete(node_id: raise("node_id is required"))
