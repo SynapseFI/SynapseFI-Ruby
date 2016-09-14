@@ -1,4 +1,5 @@
 require "synapse_pay_rest/http_client"
+require "synapse_pay_rest/error"
 require "synapse_pay_rest/api/users"
 require "synapse_pay_rest/api/nodes"
 require "synapse_pay_rest/api/trans"
