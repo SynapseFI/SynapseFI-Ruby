@@ -70,12 +70,22 @@ module SynapsePayRest
     end
 
     def attach_file(file_path: raise("file_path is required"))
+      file_contents = open(file_path) { |f| f.read }
+      file_type = MIME::Types.type_for(file_path).first.try(:content_type)
+      if file_type.nil?
+        raise("File type not found. Use attach_file_with_file_type(file_path: <file_path>, file_type: <file_type>)")
+      else
+        attach_file_with_file_type(file_path: file_path, file_type: file_type)
+      end
+    end
+
+    def attach_file_with_file_type(file_path: raise("file_path is required"), file_type: raise("file_type is required"))
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }
-      file_type = MIME::Types.type_for(file_path).first.content_type
-      mime_padding = "data:#{file_type};base64,"
       encoded = Base64.encode64(file_contents)
+      mime_padding = "data:#{file_type};base64,"
       base64_attachment = mime_padding + encoded
+
       payload = {
         'doc' => {
           'attachment' => base64_attachment
