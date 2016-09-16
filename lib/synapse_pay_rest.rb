@@ -5,6 +5,7 @@ require "synapse_pay_rest/api/nodes"
 require "synapse_pay_rest/api/trans"
 
 module SynapsePayRest
+  VERSION = '0.0.13'
 
   class Client
     attr_accessor :client, :users, :nodes, :trans

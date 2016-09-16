@@ -32,7 +32,7 @@ module SynapsePayRest
         response = @client.patch(path, payload)
       else
         # verify MFA question(s)
-        path = create_node_path()
+        path = create_node_path
         response = @client.post(path, payload)
       end
       response

@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'pry'; binding.pry
+
 class ErrorTest < Minitest::Test
 
   def test_400_error_code
