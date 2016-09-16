@@ -13,7 +13,7 @@ module SynapsePayRest
       @user_id = user_id
     end
 
-    def get_headers()
+    def get_headers
       user    = "#{config['oauth_key']}|#{config['fingerprint']}"
       gateway = "#{config['client_id']}|#{config['client_secret']}"
       headers = {
@@ -36,22 +36,22 @@ module SynapsePayRest
 
 
     def post(path, payload)
-      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, get_headers()) }
+      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, get_headers) }
       JSON.parse(response)
     end
 
     def patch(path, payload)
-      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, get_headers()) }
+      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, get_headers) }
       JSON.parse(response)
     end
 
     def get(path)
-      response = with_error_handling { RestClient.get(full_url(path), get_headers()) }
+      response = with_error_handling { RestClient.get(full_url(path), get_headers) }
       JSON.parse(response)
     end
 
     def delete(path)
-      response = with_error_handling { RestClient.delete(full_url(path), get_headers()) }
+      response = with_error_handling { RestClient.delete(full_url(path), get_headers) }
       JSON.parse(response)
     end
 
@@ -79,33 +79,33 @@ module SynapsePayRest
       when 500
         return e.response
       when 405
-        return handle_method_not_allowed()
+        return handle_method_not_allowed
       when 502
         #Raise a gateway error
-        return handle_gateway_error()
+        return handle_gateway_error
       when 504
         #Raise a timeout error
-        return handle_timeout_error()
+        return handle_timeout_error
       else
         #Raise a generic error
-        return handle_unknown_error()
+        return handle_unknown_error
       end
     end
 
-    def handle_method_not_allowed()
+    def handle_method_not_allowed
       return {'success' => false, 'reason' => 'The method is not allowed. Check your id parameters.'}.to_json
     end
 
-    def handle_gateway_error()
+    def handle_gateway_error
       return {'success' => false, 'reason' => 'The gateway appears to be down.  Check synapsepay.com or try again later.'}.to_json
     end
 
-    def handle_timeout_error()
+    def handle_timeout_error
       return {'success' => false, 'reason' => 'A timeout has occurred.'}.to_json
     end
 
 
-    def handle_unknown_error()
+    def handle_unknown_error
       return {'success' => false, 'reason' => 'Unknown error in library. Contact synapsepay.'}.to_json
     end
   end

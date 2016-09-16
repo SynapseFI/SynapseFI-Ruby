@@ -26,7 +26,7 @@ client = SynapsePayRest::Client.new options: options, user_id: USER_ID
 
 # Get All Users
 
-users_response = client.users.get()
+users_response = client.users.get
 
 
 # Create User
@@ -139,7 +139,7 @@ oauth_response = client.users.refresh(payload: oauth_payload)
 
 # Get All Nodes
 
-nodes_response = client.nodes.get()
+nodes_response = client.nodes.get
 
 
 # Add SYNAPSE-US Node
