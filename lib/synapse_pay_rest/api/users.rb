@@ -3,6 +3,7 @@ require 'base64'
 require 'open-uri'
 
 module SynapsePayRest
+  # should maybe create User class
   class Users
     # Should refactor this to HTTPClient
     VALID_QUERY_PARAMS = [:query, :page, :per_page].freeze
@@ -13,12 +14,14 @@ module SynapsePayRest
       @client = client
     end
 
+    # should be private
     def create_user_path(user_id: nil)
       path = ['/users']
       path << user_id if user_id
       return path.join('/')
     end
 
+    # refactor to automate oauth
     def refresh(payload: raise("payload is required"))
       path = "/oauth/#{@client.user_id}"
       response = @client.post(path, payload)
@@ -26,6 +29,7 @@ module SynapsePayRest
       return response
     end
 
+    # factor users/ and users/:id into separate methods
     def get(user_id: nil, options: {})
       path = create_user_path(user_id: user_id)
 
@@ -35,7 +39,7 @@ module SynapsePayRest
         return response
       end
 
-      # Should factor this out into HTTPClient
+      # Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact

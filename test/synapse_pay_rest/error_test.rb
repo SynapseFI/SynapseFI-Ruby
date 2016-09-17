@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class ErrorTest < Minitest::Test
-
   def test_400_error_code
     response = {"error"=>{"en"=>"Unable to verify document information. Please submit a valid copy of passport/driver's license."}, "error_code"=>"400", "http_code"=>"409", "success"=>false}
 
@@ -13,5 +12,4 @@ class ErrorTest < Minitest::Test
     assert_equal '400', error.code
     assert_equal response, error.response
   end
-
 end

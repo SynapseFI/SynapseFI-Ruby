@@ -14,6 +14,7 @@ module SynapsePayRest
     end
 
     def get_headers
+      # refactor to use symbols
       user    = "#{config['oauth_key']}|#{config['fingerprint']}"
       gateway = "#{config['client_id']}|#{config['client_secret']}"
       headers = {
