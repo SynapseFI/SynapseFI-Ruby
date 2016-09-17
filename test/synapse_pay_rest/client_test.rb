@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class ClientTest < Minitest::Test
-  def test_client_is_configured_through_options
+  def test_configured_through_options
     options = {
         'fingerprint' => ENV.fetch('FINGERPRINT'),
         'client_id' => ENV.fetch('CLIENT_ID'),

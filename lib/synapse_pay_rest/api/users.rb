@@ -75,7 +75,7 @@ module SynapsePayRest
 
     def attach_file(file_path: raise("file_path is required"))
       file_contents = open(file_path) { |f| f.read }
-      file_type = MIME::Types.type_for(file_path).first.try(:content_type)
+      file_type = MIME::Types.type_for(file_path).first.content_type if MIME::Types.type_for(file_path).first
       if file_type.nil?
         raise("File type not found. Use attach_file_with_file_type(file_path: <file_path>, file_type: <file_type>)")
       else

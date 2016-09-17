@@ -1,13 +1,14 @@
 require 'test_helper'
 
 class IntegrationTest < Minitest::Test
-  def test_users_update
-    client = authenticated_client
-    user_id = client.client.user_id
-    user = test_client.users.get(user_id: user_id)
+  def setup
+    @client = authenticated_client
+    @user = oauth_user(@client, ENV.fetch('USER_ID'))
+  end
 
+  def test_users_update
     payload = {
-      "refresh_token" => user['refresh_token'],
+      "refresh_token" => @user['refresh_token'],
       "update" => {
         "login" => {
           "email" => "test2ruby@email.com",
@@ -19,18 +20,11 @@ class IntegrationTest < Minitest::Test
       }
     }
     
-    response = client.users.update(payload: payload)
+    response = @client.users.update(payload: payload)
     refute_nil response['_id']
   end
 
   def test_add_doc_successful
-    client = authenticated_client
-    user_id = client.client.user_id
-    user = test_client.users.get(user_id: user_id)
-    oauth = client.users.refresh(payload: {
-      'refresh_token' => user['refresh_token']
-    })
-
     payload = {
       "doc" => {
         "birth_day" => 4,
@@ -45,17 +39,12 @@ class IntegrationTest < Minitest::Test
         "document_type" => "SSN"
       }
     }
-    response = client.users.add_doc(payload: payload)
+    response = @client.users.add_doc(payload: payload)
+
     refute_nil response['_id']
   end
 
   def test_add_doc_with_answer_kba
-    client = authenticated_client
-    user_id = client.client.user_id
-    user = test_client.users.get(user_id: user_id)
-    oauth = client.users.refresh(payload: {
-      'refresh_token' => user['refresh_token']
-    })
     payload = {
       "doc" => {
         "birth_day" => 4,
@@ -70,8 +59,8 @@ class IntegrationTest < Minitest::Test
         "document_type" => "SSN"
       }
     }
+    response = @client.users.add_doc(payload: payload)
 
-    response = client.users.add_doc(payload: payload)
     assert_equal response['error_code'], '10'
     assert_equal response['http_code'], '202'
 
@@ -87,15 +76,15 @@ class IntegrationTest < Minitest::Test
         ]
       }
     }
-
-    kba_response = client.users.answer_kba(payload: kba_payload)
+    kba_response = @client.users.answer_kba(payload: kba_payload)
     ssn_field = kba_response['documents'][-1]['virtual_docs'].find {|doc| doc['document_type'] == 'SSN'}
+
     assert_nil ssn_field['meta']
   end
 
   def test_attach_file
-  end
-
-  def test_attach_file_with_file_type
+    response = @client.users.attach_file(file_path: fixture_path('id.png'))
+    
+    refute_nil response['_id']
   end
 end
