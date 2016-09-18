@@ -3,7 +3,6 @@ require 'json'
 
 module SynapsePayRest
   class HTTPClient
-
     attr_accessor :base_url, :config, :headers, :user_id
 
     def initialize(config, base_url, user_id: nil)
@@ -14,6 +13,7 @@ module SynapsePayRest
     end
 
     def get_headers
+      # refactor to use symbols
       user    = "#{config['oauth_key']}|#{config['fingerprint']}"
       gateway = "#{config['client_id']}|#{config['client_secret']}"
       headers = {

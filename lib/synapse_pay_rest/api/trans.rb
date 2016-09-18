@@ -1,6 +1,6 @@
 module SynapsePayRest
+  # rename this
   class Trans
-
     attr_accessor :client
 
     def initialize(client)

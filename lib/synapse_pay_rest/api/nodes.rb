@@ -1,6 +1,5 @@
 module SynapsePayRest
   class Nodes
-
     attr_accessor :client
 
     def initialize(client)
@@ -10,7 +9,7 @@ module SynapsePayRest
     def create_node_path(node_id: nil)
       path = ['/users', client.user_id, 'nodes' ]
       path << node_id if node_id
-      return path.join('/')
+      path.join('/')
     end
 
     def add(payload: raise("payload is required"))
@@ -25,6 +24,7 @@ module SynapsePayRest
       client.get(path)
     end
 
+    # separate this into different methods
     def verify(node_id: nil, payload: raise("payload is required"))
       if node_id
         # verify microdeposits
@@ -35,7 +35,6 @@ module SynapsePayRest
         path = create_node_path
         response = @client.post(path, payload)
       end
-      response
     end
 
     def delete(node_id: raise("node_id is required"))

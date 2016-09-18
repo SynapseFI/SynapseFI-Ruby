@@ -5,12 +5,12 @@
 require 'synapse_pay_rest'
 
 options = {
-	'oauth_key' => USER_OAUTH KEY, # Optional
+	'oauth_key' => USER_OAUTH_KEY, # Optional
 	'fingerprint' => USER_FINGERPRINT,
-	'client_id' =>  YOUR_CLIENT_ID,
-	'client_secret' =>  YOUR_CLIENT_SECRET,
-	'ip_address' =>  USER_IP_ADDRESS,
-	'development_mode' =>  true #true will ping sandbox.synapsepay.com while false will ping synapsepay.com
+	'client_id' => YOUR_CLIENT_ID,
+	'client_secret' => YOUR_CLIENT_SECRET,
+	'ip_address' => USER_IP_ADDRESS,
+	'development_mode' => true # true will ping sandbox.synapsepay.com while false will ping synapsepay.com
 }
 
 USER_ID = ID_OF_USER # Optional
@@ -64,7 +64,7 @@ user_response = client.users.get(user_id: USER_ID)
 
 update_payload = {
 	"refresh_token" => "REFRESH_TOKEN",
-	"update":{
+	"update" => {
 		"login" => {
 			"email" => "test2ruby@email.com",
 			"password" => "test1234",
@@ -104,11 +104,11 @@ kba_payload = {
 	"doc" => {
 		"question_set_id" => "557520ad343463000300005a",
 		"answers" => [
-			{ "question_id" =>  1, "answer_id" =>  1 },
-			{ "question_id" =>  2, "answer_id" =>  1 },
-			{ "question_id" =>  3, "answer_id" =>  1 },
-			{ "question_id" =>  4, "answer_id" =>  1 },
-			{ "question_id" =>  5, "answer_id" =>  1 }
+			{ "question_id" =>  1, "answer_id" => 1 },
+			{ "question_id" =>  2, "answer_id" => 1 },
+			{ "question_id" =>  3, "answer_id" => 1 },
+			{ "question_id" =>  4, "answer_id" => 1 },
+			{ "question_id" =>  5, "answer_id" => 1 }
 		]
 	}
 }
