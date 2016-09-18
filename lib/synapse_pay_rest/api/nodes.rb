@@ -1,6 +1,5 @@
 module SynapsePayRest
   class Nodes
-
     attr_accessor :client
 
     def initialize(client)
@@ -25,6 +24,7 @@ module SynapsePayRest
       client.get(path)
     end
 
+    # separate this into different methods
     def verify(node_id: nil, payload: raise("payload is required"))
       if node_id
         # verify microdeposits
