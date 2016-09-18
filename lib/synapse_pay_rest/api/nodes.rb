@@ -6,12 +6,6 @@ module SynapsePayRest
       @client = client
     end
 
-    def create_node_path(node_id: nil)
-      path = ['/users', client.user_id, 'nodes' ]
-      path << node_id if node_id
-      path.join('/')
-    end
-
     def add(payload: raise("payload is required"))
       path = create_node_path
       client.post(path, payload)
@@ -40,6 +34,14 @@ module SynapsePayRest
     def delete(node_id: raise("node_id is required"))
       path = create_node_path(node_id: node_id)
       client.delete(path)
+    end
+
+    private
+
+    def create_node_path(node_id: nil)
+      path = ['/users', client.user_id, 'nodes' ]
+      path << node_id if node_id
+      path.join('/')
     end
   end
 end

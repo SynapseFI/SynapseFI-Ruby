@@ -3,7 +3,7 @@ require 'json'
 
 module SynapsePayRest
   class HTTPClient
-    attr_accessor :base_url, :config, :headers, :user_id
+    attr_accessor :base_url, :config, :user_id
 
     def initialize(config, base_url, user_id: nil)
       @config = config
@@ -25,6 +25,7 @@ module SynapsePayRest
       }
     end
 
+    # room for refactoring
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
       self.user_id  = user_id if user_id
       config['fingerprint']   = fingerprint if fingerprint
@@ -103,7 +104,6 @@ module SynapsePayRest
     def handle_timeout_error
       return {'success' => false, 'reason' => 'A timeout has occurred.'}.to_json
     end
-
 
     def handle_unknown_error
       return {'success' => false, 'reason' => 'Unknown error in library. Contact synapsepay.'}.to_json

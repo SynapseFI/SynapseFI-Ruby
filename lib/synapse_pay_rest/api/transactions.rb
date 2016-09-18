@@ -1,16 +1,9 @@
 module SynapsePayRest
-  # rename this
-  class Trans
+  class Transactions
     attr_accessor :client
 
     def initialize(client)
       @client = client
-    end
-
-    def create_transaction_path(node_id: raise("node_id is required"), trans_id: nil)
-      path = ['/users', client.user_id, 'nodes', node_id, 'trans' ]
-      path << trans_id if trans_id
-      return path.join('/')
     end
 
     def create(node_id: raise("node_id is required"), payload: raise("payload is required"))
@@ -33,6 +26,14 @@ module SynapsePayRest
     def delete(node_id: raise("node_id is required"), trans_id: raise("trans_id is required"))
       path = create_transaction_path(node_id: node_id, trans_id: trans_id)
       client.delete(path)
+    end
+
+    private
+
+    def create_transaction_path(node_id: raise("node_id is required"), trans_id: nil)
+      path = ['/users', client.user_id, 'nodes', node_id, 'trans' ]
+      path << trans_id if trans_id
+      return path.join('/')
     end
   end
 end

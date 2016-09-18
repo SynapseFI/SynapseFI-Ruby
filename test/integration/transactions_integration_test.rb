@@ -45,9 +45,7 @@ class TransactionsIntegrationTest < Minitest::Test
   end
 
   def test_transactions_update
-    payload = {
-      'comment' =>  'I am comment'
-    }
+    payload = {'comment' =>  'I am comment'}
     transactions_response = @client.trans.get(node_id: @from_node['_id'])
     transaction_id = transactions_response['trans'].first['_id']
     update_response = @client.trans.update(node_id: @from_node['_id'], trans_id: transaction_id, payload: payload)
@@ -55,7 +53,7 @@ class TransactionsIntegrationTest < Minitest::Test
 
     assert_equal update_response['http_code'], '200'
     assert_equal update_response['error_code'], '0'
-    assert_operator note, :=~, /I am comment/
+    assert_match /I am comment/, note
   end
 
   def test_transactions_delete
