@@ -85,5 +85,3 @@ def oauth_user(client, user_id)
     user
 end
 
-def test_node
-end

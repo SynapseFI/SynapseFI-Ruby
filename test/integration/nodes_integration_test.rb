@@ -1,19 +1,19 @@
 require 'test_helper'
 
-class IntegrationTest < Minitest::Test
+class NodesIntegrationTest < Minitest::Test
   def setup
-    @client = client_with_user
+    # @client = client_with_user
     @user = oauth_user(@client, ENV.fetch('USER_ID'))
   end
 
   def test_nodes_add_with_bank_login_no_kba
     payload = {
-        'type' => 'ACH-US',
-        'info' => {
-            'bank_id' => 'synapse_nomfa',
-            'bank_pw' => 'test1234',
-            'bank_name' => 'fake'
-        }
+      'type' => 'ACH-US',
+      'info' => {
+        'bank_id' => 'synapse_nomfa',
+        'bank_pw' => 'test1234',
+        'bank_name' => 'fake'
+      }
     }
     response = @client.nodes.add(payload: payload)
 
@@ -24,12 +24,12 @@ class IntegrationTest < Minitest::Test
 
   def test_nodes_add_with_bank_login_and_verify_mfa_questions
     add_payload = {
-        'type' => 'ACH-US',
-        'info' => {
-            'bank_id' => 'synapse_good',
-            'bank_pw' => 'test1234',
-            'bank_name' => 'fake'
-        }
+      'type' => 'ACH-US',
+      'info' => {
+        'bank_id' => 'synapse_good',
+        'bank_pw' => 'test1234',
+        'bank_name' => 'fake'
+      }
     }
     add_response = @client.nodes.add(payload: add_payload)
 
