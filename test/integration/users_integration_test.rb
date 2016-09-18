@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class IntegrationTest < Minitest::Test
+class UsersIntegrationTest < Minitest::Test
   def setup
     @client = client_with_user
     @user = oauth_user(@client, ENV.fetch('USER_ID'))

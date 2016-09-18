@@ -8,7 +8,7 @@ module SynapsePayRest
     def initialize(config, base_url, user_id: nil)
       @config = config
       @base_url = base_url
-      RestClient.log = 'stdout'
+      # RestClient.log = 'stdout'
       @user_id = user_id
     end
 

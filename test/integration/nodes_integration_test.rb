@@ -2,7 +2,7 @@ require 'test_helper'
 
 class NodesIntegrationTest < Minitest::Test
   def setup
-    # @client = client_with_user
+    @client = client_with_user
     @user = oauth_user(@client, ENV.fetch('USER_ID'))
   end
 
