@@ -11,8 +11,8 @@ module SynapsePayRest
       client.post(path, payload)
     end
 
+    # if node_id is nil then returns all nodes
     def get(node_id: nil, page: nil)
-      # If node_id is nil then create_node_path will handle it just fine
       path = create_node_path(node_id: node_id)
       path += "?page=#{page}" if page
       client.get(path)

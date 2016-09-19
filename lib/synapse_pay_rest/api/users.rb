@@ -22,10 +22,25 @@ module SynapsePayRest
       response
     end
 
+    # return an array of all users
+    def all(per_page: nil)
+      get(options: {per_page: per_page})['users']
+    end
+
+    # return a specific user hash
+    def find(user_id:)
+      get(user_id: user_id)
+    end
+
+    # return users by name/email substring match
+    def search(query:, per_page: nil)
+      get(options: {query: query, per_page: per_page})['users']
+    end
+
+    # if user_id is nil returns all users
     def get(user_id: nil, options: {})
       path = create_user_path(user_id: user_id)
 
-      # factor single user and all users into separate methods
       if options[:user_id]
         response = client.get(path)
         client.update_headers(user_id: response['_id']) if response['_id']
@@ -49,7 +64,18 @@ module SynapsePayRest
       client.patch(path, payload)
     end
 
-    def create(payload: raise("payload is required"))
+    # support payload directly (base API use) or keyword args
+    def create(payload: {}, **args)
+      if payload.empty?
+        payload = create_payload_from_kwargs(
+          {
+            email: args[:email],
+            phone_numbers: args[:phone_numbers],
+            legal_names: args[:legal_names]
+          }.merge(args)
+        )
+      end
+
       path = create_user_path
       response = client.post(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
@@ -67,6 +93,8 @@ module SynapsePayRest
     end
 
     def attach_file(file_path: raise("file_path is required"))
+      warn caller.first + "DEPRECATION WARNING: the method #{__METHOD__} is deprecated. Use SynapsePayRest::Users::update instead."
+
       file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
@@ -98,6 +126,26 @@ module SynapsePayRest
       path = ['/users']
       path << user_id if user_id
       path.join('/')
+    end
+
+    # for use with #create
+    def create_payload_from_kwargs(email:, phone_numbers:, legal_names:, **options)
+      payload = {
+        'logins' => [
+          {
+            'email' => email
+          }
+        ],
+        'phone_numbers' => phone_numbers,
+        'legal_names' => legal_names,
+        'extra' => {}
+      }
+      # optional fields
+      payload['extra']['supp_id'] = options[:supp_id] if options[:supp_id]
+      payload['extra']['note'] = options[:note] if options[:note]
+      payload['extra']['is_business'] = options[:is_business] if options[:is_business]
+      payload['extra']['cip_tag'] = options[:cip_tag] if options[:cip_tag]
+      payload
     end
   end
 end

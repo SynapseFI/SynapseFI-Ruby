@@ -8,12 +8,11 @@ module SynapsePayRest
     def initialize(config, base_url, user_id: nil)
       @config = config
       @base_url = base_url
-      # RestClient.log = 'stdout'
+      RestClient.log = 'stdout'
       @user_id = user_id
     end
 
-    def get_headers
-      # refactor to use symbols
+    def headers
       user    = "#{config['oauth_key']}|#{config['fingerprint']}"
       gateway = "#{config['client_id']}|#{config['client_secret']}"
       headers = {
@@ -24,10 +23,10 @@ module SynapsePayRest
         'X-SP-USER-IP' => config['ip_address'] 
       }
     end
+    alias_method :get_headers, :headers
 
-    # room for refactoring
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
-      self.user_id  = user_id if user_id
+      self.user_id            = user_id if user_id
       config['fingerprint']   = fingerprint if fingerprint
       config['oauth_key']     = oauth_key if oauth_key
       config['client_id']     = client_id if client_id
@@ -37,22 +36,22 @@ module SynapsePayRest
 
 
     def post(path, payload)
-      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, get_headers) }
+      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, headers) }
       JSON.parse(response)
     end
 
     def patch(path, payload)
-      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, get_headers) }
+      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, headers) }
       JSON.parse(response)
     end
 
     def get(path)
-      response = with_error_handling { RestClient.get(full_url(path), get_headers) }
+      response = with_error_handling { RestClient.get(full_url(path), headers) }
       JSON.parse(response)
     end
 
     def delete(path)
-      response = with_error_handling { RestClient.delete(full_url(path), get_headers) }
+      response = with_error_handling { RestClient.delete(full_url(path), headers) }
       JSON.parse(response)
     end
 
@@ -82,13 +81,13 @@ module SynapsePayRest
       when 405
         return handle_method_not_allowed
       when 502
-        #Raise a gateway error
+        # Raise a gateway error
         return handle_gateway_error
       when 504
-        #Raise a timeout error
+        # Raise a timeout error
         return handle_timeout_error
       else
-        #Raise a generic error
+        # Raise a generic error
         return handle_unknown_error
       end
     end

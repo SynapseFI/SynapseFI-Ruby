@@ -53,6 +53,14 @@ def client_with_node
   client
 end
 
+def oauth_user(client, user_id)
+    user = client.users.get(user_id: user_id)
+    oauth = client.users.refresh(payload: {
+      'refresh_token' => user['refresh_token']
+    })
+    user
+end
+
 def test_user
   payload = {
     'logins' =>  [
@@ -76,12 +84,3 @@ def test_user
   }
   test_client.users.create(payload: payload)
 end
-
-def oauth_user(client, user_id)
-    user = client.users.get(user_id: user_id)
-    oauth = client.users.refresh(payload: {
-      'refresh_token' => user['refresh_token']
-    })
-    user
-end
-

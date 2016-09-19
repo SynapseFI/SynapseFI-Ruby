@@ -10,7 +10,7 @@ module SynapsePayRest
   # deprecated classes
   def self.const_missing(const_name)
     super unless const_name == :Trans
-    warn caller.first + 'DEPRECATION WARNING: the class SynapsePayRest::Trans is deprecated. Use SynapsePayRest::Transactions instead.'
+    warn caller.first + "DEPRECATION WARNING: the class SynapsePayRest::#{const_name} is deprecated. Use SynapsePayRest::Transactions instead."
     Transactions
   end
 end

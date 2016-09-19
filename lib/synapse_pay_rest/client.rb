@@ -1,8 +1,8 @@
 module SynapsePayRest
   class Client
-    attr_accessor :client, :users, :nodes, :transactions
+    attr_accessor :http_client, :users, :nodes, :transactions
 
-    # need to allow symbols in options, validate arg class, default to sandbox
+    # validate arg class, default to sandbox
     def initialize(options: raise("options is required"), user_id: nil)
       base_url = if options['development_mode']
                    'https://sandbox.synapsepay.com/api/3'
@@ -10,12 +10,14 @@ module SynapsePayRest
                    'https://synapsepay.com/api/3'
                  end
 
-      # rename to @http_client
-      @client = HTTPClient.new options, base_url, user_id: user_id
-      @users = Users.new @client
-      @nodes = Nodes.new @client
-      @transactions = Transactions.new @client
+      @http_client = HTTPClient.new options, base_url, user_id: user_id
+      @users = Users.new @http_client
+      @nodes = Nodes.new @http_client
+      @transactions = Transactions.new @http_client
     end
+
+    # legacy instance variable names
     alias_method :trans, :transactions
+    alias_method :client, :http_client
   end
 end
