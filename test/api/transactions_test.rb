@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TransactionsIntegrationTest < Minitest::Test
+class TransactionsTest < Minitest::Test
   def setup
     # @client = client_with_user
     @client = client_with_node
@@ -8,25 +8,21 @@ class TransactionsIntegrationTest < Minitest::Test
     @from_node = @client.nodes.get['nodes'].first
     @to_node = @client.nodes.get['nodes'].last
   end
-
-  # ##############
-  # base API calls
-  # ##############
   
   def test_transactions_create
     transaction_payload = {
-      'to':{
-        'type': 'ACH-US',
-        'id': @to_node['_id']
+      'to' => {
+        'type' => 'ACH-US',
+        'id' => @to_node['_id']
       },
-      'amount': {
-        'amount': 1000,
-        'currency': 'USD'
-        },
-        'extra': {
-          'ip': '192.168.0.1'
-        }
+      'amount' => {
+        'amount' => 1000,
+        'currency' => 'USD'
+      },
+      'extra' => {
+        'ip' => '192.168.0.1'
       }
+    }
     transaction_response = @client.trans.create(node_id: @from_node['_id'], payload: transaction_payload)
 
     refute_nil transaction_response['_id']
@@ -43,9 +39,12 @@ class TransactionsIntegrationTest < Minitest::Test
   def test_transactions_get_with_transaction_id
     transactions_response = @client.trans.get(node_id: @from_node['_id'])
     transaction_id = transactions_response['trans'].first['_id']
-    transaction_response = @client.trans.get(node_id: @from_node['_id'], trans_id: transaction_id)
+    transaction_response = @client.trans.get(
+      node_id: @from_node['_id'],
+      trans_id: transaction_id
+    )
 
-    assert_equal transaction_response['_id'], @from_node['_id']
+    assert_equal transaction_response['_id'], transaction_id
   end
 
   def test_transactions_update
@@ -62,23 +61,23 @@ class TransactionsIntegrationTest < Minitest::Test
 
   def test_transactions_delete
     transaction_payload = {
-      'to':{
-        'type': 'ACH-US',
-        'id': @to_node['_id']
+      'to' => {
+        'type' => 'ACH-US',
+        'id' => @to_node['_id']
       },
-      'amount': {
-        'amount': 1000,
-        'currency': 'USD'
-        },
-        'extra': {
-          'ip': '192.168.0.1'
-        }
+      'amount' => {
+        'amount' => 1000,
+        'currency' => 'USD'
+      },
+      'extra' => {
+        'ip' => '192.168.0.1'
       }
+    }
     transaction_response = @client.trans.create(node_id: @from_node['_id'], payload: transaction_payload)
     transaction_id = transaction_response['_id']
     delete_response = @client.trans.delete(node_id: @from_node['_id'], trans_id: transaction_id)
     status = delete_response['recent_status']['status']
-    
+
     assert status, 'CANCELED'
   end
 end

@@ -62,6 +62,7 @@ module SynapsePayRest
       "#{base_url}#{path}"
     end
 
+    # TODO: fix this
     def with_error_handling
       yield
     rescue => e

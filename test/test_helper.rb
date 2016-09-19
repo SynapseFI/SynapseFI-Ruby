@@ -42,44 +42,44 @@ def client_with_node
   user = oauth_user(client, ENV.fetch('USER_ID'))
 
   payload = {
-      'type' => 'ACH-US',
-      'info' => {
-          'bank_id' => 'synapse_nomfa',
-          'bank_pw' => 'test1234',
-          'bank_name' => 'fake'
-      }
+    'type' => 'ACH-US',
+    'info' => {
+      'bank_id' => 'synapse_nomfa',
+      'bank_pw' => 'test1234',
+      'bank_name' => 'fake'
+    }
   }
   client.nodes.add(payload: payload)
   client
 end
 
 def oauth_user(client, user_id)
-    user = client.users.get(user_id: user_id)
-    oauth = client.users.refresh(payload: {
-      'refresh_token' => user['refresh_token']
-    })
-    user
+  user = client.users.get(user_id: user_id)
+  oauth = client.users.refresh(payload: {
+    'refresh_token' => user['refresh_token']
+  })
+  user
 end
 
 def test_user
   payload = {
-    'logins' =>  [
+    'logins' => [
       {
-        'email' =>  'rubyTest@synapsepay.com',
+        'email' => 'rubyTest@synapsepay.com',
         'password' =>  'test1234',
         'read_only' => false
       }
     ],
-    'phone_numbers' =>  [
+    'phone_numbers' => [
       '901.111.1111'
     ],
-    'legal_names' =>  [
+    'legal_names' => [
       'RUBY TEST USER'
     ],
-    'extra' =>  {
-      'note' =>  'Interesting user',
-      'supp_id' =>  '122eddfgbeafrfvbbb',
-      'is_business' =>  false
+    'extra' => {
+      'note' => 'Interesting user',
+      'supp_id' => '122eddfgbeafrfvbbb',
+      'is_business' => false
     }
   }
   test_client.users.create(payload: payload)

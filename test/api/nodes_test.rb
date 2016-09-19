@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NodesIntegrationTest < Minitest::Test
+class NodesTest < Minitest::Test
   def setup
     @client = client_with_user
     @user = oauth_user(@client, ENV.fetch('USER_ID'))
@@ -95,7 +95,6 @@ class NodesIntegrationTest < Minitest::Test
     assert_nil node_response['error']
   end
 
-  # expected to fail until error handling (404)
   def test_nodes_delete
     client = client_with_node
     nodes_response = client.nodes.get
@@ -108,6 +107,6 @@ class NodesIntegrationTest < Minitest::Test
     verify_deleted_response = client.nodes.get(node_id: node_id)
 
     assert_nil verify_deleted_response['_id']
-    refute_nil verify_deleted_response['error']
+    refute verify_deleted_response['success']
   end
 end

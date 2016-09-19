@@ -1,5 +1,4 @@
 module SynapsePayRest
-  # should maybe create Transaction class
   class Transactions
     attr_accessor :client
 
@@ -20,7 +19,7 @@ module SynapsePayRest
     # if trans_id is nil then returns all transactions
     def get(node_id: raise("node_id is required"), trans_id: nil, page: nil)
       path = create_transaction_path(node_id: node_id, trans_id: trans_id)
-      # This part really should just be a generic params generator
+      # TODO: This part really should just be a generic params generator
       path += "?page=#{page}" if page
       client.get(path)
     end
