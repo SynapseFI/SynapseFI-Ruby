@@ -16,7 +16,7 @@ module SynapsePayRest
       @transactions = Transactions.new @http_client
     end
 
-    # legacy instance variable names
+    # support old reader/var names
     alias_method :trans, :transactions
     alias_method :client, :http_client
   end

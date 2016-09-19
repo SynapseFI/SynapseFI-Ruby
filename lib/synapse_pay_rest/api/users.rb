@@ -64,17 +64,10 @@ module SynapsePayRest
       client.patch(path, payload)
     end
 
-    # support payload directly (base API use) or keyword args
+    # supports payload directly (base API use) or keyword args
+    # works differently from other methods to support same method name for two different strategies
     def create(payload: {}, **args)
-      if payload.empty?
-        payload = create_payload_from_kwargs(
-          {
-            email: args[:email],
-            phone_numbers: args[:phone_numbers],
-            legal_names: args[:legal_names]
-          }.merge(args)
-        )
-      end
+      payload = create_payload_from_kwargs(args) if payload.empty?
 
       path = create_user_path
       response = client.post(path, payload)
@@ -82,18 +75,21 @@ module SynapsePayRest
       response
     end
 
+    # deprecate
     def add_doc(payload: raise("payload is required"))
       path = create_user_path(user_id: client.user_id)
       client.patch(path, payload)
     end
 
+    # deprecate
     def answer_kba(payload: raise("payload is required"))
       path = create_user_path(user_id: client.user_id)
       client.patch(path, payload)
     end
 
+    # deprecate?
     def attach_file(file_path: raise("file_path is required"))
-      warn caller.first + "DEPRECATION WARNING: the method #{__METHOD__} is deprecated. Use SynapsePayRest::Users::update instead."
+      warn caller.first + "DEPRECATION WARNING: the method SynapsePayRest::Users##{__method__} is deprecated. Use SynapsePayRest::Users::update instead."
 
       file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
@@ -105,6 +101,7 @@ module SynapsePayRest
       end
     end
 
+    # deprecate
     def attach_file_with_file_type(file_path: raise("file_path is required"), file_type: raise("file_type is required"))
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }
@@ -128,7 +125,7 @@ module SynapsePayRest
       path.join('/')
     end
 
-    # for use with #create
+    # needed to support both types of input for create due to method name sharing
     def create_payload_from_kwargs(email:, phone_numbers:, legal_names:, **options)
       payload = {
         'logins' => [
@@ -140,11 +137,8 @@ module SynapsePayRest
         'legal_names' => legal_names,
         'extra' => {}
       }
-      # optional fields
-      payload['extra']['supp_id'] = options[:supp_id] if options[:supp_id]
-      payload['extra']['note'] = options[:note] if options[:note]
-      payload['extra']['is_business'] = options[:is_business] if options[:is_business]
-      payload['extra']['cip_tag'] = options[:cip_tag] if options[:cip_tag]
+      optional_fields = ['supp_id', 'note', 'is_business', 'cip_tag']
+      optional_fields.each {|field| payload['extra'][field] = options[field.to_sym] if options[field.to_sym]}
       payload
     end
   end

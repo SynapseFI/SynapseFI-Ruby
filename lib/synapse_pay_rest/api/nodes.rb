@@ -1,4 +1,6 @@
 module SynapsePayRest
+  # should maybe create Node class
+
   class Nodes
     attr_accessor :client
 

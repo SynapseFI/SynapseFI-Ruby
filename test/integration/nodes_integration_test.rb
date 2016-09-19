@@ -91,10 +91,11 @@ class NodesIntegrationTest < Minitest::Test
     node_id = nodes_response['nodes'].first['_id']
     node_response = client.nodes.get(node_id: node_id)
 
-    refute_nil node_response['_id']
+    assert_equal node_response['_id'], node_id
     assert_nil node_response['error']
   end
 
+  # expected to fail until error handling (404)
   def test_nodes_delete
     client = client_with_node
     nodes_response = client.nodes.get
@@ -103,5 +104,10 @@ class NodesIntegrationTest < Minitest::Test
 
     assert_equal delete_response['http_code'], '200'
     assert_equal delete_response['error_code'], '0'
+
+    verify_deleted_response = client.nodes.get(node_id: node_id)
+
+    assert_nil verify_deleted_response['_id']
+    refute_nil verify_deleted_response['error']
   end
 end

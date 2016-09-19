@@ -84,7 +84,6 @@ class UsersIntegrationTest < Minitest::Test
 
   def test_attach_file
     response = @client.users.attach_file(file_path: fixture_path('id.png'))
-
     refute_nil response['_id']
   end
 end

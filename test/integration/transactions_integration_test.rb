@@ -2,13 +2,17 @@ require 'test_helper'
 
 class TransactionsIntegrationTest < Minitest::Test
   def setup
-    @client = client_with_user
-    @user = oauth_user(@client, ENV.fetch('USER_ID'))
+    # @client = client_with_user
     @client = client_with_node
+    @user = oauth_user(@client, ENV.fetch('USER_ID'))
     @from_node = @client.nodes.get['nodes'].first
     @to_node = @client.nodes.get['nodes'].last
   end
 
+  # ##############
+  # base API calls
+  # ##############
+  
   def test_transactions_create
     transaction_payload = {
       'to':{
@@ -41,7 +45,7 @@ class TransactionsIntegrationTest < Minitest::Test
     transaction_id = transactions_response['trans'].first['_id']
     transaction_response = @client.trans.get(node_id: @from_node['_id'], trans_id: transaction_id)
 
-    refute_nil transaction_response['_id']
+    assert_equal transaction_response['_id'], @from_node['_id']
   end
 
   def test_transactions_update

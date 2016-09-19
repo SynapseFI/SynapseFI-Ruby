@@ -1,4 +1,5 @@
 module SynapsePayRest
+  # should maybe create Transaction class
   class Transactions
     attr_accessor :client
 

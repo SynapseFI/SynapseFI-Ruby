@@ -8,7 +8,7 @@ module SynapsePayRest
     def initialize(config, base_url, user_id: nil)
       @config = config
       @base_url = base_url
-      RestClient.log = 'stdout'
+      # RestClient.log = 'stdout'
       @user_id = user_id
     end
 
@@ -23,6 +23,7 @@ module SynapsePayRest
         'X-SP-USER-IP' => config['ip_address'] 
       }
     end
+    # to support old method name
     alias_method :get_headers, :headers
 
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
@@ -69,6 +70,7 @@ module SynapsePayRest
       # The exceptions should be enumerated. Not all exceptions are going
       # to be parsable by JSON. The only one that should be captured are the
       # are the HTTP Client responses.
+      # For example, doesn't handle 404 (e.g. when searchin a user_id that doesn't exist)
       case e.response.code
       when 400
         return e.response
@@ -104,6 +106,7 @@ module SynapsePayRest
       return {'success' => false, 'reason' => 'A timeout has occurred.'}.to_json
     end
 
+    # these are bad. should let the user know the http error.
     def handle_unknown_error
       return {'success' => false, 'reason' => 'Unknown error in library. Contact synapsepay.'}.to_json
     end
