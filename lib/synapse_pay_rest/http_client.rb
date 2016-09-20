@@ -8,6 +8,7 @@ module SynapsePayRest
     def initialize(config, base_url, user_id: nil)
       @config = config
       @base_url = base_url
+      # TODO: add params setting for logging
       # RestClient.log = 'stdout'
       @user_id = user_id
     end
@@ -34,7 +35,6 @@ module SynapsePayRest
       config['client_secret'] = client_secret if client_secret
       config['ip_address']    = ip_address if ip_address
     end
-
 
     def post(path, payload)
       response = with_error_handling { RestClient.post(full_url(path), payload.to_json, headers) }

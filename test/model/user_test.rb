@@ -10,6 +10,7 @@ class UserTest < Minitest::Test
     assert_equal @user.id, user_data_from_api['_id']
     assert_equal @user.logins, user_data_from_api['logins']
     assert_equal @user.legal_names, user_data_from_api['legal_names']
+    refute_nil @user.refresh_token
   end
 
   def test_initialize_user_with_new_info
@@ -28,6 +29,8 @@ class UserTest < Minitest::Test
     instance_variables = user.instance_variables.map { |var| var.to_s[1..-1].to_sym }
     # confirm all fields assigned to instance variables (check union of arrays)
     assert_empty info.keys - instance_variables
+    refute_nil user.id
+    refute_nil user.refresh_token
   end
 
   def test_initialize_user_with_incomplete_info
@@ -83,11 +86,40 @@ class UserTest < Minitest::Test
   end
 
   def test_update
-    login = {
-      email: 'test2@email.com',
+    new_login = {
+      email: 'new@email.com',
       password: 'test1234',
       read_only: true
     }
+    new_legal_name = 'Heidi'
+    new_phone_number = '99999999'
+
+    # add some info
+    @user.update(
+      login: new_login,
+      legal_name: new_legal_name,
+      phone_number: new_phone_number
+    )
+    api_response = test_client.users.get(user_id: ENV.fetch('USER_ID'))
+    # verify that it's added
+    assert api_response['logins'].any? { |login| login['email'] == new_login[:email] }
+    assert_includes api_response['legal_names'], new_legal_name
+    assert_includes api_response['phone_numbers'], new_phone_number
+
+    # remove some info
+    @user.update(remove_login: {email: new_login[:email]}, remove_phone_number: new_phone_number)
+    api_response2 = test_client.users.get(user_id: ENV.fetch('USER_ID'))
+    # verify that it's removed
+    refute api_response2['logins'].any? { |login| login['email'] == new_login[:email] }
+    refute_includes api_response2['phone_numbers'], new_phone_number
+  end
+
+  def test_add_documents
+    document = SynapsePayRest::Document.new()
+    require 'pry'; binding.pry
+  end
+
+  def test_update_document
   end
 
   # nodes

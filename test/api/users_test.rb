@@ -76,7 +76,7 @@ class UsersTest < Minitest::Test
         'legal_name' => 'Some new name'
       }
     }
-    
+
     response = @client.users.update(payload: payload)
     refute_nil response['_id']
   end

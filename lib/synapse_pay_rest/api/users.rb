@@ -3,8 +3,7 @@ require 'base64'
 require 'open-uri'
 
 module SynapsePayRest
-  # TODO: test payloads in proper format
-
+  # TODO: validate payloads are in proper format
   class Users
     # TODO: Should refactor this to HTTPClient
     VALID_QUERY_PARAMS = [:query, :page, :per_page].freeze
@@ -51,8 +50,6 @@ module SynapsePayRest
     end
 
     def create(payload: raise('payload is required'))
-      payload = create_payload_from_kwargs(args) if payload.empty?
-
       path = create_user_path
       response = client.post(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
@@ -75,7 +72,6 @@ module SynapsePayRest
     def attach_file(file_path: raise("file_path is required"))
       warn caller.first + " DEPRECATION WARNING: the method SynapsePayRest::Users##{__method__} is deprecated. Use SynapsePayRest::Users::update instead."
 
-      file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
       if file_type.nil?
