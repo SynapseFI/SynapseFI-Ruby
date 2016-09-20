@@ -1,35 +1,38 @@
 require 'test_helper'
-# TODO: tests sometimes fail when run with other test files (need to reset state better)
+
 class TransactionsTest < Minitest::Test
   def setup
-    # @client = client_with_user
-    @client = client_with_node
-    @user = oauth_user(@client, ENV.fetch('USER_ID'))
-    @from_node = @client.nodes.get['nodes'].first
-    @to_node = @client.nodes.get['nodes'].last
+    @client = client_with_transactions
+    @nodes  = @client.nodes.get['nodes']
   end
-  
+
   def test_transactions_create
     transaction_payload = {
       'to' => {
         'type' => 'ACH-US',
-        'id' => @to_node['_id']
+        'id' => @nodes.last['_id']
       },
       'amount' => {
-        'amount' => 1000,
+        'amount' => 55,
         'currency' => 'USD'
       },
       'extra' => {
         'ip' => '192.168.0.1'
       }
     }
-    transaction_response = @client.trans.create(node_id: @from_node['_id'], payload: transaction_payload)
+    transaction_response = @client.trans.create(
+      node_id: @nodes.first['_id'],
+      payload: transaction_payload
+    )
 
     refute_nil transaction_response['_id']
+    assert_equal transaction_response['amount']['amount'], transaction_payload['amount']['amount']
+    assert_equal transaction_response['amount']['currency'], transaction_payload['amount']['currency']
+    assert_equal transaction_response['to']['id'], transaction_payload['to']['id']
   end
 
   def test_transactions_get
-    transactions_response = @client.trans.get(node_id: @from_node['_id'])
+    transactions_response = @client.trans.get(node_id: @nodes.first['_id'])
 
     assert transactions_response['error_code'], 0
     assert transactions_response['http_code'], 200
@@ -37,10 +40,10 @@ class TransactionsTest < Minitest::Test
   end
 
   def test_transactions_get_with_transaction_id
-    transactions_response = @client.trans.get(node_id: @from_node['_id'])
+    transactions_response = @client.trans.get(node_id: @nodes.first['_id'])
     transaction_id = transactions_response['trans'].first['_id']
     transaction_response = @client.trans.get(
-      node_id: @from_node['_id'],
+      node_id: @nodes.first['_id'],
       trans_id: transaction_id
     )
 
@@ -48,10 +51,14 @@ class TransactionsTest < Minitest::Test
   end
 
   def test_transactions_update
-    payload = {'comment' =>  'I am comment'}
-    transactions_response = @client.trans.get(node_id: @from_node['_id'])
+    payload = {'comment' => 'I am comment'}
+    transactions_response = @client.trans.get(node_id: @nodes.first['_id'])
     transaction_id = transactions_response['trans'].first['_id']
-    update_response = @client.trans.update(node_id: @from_node['_id'], trans_id: transaction_id, payload: payload)
+    update_response = @client.trans.update(
+      node_id: @nodes.first['_id'],
+      trans_id: transaction_id,
+      payload: payload
+    )
     note = update_response['trans']['recent_status']['note']
 
     assert_equal update_response['http_code'], '200'
@@ -60,24 +67,15 @@ class TransactionsTest < Minitest::Test
   end
 
   def test_transactions_delete
-    transaction_payload = {
-      'to' => {
-        'type' => 'ACH-US',
-        'id' => @to_node['_id']
-      },
-      'amount' => {
-        'amount' => 1000,
-        'currency' => 'USD'
-      },
-      'extra' => {
-        'ip' => '192.168.0.1'
-      }
-    }
-    transaction_response = @client.trans.create(node_id: @from_node['_id'], payload: transaction_payload)
-    transaction_id = transaction_response['_id']
-    delete_response = @client.trans.delete(node_id: @from_node['_id'], trans_id: transaction_id)
-    status = delete_response['recent_status']['status']
+    transactions = @client.trans.get(node_id: @nodes.first['_id'])['trans']
+    delete_response = @client.trans.delete(
+      node_id: @nodes.first['_id'],
+      trans_id: transactions.first['_id']
+    )
 
+    status = delete_response['recent_status']['status']
     assert status, 'CANCELED'
+    # confirm number of trans reduced
+    transactions2 = @client.trans.get(node_id: @nodes.first['_id'])['trans']
   end
 end

@@ -9,7 +9,7 @@ module SynapsePayRest
       @config = config
       @base_url = base_url
       # TODO: add params setting for logging
-      RestClient.log = 'stdout'
+      # RestClient.log = 'stdout'
       @user_id = user_id
     end
 
@@ -21,12 +21,13 @@ module SynapsePayRest
         :accept => :json,
         'X-SP-GATEWAY' => gateway,
         'X-SP-USER' => user,
-        'X-SP-USER-IP' => config['ip_address'] 
+        'X-SP-USER-IP' => config['ip_address']
       }
     end
     # to support old method name
     alias_method :get_headers, :headers
 
+    # TODO: auto-generate fingerprint
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
       self.user_id            = user_id if user_id
       config['fingerprint']   = fingerprint if fingerprint

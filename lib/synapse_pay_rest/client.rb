@@ -1,8 +1,8 @@
 module SynapsePayRest
   class Client
-    attr_accessor :http_client, :users, :nodes, :transactions
+    attr_accessor :http_client, :users, :nodes, :transactions, :user_id
 
-    # TODO: validate arg class, default to sandbox
+    # TODO: validate arg class, default to sandbox instead of production.
     def initialize(options: raise("options is required"), user_id: nil)
       base_url = if options['development_mode']
                    'https://sandbox.synapsepay.com/api/3'

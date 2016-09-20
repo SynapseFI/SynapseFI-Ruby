@@ -56,33 +56,33 @@ module SynapsePayRest
       response
     end
 
-    # TODO: deprecate
+    # TODO: deprecate, this is identical to #update. use alias instead.
     def add_doc(payload: raise('payload is required'))
       path = create_user_path(user_id: client.user_id)
       client.patch(path, payload)
     end
 
-    # TODO: deprecate
+    # TODO: deprecate, this is identical to #update. use alias instead.
     def answer_kba(payload: raise('payload is required'))
       path = create_user_path(user_id: client.user_id)
       client.patch(path, payload)
     end
 
     # TODO: deprecate
-    def attach_file(file_path: raise("file_path is required"))
-      warn caller.first + " DEPRECATION WARNING: the method SynapsePayRest::Users##{__method__} is deprecated. Use SynapsePayRest::Users::update instead."
+    def attach_file(file_path: raise('file_path is required'))
+      warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update instead."
 
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
       if file_type.nil?
-        raise("File type not found. Use attach_file_with_file_type(file_path: <file_path>, file_type: <file_type>)")
+        raise('File type not found. Use attach_file_with_file_type(file_path: <file_path>, file_type: <file_type>)')
       else
         attach_file_with_file_type(file_path: file_path, file_type: file_type)
       end
     end
 
     # deprecate
-    def attach_file_with_file_type(file_path: raise("file_path is required"), file_type: raise("file_type is required"))
+    def attach_file_with_file_type(file_path: raise('file_path is required'), file_type: raise('file_type is required'))
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }
       encoded = Base64.encode64(file_contents)

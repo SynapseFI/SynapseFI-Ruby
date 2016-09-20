@@ -11,11 +11,14 @@ class UserTest < Minitest::Test
   end
 
   def test_initialize_user_with_existing_user_id
-    user_data_from_api = test_client.users.get(user_id: ENV.fetch('USER_ID'))
-    assert_equal @user.id, user_data_from_api['_id']
-    assert_equal @user.logins, user_data_from_api['logins']
-    assert_equal @user.legal_names, user_data_from_api['legal_names']
-    refute_nil @user.refresh_token
+    real_user_id = '57dd988986c273218084691f'
+    user_data_from_api = test_client.users.get(user_id: real_user_id)
+    user = SynapsePayRest::User.new(client: test_client, id: real_user_id)
+
+    assert_equal user.id, user_data_from_api['_id']
+    assert_equal user.logins, user_data_from_api['logins']
+    assert_equal user.legal_names, user_data_from_api['legal_names']
+    refute_nil user.refresh_token
   end
 
   def test_initialize_user_with_new_info
@@ -53,10 +56,10 @@ class UserTest < Minitest::Test
   # class methods
 
   def test_find
-    user_data_from_api = test_client.users.get(user_id: ENV.fetch('USER_ID'))
+    user_data_from_api = test_client.users.get(user_id: @user.id)
     user_instance = SynapsePayRest::User.find(
       client: test_client,
-      id: ENV.fetch('USER_ID')
+      id: @user.id
     )
 
     assert_instance_of SynapsePayRest::User, user_instance
@@ -105,7 +108,7 @@ class UserTest < Minitest::Test
       legal_name: new_legal_name,
       phone_number: new_phone_number
     )
-    api_response = test_client.users.get(user_id: ENV.fetch('USER_ID'))
+    api_response = test_client.users.get(user_id: @user.id)
     # verify that it's added
     assert api_response['logins'].any? { |login| login['email'] == new_login[:email] }
     assert_includes api_response['legal_names'], new_legal_name
@@ -113,15 +116,38 @@ class UserTest < Minitest::Test
 
     # remove some info
     @user.update(remove_login: {email: new_login[:email]}, remove_phone_number: new_phone_number)
-    api_response2 = test_client.users.get(user_id: ENV.fetch('USER_ID'))
+    api_response2 = test_client.users.get(user_id: @user.id)
     # verify that it's removed
     refute api_response2['logins'].any? { |login| login['email'] == new_login[:email] }
     refute_includes api_response2['phone_numbers'], new_phone_number
   end
 
   def test_documents_can_be_read
+    doc_info = {
+      email: 'piper@pie.com',
+      phone_number: '4444444',
+      ip: '127002',
+      name: 'Piper',
+      alias: 'Hallowell',
+      entity_type: 'F',
+      entity_scope: 'Arts & Entertainment',
+      birth_day: 1,
+      birth_month: 2,
+      birth_year: 1933,
+      address_street: '333 14th St',
+      address_city: 'SF',
+      address_subdivision: 'CA',
+      address_postal_code: '94114',
+      address_country_code: 'US',
+      category: :physical,
+      type: 'GOVT_ID',
+      value: 'data:text/csv;base64,SUQs=='
+    }
+    doc = SynapsePayRest::Document.new(doc_info)
+    @user.add_documents(doc)
+
     refute_empty @user.documents
-    assert_instance_of SynapsePayRest::Document, @user.documents.first
+    assert_equal doc, @user.documents.first
   end
 
   def test_add_documents
@@ -190,11 +216,12 @@ class UserTest < Minitest::Test
     physical_doc = SynapsePayRest::Document.new(physical_doc_info)
     @user.add_documents(virtual_doc, physical_doc, social_doc)
 
+    # verify docs associated with User object
     assert_includes @user.documents, social_doc
     assert_includes @user.documents, virtual_doc
     assert_includes @user.documents, physical_doc
 
-    # verify with API that document was added
+    # verify with API that documents were added
     response_docs = test_client.users.get(user_id: @user.id)['documents'].first
     assert response_docs['social_docs'].any? { |doc| doc['document_type'] == social_doc.type }
     assert response_docs['virtual_docs'].any? { |doc| doc['document_type'] == virtual_doc.type }

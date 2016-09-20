@@ -3,7 +3,7 @@ require 'test_helper'
 class UsersTest < Minitest::Test
   def setup
     @client = client_with_user
-    @user = oauth_user(@client, ENV.fetch('USER_ID'))
+    @user = oauth_user(@client, @client.user_id)
   end
 
   def test_users_create
@@ -134,7 +134,9 @@ class UsersTest < Minitest::Test
       }
     }
     kba_response = @client.users.answer_kba(payload: kba_payload)
-    ssn_field = kba_response['documents'][0]['virtual_docs'].find {|doc| doc['document_type'] == 'SSN'}
+    ssn_field = kba_response['documents'][0]['virtual_docs'].find do |doc|
+      doc['document_type'] == 'SSN'
+    end
 
     assert_nil ssn_field['meta']
   end
@@ -142,5 +144,8 @@ class UsersTest < Minitest::Test
   def test_attach_file
     response = @client.users.attach_file(file_path: fixture_path('id.png'))
     refute_nil response['_id']
+  end
+
+  def test_new_documents_upload_method
   end
 end

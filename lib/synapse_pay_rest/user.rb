@@ -42,6 +42,7 @@ module SynapsePayRest
     # TODO: handle error if id not found
     def initialize(client:, id: nil, **options)
       @client = client
+      @documents = []
 
       if id
         @id = id
@@ -92,6 +93,7 @@ module SynapsePayRest
         }]
       }
 
+      # add docs to payload
       documents.each do |doc|
         if doc.category == :physical
           payload['documents'].first['physical_docs'] ||= []
@@ -110,8 +112,6 @@ module SynapsePayRest
 
       authenticate
       client.users.update(payload: payload)
-
-      @documents ||= []
       @documents.concat(documents)
     end
 

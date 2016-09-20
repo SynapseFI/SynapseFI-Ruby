@@ -3,7 +3,7 @@ require 'test_helper'
 class NodesTest < Minitest::Test
   def setup
     @client = client_with_user
-    @user = oauth_user(@client, ENV.fetch('USER_ID'))
+    @user = oauth_user(@client, @client.user_id)
   end
 
   def test_nodes_add_with_bank_login_no_kba
@@ -70,13 +70,16 @@ class NodesTest < Minitest::Test
 
     microdeposit_payload = {'micro' => [0.1, 0.1]}
     node_id = add_response['nodes'][0]['_id']
-    microdeposit_response = @client.nodes.verify(node_id: node_id, payload: microdeposit_payload)
+    microdeposit_response = @client.nodes.verify(
+      node_id: node_id,
+      payload: microdeposit_payload
+    )
 
     refute_nil microdeposit_response['_id']
   end
 
   def test_nodes_get
-    client = client_with_node
+    client = client_with_nodes
     response = client.nodes.get
 
     assert_equal response['http_code'], '200'
@@ -86,7 +89,7 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_get_with_node_id
-    client = client_with_node
+    client = client_with_nodes
     nodes_response = client.nodes.get
     node_id = nodes_response['nodes'].first['_id']
     node_response = client.nodes.get(node_id: node_id)
@@ -96,9 +99,9 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_delete
-    client = client_with_node
+    client = client_with_nodes
     nodes_response = client.nodes.get
-    # TODO: figure out why nodes_response['nodes'] is nil sometimes (need to reset state better)
+    
     node_id = nodes_response['nodes'].first['_id']
     delete_response = client.nodes.delete(node_id: node_id)
 

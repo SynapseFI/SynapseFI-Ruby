@@ -15,31 +15,50 @@ end
 
 def test_client
   options = {
-    'fingerprint' => ENV.fetch('FINGERPRINT'),
     'client_id' => ENV.fetch('CLIENT_ID'),
     'client_secret' => ENV.fetch('CLIENT_SECRET'),
-    'ip_address' => ENV.fetch('IP_ADDRESS'),
+    'fingerprint' => 'test_fp',
+    'ip_address' => '127.0.0.1',
     'development_mode' => true
   }
 
   SynapsePayRest::Client.new(options: options)
 end
 
+# TODO: can definitely optimize these to remove GET and just pass id info
 def client_with_user
-  options = {
-    'fingerprint' => ENV.fetch('FINGERPRINT'),
-    'client_id' => ENV.fetch('CLIENT_ID'),
-    'client_secret' => ENV.fetch('CLIENT_SECRET'),
-    'ip_address' => ENV.fetch('IP_ADDRESS'),
-    'development_mode' => true
+  payload = {
+    'logins' => [
+      {
+        'email' => 'rubyTest@synapsepay.com',
+        'password' =>  'test1234',
+        'read_only' => false
+      }
+    ],
+    'phone_numbers' => [
+      '901.111.1111'
+    ],
+    'legal_names' => [
+      'RUBY TEST USER'
+    ],
+    'extra' => {
+      'note' => 'Interesting user',
+      'supp_id' => '122eddfgbeafrfvbbb',
+      'is_business' => false
+    }
   }
-
-  SynapsePayRest::Client.new(options: options, user_id: ENV.fetch('USER_ID'))
+  user_response = test_client.users.create(payload: payload)
+  client = test_client
+  client.user_id = user_response['_id']
+  client.http_client.user_id = user_response['_id']
+  client.http_client.user_id = user_response['_id']
+  client
 end
 
-def client_with_node
+# create different number of nodes for different tests
+def client_with_nodes
   client = client_with_user
-  user = oauth_user(client, ENV.fetch('USER_ID'))
+  user = oauth_user(client, client.user_id)
 
   payload = {
     'type' => 'ACH-US',
@@ -53,11 +72,47 @@ def client_with_node
   client
 end
 
+# create different number of users for different tests
+def client_with_transactions
+  client    = client_with_nodes
+  nodes     = client.nodes.get['nodes']
+  from_node = nodes.first
+  to_node   = nodes.last
+
+  transaction_payload1 = {
+    'to' => {
+      'type' => 'ACH-US',
+      'id' => to_node['_id']
+    },
+    'amount' => {
+      'amount' => 22,
+      'currency' => 'USD'
+    },
+    'extra' => {
+      'ip' => '192.168.0.1'
+    }
+  }
+  transaction_payload2 = {
+    'to' => {
+      'type' => 'ACH-US',
+      'id' => to_node['_id']
+    },
+    'amount' => {
+      'amount' => 44,
+      'currency' => 'USD'
+    },
+    'extra' => {
+      'ip' => '192.168.0.1'
+    }
+  }
+  client.trans.create(node_id: from_node['_id'], payload: transaction_payload1)
+  client.trans.create(node_id: from_node['_id'], payload: transaction_payload2)
+  client
+end
+
 def oauth_user(client, user_id)
   user = client.users.get(user_id: user_id)
-  oauth = client.users.refresh(payload: {
-    'refresh_token' => user['refresh_token']
-  })
+  client.users.refresh(payload: {'refresh_token' => user['refresh_token']})
   user
 end
 

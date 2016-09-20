@@ -3,7 +3,7 @@ require 'test_helper'
 class HTTPClientTest < Minitest::Test
   def setup
     @client = client_with_user
-    oauth_user(@client, ENV.fetch('USER_ID'))
+    oauth_user(@client, @client.user_id)
     @http_client = @client.client
   end
 
@@ -27,12 +27,12 @@ class HTTPClientTest < Minitest::Test
 
   def test_update_headers
     new_options = {
-      :user_id => 'new user_id',
-      :fingerprint => 'new fingerprint',
-      :client_id => 'new client_id',
-      :client_secret => 'new client_secret',
-      :ip_address => 'new ip',
-      :oauth_key => 'new oauth_key'
+      user_id:       'new user_id',
+      fingerprint:   'new fingerprint',
+      client_id:     'new client_id',
+      client_secret: 'new client_secret',
+      ip_address:    'new ip',
+      oauth_key:     'new oauth_key'
     }
     @http_client.update_headers(new_options)
     config = @http_client.config
