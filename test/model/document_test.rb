@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class DocumentTest < Minitest::Test
-  def test_initialization_params_can_be_accessed_via_reader
+  def test_initialization_params_can_be_read
     args = {
       email: '123@abc.org',
       phone_number: '951235',
@@ -17,11 +17,15 @@ class DocumentTest < Minitest::Test
       address_city: 'Madrid',
       address_subdivision: 'Madrid Area',
       address_postal_code: '12000',
-      address_country_code: 'SP'
+      address_country_code: 'SP',
+      category: :virtual,
+      type: 'SSN',
+      value: '2222'
     }
-
     document = SynapsePayRest::Document.new(args)
-    assert_equal document.email, args[:email]
-    assert_equal document.birth_year, args[:birth_year]
+
+    args.each do |arg, value|
+      assert_equal document.send(arg), value
+    end
   end
 end

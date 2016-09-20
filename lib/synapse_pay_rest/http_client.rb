@@ -9,7 +9,7 @@ module SynapsePayRest
       @config = config
       @base_url = base_url
       # TODO: add params setting for logging
-      # RestClient.log = 'stdout'
+      RestClient.log = 'stdout'
       @user_id = user_id
     end
 

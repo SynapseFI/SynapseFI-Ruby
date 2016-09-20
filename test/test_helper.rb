@@ -61,7 +61,7 @@ def oauth_user(client, user_id)
   user
 end
 
-def test_user
+def test_user_response
   payload = {
     'logins' => [
       {
@@ -83,4 +83,28 @@ def test_user
     }
   }
   test_client.users.create(payload: payload)
+end
+
+def test_document
+  new_doc_info = {
+    email: 'piper@pie.com',
+    phone_number: '4444444',
+    ip: '127002',
+    name: 'Piper',
+    alias: 'Hallowell',
+    entity_type: 'F',
+    entity_scope: 'Arts & Entertainment',
+    birth_day: 1,
+    birth_month: 2,
+    birth_year: 1933,
+    address_street: '333 14th St',
+    address_city: 'SF',
+    address_subdivision: 'CA',
+    address_postal_code: '94114',
+    address_country_code: 'US',
+    category: :social,
+    type: 'FACEBOOK',
+    value: 'https://www.facebook.com/martini'
+  }
+  SynapsePayRest::Document.new(new_doc_info)
 end

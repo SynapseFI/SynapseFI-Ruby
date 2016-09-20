@@ -1,5 +1,5 @@
 require 'test_helper'
-
+# TODO: tests sometimes fail when run with other test files (need to reset state better)
 class TransactionsTest < Minitest::Test
   def setup
     # @client = client_with_user

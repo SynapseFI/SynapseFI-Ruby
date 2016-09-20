@@ -11,6 +11,7 @@ require 'synapse_pay_rest/document'
 require 'synapse_pay_rest/user'
 require 'synapse_pay_rest/node'
 require 'synapse_pay_rest/transaction'
+require 'pry'
 
 module SynapsePayRest
   # deprecated classes

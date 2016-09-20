@@ -98,6 +98,7 @@ class NodesTest < Minitest::Test
   def test_nodes_delete
     client = client_with_node
     nodes_response = client.nodes.get
+    # TODO: figure out why nodes_response['nodes'] is nil sometimes (need to reset state better)
     node_id = nodes_response['nodes'].first['_id']
     delete_response = client.nodes.delete(node_id: node_id)
 
