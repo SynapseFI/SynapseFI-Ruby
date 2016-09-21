@@ -59,7 +59,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_user_id
-    user = test_client.users.get(user_id: test_user_response['_id'])
+    user = @client.users.get(user_id: @client.user_id)
     refute_nil user['_id']
   end
 
@@ -147,5 +147,6 @@ class UsersTest < Minitest::Test
   end
 
   def test_new_documents_upload_method
+    # TODO
   end
 end

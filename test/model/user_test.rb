@@ -2,12 +2,7 @@ require 'test_helper'
 
 class UserTest < Minitest::Test
   def setup
-    @user = SynapsePayRest::User.new(
-      client: test_client,
-      logins: [{email: 'betty@white.com'}],
-      phone_numbers: [415-555-5555],
-      legal_names: ['Betty White']
-    )
+    @user = test_user
   end
 
   def test_initialize_user_with_existing_user_id
@@ -150,86 +145,11 @@ class UserTest < Minitest::Test
     assert_equal doc, @user.documents.first
   end
 
-  def test_add_documents
-    social_doc_info = {
-      email: 'piper@pie.com',
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Piper',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      category: :social,
-      type: 'FACEBOOK',
-      value: 'https://www.facebook.com/mariachi'
-    }
-    virtual_doc_info = {
-      email: 'piper@pie.com',
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Piper',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      category: :virtual,
-      type: 'SSN',
-      value: '2222'
-    }
-    physical_doc_info = {
-      email: 'piper@pie.com',
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Piper',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      category: :physical,
-      type: 'GOVT_ID',
-      value: 'data:text/csv;base64,SUQs=='
-    }
-    social_doc = SynapsePayRest::Document.new(social_doc_info)
-    virtual_doc = SynapsePayRest::Document.new(virtual_doc_info)
-    physical_doc = SynapsePayRest::Document.new(physical_doc_info)
-    @user.add_documents(virtual_doc, physical_doc, social_doc)
 
-    # verify docs associated with User object
-    assert_includes @user.documents, social_doc
-    assert_includes @user.documents, virtual_doc
-    assert_includes @user.documents, physical_doc
+  def test_update_document
+    user = test_user_with_document
 
-    # verify with API that documents were added
-    response_docs = test_client.users.get(user_id: @user.id)['documents'].first
-    assert response_docs['social_docs'].any? { |doc| doc['document_type'] == social_doc.type }
-    assert response_docs['virtual_docs'].any? { |doc| doc['document_type'] == virtual_doc.type }
-    assert response_docs['physical_docs'].any? { |doc| doc['document_type'] == physical_doc.type }
   end
-
-  # def test_update_document
-  # end
 
   # nodes
 

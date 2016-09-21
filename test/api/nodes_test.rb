@@ -42,7 +42,7 @@ class NodesTest < Minitest::Test
       'mfa_answer' => 'test_answer'
     }
     mfa_response = @client.nodes.verify(payload: mfa_payload)
-
+    
     assert_equal mfa_response['http_code'], '200'
     assert_equal mfa_response['error_code'], '0'
     assert_operator mfa_response['nodes'].length, :>, 0
@@ -101,7 +101,7 @@ class NodesTest < Minitest::Test
   def test_nodes_delete
     client = client_with_nodes
     nodes_response = client.nodes.get
-    
+
     node_id = nodes_response['nodes'].first['_id']
     delete_response = client.nodes.delete(node_id: node_id)
 

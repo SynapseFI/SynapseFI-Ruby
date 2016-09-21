@@ -116,32 +116,31 @@ def oauth_user(client, user_id)
   user
 end
 
-def test_user_response
-  payload = {
-    'logins' => [
-      {
-        'email' => 'rubyTest@synapsepay.com',
-        'password' =>  'test1234',
-        'read_only' => false
-      }
-    ],
-    'phone_numbers' => [
-      '901.111.1111'
-    ],
-    'legal_names' => [
-      'RUBY TEST USER'
-    ],
-    'extra' => {
-      'note' => 'Interesting user',
-      'supp_id' => '122eddfgbeafrfvbbb',
-      'is_business' => false
-    }
-  }
-  test_client.users.create(payload: payload)
+def test_user
+  SynapsePayRest::User.new(
+    client: test_client,
+    logins: [{email: 'betty@white.com'}],
+    phone_numbers: ['415-555-5555'],
+    legal_names: ['Betty White']
+  )
+end
+
+def test_user_with_document
+  test_user.add_documents(test_document)
 end
 
 def test_document
   new_doc_info = {
+    category: :social,
+    type: 'FACEBOOK',
+    value: 'https://www.facebook.com/martini'
+  }
+  SynapsePayRest::Document.new(new_doc_info)
+end
+
+def test_cip_document_with_documents
+  cip_info = {
+    user: test_user,
     email: 'piper@pie.com',
     phone_number: '4444444',
     ip: '127002',
@@ -156,10 +155,26 @@ def test_document
     address_city: 'SF',
     address_subdivision: 'CA',
     address_postal_code: '94114',
-    address_country_code: 'US',
+    address_country_code: 'US'
+  }
+  social_doc_info = {
     category: :social,
     type: 'FACEBOOK',
-    value: 'https://www.facebook.com/martini'
+    value: 'https://www.facebook.com/mariachi'
   }
-  SynapsePayRest::Document.new(new_doc_info)
+  virtual_doc_info = {
+    category: :virtual,
+    type: 'SSN',
+    value: '2222'
+  }
+  physical_doc_info = {
+    category: :physical,
+    type: 'GOVT_ID',
+    value: 'data:text/csv;base64,SUQs=='
+  }
+  cip_doc      = SynapsePayRest::CipDocument.new(cip_info)
+  social_doc   = SynapsePayRest::Document.new(social_doc_info)
+  virtual_doc  = SynapsePayRest::Document.new(virtual_doc_info)
+  physical_doc = SynapsePayRest::Document.new(physical_doc_info)
+  cip_doc.add_documents(virtual_doc, physical_doc, social_doc)
 end

@@ -6,7 +6,7 @@ module SynapsePayRest
       @client = client
     end
 
-    def add(payload: raise("payload is required"))
+    def add(payload: raise('payload is required'))
       path = create_node_path
       client.post(path, payload)
     end
@@ -19,19 +19,19 @@ module SynapsePayRest
     end
 
     # TODO: separate this into different methods
-    def verify(node_id: nil, payload: raise("payload is required"))
+    def verify(node_id: nil, payload: raise('payload is required'))
       if node_id
         # verify microdeposits
         path = create_node_path(node_id: node_id)
-        response = @client.patch(path, payload)
+        @client.patch(path, payload)
       else
         # verify MFA question(s)
         path = create_node_path
-        response = @client.post(path, payload)
+        @client.post(path, payload)
       end
     end
 
-    def delete(node_id: raise("node_id is required"))
+    def delete(node_id: raise('node_id is required'))
       path = create_node_path(node_id: node_id)
       client.delete(path)
     end
