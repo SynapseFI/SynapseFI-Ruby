@@ -68,7 +68,6 @@ module SynapsePayRest
       client.patch(path, payload)
     end
 
-    # TODO: deprecate
     def attach_file(file_path: raise('file_path is required'))
       warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update instead."
 
@@ -81,7 +80,6 @@ module SynapsePayRest
       end
     end
 
-    # deprecate
     def attach_file_with_file_type(file_path: raise('file_path is required'), file_type: raise('file_type is required'))
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }

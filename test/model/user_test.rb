@@ -65,14 +65,18 @@ class UserTest < Minitest::Test
     assert_equal user_data_from_api['_id'], user_instance.id
     assert_equal user_data_from_api['logins'], user_instance.logins
     # confirm documents survive being submitted and fetched
-    refute_nil user_instance.cip_document
-    refute_nil user_instance.cip_document.id
-    refute_empty user_instance.cip_document.social_documents
-    refute_empty user_instance.cip_document.physical_documents
-    refute_empty user_instance.cip_document.virtual_documents
-    refute_nil user_instance.cip_document.virtual_documents.first.id
+    refute_empty user_instance.cip_documents
+    refute_nil user_instance.cip_documents.first.id
+    refute_empty user_instance.cip_documents.first.social_documents
+    refute_empty user_instance.cip_documents.first.physical_documents
+    refute_empty user_instance.cip_documents.first.virtual_documents
+    # confirm documents contain all data from response
+    refute_nil user_instance.cip_documents.first.virtual_documents.first.id
+    refute_nil user_instance.cip_documents.first.virtual_documents.first.status
+    refute_nil user_instance.cip_documents.first.virtual_documents.first.last_updated
+    refute_nil user_instance.cip_documents.first.virtual_documents.first.type
     # 3 + 1 because the phone number from base doc is auto-added to documents
-    assert_equal 4, user_instance.cip_document.documents.count
+    assert_equal 1, user_instance.cip_documents.first.virtual_documents.count
   end
 
   def test_find_user_with_non_existent_id_raises_error
@@ -151,7 +155,7 @@ class UserTest < Minitest::Test
       type: 'FACEBOOK',
       value: 'https://www.facebook.com/marcopolo'
     }
-    social_doc = SynapsePayRest::Document.new(social_doc_info)
+    social_doc = SynapsePayRest::SocialDocument.new(social_doc_info)
     cip_info = {
       email: 'piper@pie.com',
       phone_number: '4444444',
@@ -168,14 +172,13 @@ class UserTest < Minitest::Test
       address_subdivision: 'CA',
       address_postal_code: '94114',
       address_country_code: 'US',
-      documents: [social_doc]
+      social_documents: [social_doc]
     }
     @user.create_cip_document(cip_info)
-    cip_doc = @user.cip_document
 
-    refute_nil @user.cip_document
-    assert_equal cip_doc, @user.cip_document
-    assert_equal cip_doc.user, @user
+    refute_empty @user.cip_documents
+    assert_equal social_doc, @user.cip_documents.first.social_documents.first
+    assert_equal @user, @user.cip_documents.first.user
   end
 
   def test_with_multiple_cip_docs

@@ -217,3 +217,24 @@ def test_cip_document_with_documents
   }
   SynapsePayRest::CipDocument.create(cip_info)
 end
+
+def test_cip_document_info
+  {
+    user: test_user,
+    email: 'piper@pie.com',
+    phone_number: '4444444',
+    ip: '127002',
+    name: 'Piper',
+    alias: 'Hallowell',
+    entity_type: 'F',
+    entity_scope: 'Arts & Entertainment',
+    birth_day: 1,
+    birth_month: 2,
+    birth_year: 1933,
+    address_street: '333 14th St',
+    address_city: 'SF',
+    address_subdivision: 'CA',
+    address_postal_code: '94114',
+    address_country_code: 'US'
+  }
+end

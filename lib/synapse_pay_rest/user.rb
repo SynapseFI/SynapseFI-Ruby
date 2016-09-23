@@ -1,8 +1,8 @@
 module SynapsePayRest
   class User
     attr_reader :client, :logins, :phone_numbers, :legal_names, :note, :supp_id,
-                :is_business, :cip_tag, :cip_documents
-    attr_accessor :id, :refresh_token
+                :is_business, :cip_tag
+    attr_accessor :id, :refresh_token, :cip_documents
 
     class << self
       # TODO: simplify the logins argument
@@ -14,26 +14,26 @@ module SynapsePayRest
 
         payload = payload_for_create(logins: logins, phone_numbers: phone_numbers, legal_names: legal_names, **options)
         response = client.users.create(payload: payload)
-        user_from_response(client, response)
+        create_from_response(client, response)
       end
 
       # used to fetch an existing user
       # handle error if id not found
       def find(client:, id:)
         response = client.users.get(user_id: id)
-        user_from_response(client, response)
+        create_from_response(client, response)
       end
 
       # fetches data for multiple users
       def all(client:, page: 1, per_page: 15)
         response = client.users.get(options: {page: page, per_page: per_page})
-        response['users'].map { |data| user_from_response(client, data) }
+        response['users'].map { |data| create_from_response(client, data) }
       end
 
       # fetches data for users matching query in name/email
       def search(client:, query:, page: 1, per_page: 15)
         response = client.users.get(options: {query: query, page: page, per_page: per_page})
-        response['users'].map { |data| user_from_response(client, data) }
+        response['users'].map { |data| create_from_response(client, data) }
       end
 
       private
@@ -47,15 +47,15 @@ module SynapsePayRest
         }
         # TODO: refactor
         # optional payload fields
-        payload['extra']['note'] = options[:note] if options[:note]
-        payload['extra']['supp_id'] = options[:supp_id] if options[:supp_id]
+        payload['extra']['note']        = options[:note] if options[:note]
+        payload['extra']['supp_id']     = options[:supp_id] if options[:supp_id]
         payload['extra']['is_business'] = options[:is_business] if options[:is_business]
-        payload['extra']['cip_tag'] = options[:cip_tag] if options[:cip_tag]
+        payload['extra']['cip_tag']     = options[:cip_tag] if options[:cip_tag]
         payload
       end
 
       # builds a user object from a user response
-      def user_from_response(client, response)
+      def create_from_response(client, response)
         user = User.new(
           client:        client,
           id:            response['_id'],
@@ -70,7 +70,8 @@ module SynapsePayRest
         )
 
         unless response['documents'].empty?
-          user.create_cip_documents_from_response(user, response)
+          cip_docs = CipDocument.create_from_response(user, response)
+          user.cip_documents = cip_docs
         end
 
         user
@@ -80,7 +81,7 @@ module SynapsePayRest
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @client.http_client.user_id = @id
-      @cip_documents = []
+      @cip_documents ||= []
     end
 
     # TODO: validate some kind of proper input was entered

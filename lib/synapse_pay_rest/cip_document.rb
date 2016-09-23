@@ -27,71 +27,36 @@ module SynapsePayRest
 
       # parses multiple cip documents from response
       def create_from_response(user, response)
-        # CipDocument.new(user: user, id: id, name: name, permission_scope: permission_scope, documents: documents)
+        cip_docs_data = response['documents']
+        cip_docs_data.map do |cip_data|
+          physical_docs = cip_data['physical_docs'].map do |data|
+            PhysicalDocument.create_from_response_fields(data)
+          end
+          social_docs = cip_data['social_docs'].map do |data|
+            SocialDocument.create_from_response_fields(data)
+          end
+          virtual_docs = cip_data['virtual_docs'].map do |data|
+            VirtualDocument.create_from_response_fields(data)
+          end
+
+          CipDocument.new(user: user, id: cip_data['id'], name: cip_data['name'],
+            permission_scope: cip_data['permission_scope'], physical_documents: physical_docs,
+            social_documents: social_docs, virtual_documents: virtual_docs)
+        end
       end
-
-      private
-
-      # TODO: refactor for DRYness
-      # def cip_fields_from_response(user, response)
-      #   cip_fields = response['documents'].last
-
-      #   physical_docs = cip_fields['physical_docs'].map do |doc_fields|
-      #     doc_info = {
-      #       id: doc_fields['id']
-      #     }
-      #     doc_info = doc_info.merge({
-      #                 category: :physical,
-      #                 id: doc_fields['id'],
-      #                 type: doc_fields['document_type'],
-      #                 status: doc_fields['status']
-      #               })
-      #     Document.new(doc_info)
-      #   end
-
-      #   social_docs = cip_fields['social_docs'].map do |doc_fields|
-      #     doc_info = {
-      #       id: doc_fields['id']
-      #     }
-      #     doc_info = doc_info.merge({
-      #                 category: :social,
-      #                 id: doc_fields['id'],
-      #                 type: doc_fields['document_type'],
-      #                 status: doc_fields['status']
-      #               })
-      #     Document.new(doc_info)
-      #   end
-
-      #   virtual_docs = cip_fields['virtual_docs'].map do |doc_fields|
-      #     doc_info = {
-      #       id: doc_fields['id']
-      #     }
-      #     doc_info = doc_info.merge({
-      #                 category: :virtual,
-      #                 id: doc_fields['id'],
-      #                 type: doc_fields['document_type'],
-      #                 status: doc_fields['status']
-      #               })
-      #     Document.new(doc_info)
-      #   end
-
-      #   documents = [physical_docs, social_docs, virtual_docs].flatten
-
-      #   fields = {
-      #     id:               cip_fields['id'],
-      #     name:             cip_fields['name'],
-      #     permission_scope: cip_fields['permission_scope'],
-      #     documents:        documents
-      #   }
-      # end
     end
 
     # TODO: validate input types
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
+
+      @physical_documents ||= []
+      @social_documents   ||= []
+      @virtual_documents  ||= []
+
       # associate this cip doc with each doc
-      [physical_documents, social_documents, virtual_documents].each do |docs| 
-        associate_documents_with_self(docs)
+      [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
+        doc.cip_document = self
       end
     end
     
@@ -193,10 +158,6 @@ module SynapsePayRest
       payload
     end
 
-    def associate_documents_with_self(documents)
-      documents.each { |doc| doc.cip_document = self }
-    end
-
     def update_values_with_response_data(response)
       if id
         # updated values, find cip doc by id
@@ -237,9 +198,11 @@ module SynapsePayRest
             resp_doc['document_type'] == doc.type
           end
         end
-        match      = same_types.max_by { |x| x['last_updated'] }
-        doc.id     = match['id']
-        doc.status = match['status']
+        
+        match            = same_types.max_by { |x| x['last_updated'] }
+        doc.id           = match['id']
+        doc.status       = match['status']
+        doc.last_updated = match['last_updated']
       end
     end
 
