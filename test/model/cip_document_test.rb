@@ -16,7 +16,7 @@ class CipDocumentTest < Minitest::Test
     }
     physical_doc_info = {
       type: 'GOVT_ID',
-      value: 'data:text/csv;base64,SUQs=='
+      value: fixture_path('id.png')
     }
     social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
     virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
@@ -61,7 +61,7 @@ class CipDocumentTest < Minitest::Test
     }
     physical_doc_info = {
       type: 'GOVT_ID',
-      value: 'data:text/csv;base64,SUQs=='
+      value: fixture_path('id.png')
     }
     social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
     virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
@@ -110,7 +110,7 @@ class CipDocumentTest < Minitest::Test
     }
     physical_doc_info = {
       type: 'GOVT_ID',
-      value: 'data:text/csv;base64,SUQs=='
+      value: fixture_path('id.png')
     }
     social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
     virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)

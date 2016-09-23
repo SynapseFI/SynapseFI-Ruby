@@ -175,7 +175,7 @@ end
 def test_physical_document
   SynapsePayRest::PhysicalDocument.create(
     type: 'GOVT_ID',
-    value: 'data:text/csv;base64,SUQs=='
+    value: fixture_path('id.png')
   )
 end
 

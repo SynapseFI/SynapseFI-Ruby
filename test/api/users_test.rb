@@ -145,8 +145,4 @@ class UsersTest < Minitest::Test
     response = @client.users.attach_file(file_path: fixture_path('id.png'))
     refute_nil response['_id']
   end
-
-  def test_new_documents_upload_method
-    # TODO
-  end
 end

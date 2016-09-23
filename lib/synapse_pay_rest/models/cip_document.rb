@@ -87,7 +87,6 @@ module SynapsePayRest
 
     private
 
-    # TODO: lot of room for refactoring
     def payload_for_submit
       payload = {
         'documents' => [{
