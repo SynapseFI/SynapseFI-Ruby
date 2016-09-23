@@ -32,4 +32,8 @@ class ClientTest < Minitest::Test
     # deprecated
     assert_instance_of SynapsePayRest::Transactions, client.trans
   end
+
+  def test_logging_flag
+    skip 'pending'
+  end
 end

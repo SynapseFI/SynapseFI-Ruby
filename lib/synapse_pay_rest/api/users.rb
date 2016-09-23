@@ -14,7 +14,7 @@ module SynapsePayRest
       @client = client
     end
 
-    # refactor to automate oauth
+    # TODO: refactor to automate oauth
     def refresh(payload: raise('payload is required'))
       path = "/oauth/#{@client.user_id}"
       response = @client.post(path, payload)
@@ -37,7 +37,7 @@ module SynapsePayRest
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact
 
-      # Probably should use CGI or RestClient's param builder instead of
+      # TODO: Probably should use CGI or RestClient's param builder instead of
       # rolling our own, probably error-prone and untested version
       # https://github.com/rest-client/rest-client#usage-raw-url
       path += '?' + params.join('&') if params.any?

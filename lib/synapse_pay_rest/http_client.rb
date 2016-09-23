@@ -5,11 +5,11 @@ module SynapsePayRest
   class HTTPClient
     attr_accessor :base_url, :config, :user_id
 
-    def initialize(config, base_url, user_id: nil)
+    # TODO: log responses as well as requests
+    def initialize(config, base_url, user_id: nil, logging: true)
       @config = config
       @base_url = base_url
-      # TODO: add params setting for logging
-      # RestClient.log = 'stdout'
+      RestClient.log = 'stdout' if logging
       @user_id = user_id
     end
 
