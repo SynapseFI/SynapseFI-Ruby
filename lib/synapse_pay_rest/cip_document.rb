@@ -166,9 +166,11 @@ module SynapsePayRest
         # first time values, use latest cip doc if multiple
         cip_fields = response['documents'].last
         self.id = cip_fields['id']
+        self
       end
     end
 
+    # TODO: move some of this logic to Document
     def update_document_values_with_response_data(response)
       if id
         # updated values, find cip doc by id. id 
@@ -185,6 +187,7 @@ module SynapsePayRest
       end
 
       [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
+
         if doc.is_a? PhysicalDocument
           same_types = cip_fields['physical_docs'].select do |resp_doc|
             resp_doc['document_type'] == doc.type
@@ -198,12 +201,13 @@ module SynapsePayRest
             resp_doc['document_type'] == doc.type
           end
         end
-        
-        match            = same_types.max_by { |x| x['last_updated'] }
-        doc.id           = match['id']
-        doc.status       = match['status']
-        doc.last_updated = match['last_updated']
+
+        # this probably won't work if there are multiple of same type
+        doc_data = same_types.max_by { |x| x['last_updated'] }
+        doc.update_from_response_fields(doc_data)
       end
+
+      self
     end
 
     # updates changed values that don't come back in response data
@@ -222,6 +226,8 @@ module SynapsePayRest
           self.send("#{field}=", new_value)
         end
       end
+
+      self
     end
   end
 end

@@ -29,5 +29,11 @@ module SynapsePayRest
     def to_hash
       {'document_value' => value, 'document_type' => type}
     end
+
+    def update_from_response_fields(data)
+      self.id           = data['id']
+      self.status       = data['status']
+      self.last_updated = data['last_updated']
+    end
   end
 end
