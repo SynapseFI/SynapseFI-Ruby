@@ -2,7 +2,7 @@ require 'test_helper'
 
 class NodesTest < Minitest::Test
   def setup
-    @client = client_with_user
+    @client = test_client_with_user
     @user = oauth_user(@client, @client.user_id)
   end
 
@@ -79,7 +79,7 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_get
-    client = client_with_nodes
+    client = test_client_with_node
     response = client.nodes.get
 
     assert_equal response['http_code'], '200'
@@ -89,7 +89,7 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_get_with_node_id
-    client = client_with_nodes
+    client = test_client_with_node
     nodes_response = client.nodes.get
     node_id = nodes_response['nodes'].first['_id']
     node_response = client.nodes.get(node_id: node_id)
@@ -99,7 +99,7 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_delete
-    client = client_with_nodes
+    client = test_client_with_node
     nodes_response = client.nodes.get
 
     node_id = nodes_response['nodes'].first['_id']

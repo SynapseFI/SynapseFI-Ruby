@@ -1,8 +1,8 @@
 module SynapsePayRest
   class User
     attr_reader :client, :logins, :phone_numbers, :legal_names, :note, :supp_id,
-                :is_business, :cip_tag
-    attr_accessor :id, :refresh_token, :cip_documents
+                :is_business, :kyc_tag, :nodes
+    attr_accessor :id, :refresh_token, :kycs
 
     class << self
       # TODO: simplify the logins argument
@@ -17,22 +17,22 @@ module SynapsePayRest
         create_from_response(client, response)
       end
 
+      # TODO: handle error if id not found
       # used to fetch an existing user
-      # handle error if id not found
       def find(client:, id:)
         response = client.users.get(user_id: id)
         create_from_response(client, response)
       end
 
       # fetches data for multiple users
-      def all(client:, page: 1, per_page: 15)
-        response = client.users.get(options: {page: page, per_page: per_page})
+      def all(client:, page: 1, per_page: 20)
+        response = client.users.get(page: page, per_page: per_page)
         response['users'].map { |data| create_from_response(client, data) }
       end
 
       # fetches data for users matching query in name/email
-      def search(client:, query:, page: 1, per_page: 15)
-        response = client.users.get(options: {query: query, page: page, per_page: per_page})
+      def search(client:, query:, page: 1, per_page: 20)
+        response = client.users.get(query: query, page: page, per_page: per_page)
         response['users'].map { |data| create_from_response(client, data) }
       end
 
@@ -40,17 +40,17 @@ module SynapsePayRest
 
       def payload_for_create(logins:, phone_numbers:, legal_names:, **options)
         payload = {
-          'logins' => logins,
+          'logins'        => logins,
           'phone_numbers' => phone_numbers,
-          'legal_names' => legal_names,
-          'extra' => {}
+          'legal_names'   => legal_names,
+          'extra'         => {}
         }
         # TODO: refactor
         # optional payload fields
         payload['extra']['note']        = options[:note] if options[:note]
         payload['extra']['supp_id']     = options[:supp_id] if options[:supp_id]
         payload['extra']['is_business'] = options[:is_business] if options[:is_business]
-        payload['extra']['cip_tag']     = options[:cip_tag] if options[:cip_tag]
+        payload['extra']['kyc_tag']     = options[:kyc_tag] if options[:kyc_tag]
         payload
       end
 
@@ -66,12 +66,12 @@ module SynapsePayRest
           note:          response['extra']['note'],
           supp_id:       response['extra']['supp_id'],
           is_business:   response['extra']['is_business'],
-          cip_tag:       response['extra']['cip_tag']
+          kyc_tag:       response['extra']['kyc_tag']
         )
 
         unless response['documents'].empty?
-          cip_docs = CipDocument.create_from_response(user, response)
-          user.cip_documents = cip_docs
+          kycs = Kyc.create_from_response(user, response)
+          user.kycs = kycs
         end
 
         user
@@ -81,7 +81,8 @@ module SynapsePayRest
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @client.http_client.user_id = @id
-      @cip_documents ||= []
+      @kycs  ||= []
+      @nodes ||= []
     end
 
     # TODO: validate some kind of proper input was entered
@@ -95,21 +96,21 @@ module SynapsePayRest
 
     # TODO: refactor
     # TODO: validate arg format
-    def create_cip_document(email:, phone_number:, ip:, name:,
+    def create_kyc(email:, phone_number:, ip:, name:,
       alias:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
       address_street:, address_city:, address_subdivision:, address_postal_code:,
       address_country_code:, physical_documents: [], social_documents: [],
       virtual_documents: [])
-      cip_doc = CipDocument.create(user: self, email: email, phone_number: phone_number,
+      kyc = Kyc.create(user: self, email: email, phone_number: phone_number,
         ip: ip, name: name, alias: binding.local_variable_get(:alias), entity_type: entity_type,
         entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
         birth_year: birth_year, address_street: address_street, address_city: address_city,
         address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
         address_country_code: address_country_code, physical_documents: physical_documents,
         social_documents: social_documents, virtual_documents: virtual_documents)
-      @cip_documents << cip_doc
+      @kycs << kyc
 
-      self
+      kyc
     end
 
     def authenticate
@@ -120,19 +121,56 @@ module SynapsePayRest
     def verify_fingerprint
     end
 
-    def verify_kba
-
-    end
-
+    # TODO: low priority
     # def add_login(email:, password: nil)
     # end
 
-    # def create_node(node)
-    #   @nodes << node
-    # end
+    # TODO: validate arg values in allowed range
+    def fetch_nodes(page: 1, per_page: 20, type: nil)
+      authenticate
+      response = client.nodes.get(page: page, per_page: per_page, type: type)
+      # TODO
+    end
 
-    # def nodes
-    # end
+    def fetch_node(id:)
+    end
+
+    def create_node_synapse_us()
+      @nodes << node
+    end
+
+    # TODO: handle MFA
+    def create_node_ach_us_via_bank_login()
+      @nodes << node
+    end
+
+    def create_node_ach_us()
+      @nodes << node
+    end
+
+    def create_node_wire_us()
+    end
+
+    def create_node_wire_int()
+    end
+
+    def create_node_reserve_us()
+    end
+
+    def create_node_synapse_ind()
+    end
+
+    def create_node_synapse_np()
+    end
+
+    def create_node_eft_ind()
+    end
+
+    def create_node_eft_np()
+    end
+
+    def create_node_iou()
+    end
 
     private
 
@@ -148,6 +186,12 @@ module SynapsePayRest
       payload['update']['phone_number'] = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload
+    end
+
+    def payload_for_fetch_nodes
+      payload = {
+
+      }
     end
   end
 end

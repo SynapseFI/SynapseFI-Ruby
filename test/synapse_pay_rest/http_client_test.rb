@@ -2,7 +2,7 @@ require 'test_helper'
 
 class HTTPClientTest < Minitest::Test
   def setup
-    @client = client_with_user
+    @client = test_client_with_user
     oauth_user(@client, @client.user_id)
     @http_client = @client.client
   end

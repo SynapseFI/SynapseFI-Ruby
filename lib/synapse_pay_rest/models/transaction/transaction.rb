@@ -1,6 +1,5 @@
 module SynapsePayRest
   class Transaction
-    # TODO: handle returns codes with errors
-    
+    # TODO: handle ach return codes
   end
 end

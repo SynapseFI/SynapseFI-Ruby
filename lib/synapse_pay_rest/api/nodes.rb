@@ -1,5 +1,8 @@
 module SynapsePayRest
   class Nodes
+    # TODO: Should refactor this to HTTPClient
+    VALID_QUERY_PARAMS = [:page, :per_page, :type].freeze
+
     attr_accessor :client
 
     def initialize(client)
@@ -12,9 +15,17 @@ module SynapsePayRest
     end
 
     # if node_id is nil then returns all nodes
-    def get(node_id: nil, page: nil)
+    def get(node_id: nil, **options)
+      # TODO: Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
+      params = VALID_QUERY_PARAMS.map do |p|
+        options[p] ? "#{p}=#{options[p]}" : nil
+      end.compact
+
+      # TODO: Probably should use CGI or RestClient's param builder instead of
+      # rolling our own, probably error-prone and untested version
+      # https://github.com/rest-client/rest-client#usage-raw-url
       path = create_node_path(node_id: node_id)
-      path += "?page=#{page}" if page
+      path += '?' + params.join('&') if params.any?
       client.get(path)
     end
 

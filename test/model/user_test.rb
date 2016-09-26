@@ -57,7 +57,7 @@ class UserTest < Minitest::Test
   end
 
   def test_find
-    user = test_user_with_cip_document_with_three_documents
+    user = test_user_with_kyc_with_three_documents
     user_instance = SynapsePayRest::User.find(client: test_client, id: user.id)
     user_data_from_api = test_client.users.get(user_id: user.id)
 
@@ -65,18 +65,18 @@ class UserTest < Minitest::Test
     assert_equal user_data_from_api['_id'], user_instance.id
     assert_equal user_data_from_api['logins'], user_instance.logins
     # confirm documents survive being submitted and fetched
-    refute_empty user_instance.cip_documents
-    refute_nil user_instance.cip_documents.first.id
-    refute_empty user_instance.cip_documents.first.social_documents
-    refute_empty user_instance.cip_documents.first.physical_documents
-    refute_empty user_instance.cip_documents.first.virtual_documents
+    refute_empty user_instance.kycs
+    refute_nil user_instance.kycs.first.id
+    refute_empty user_instance.kycs.first.social_documents
+    refute_empty user_instance.kycs.first.physical_documents
+    refute_empty user_instance.kycs.first.virtual_documents
     # confirm documents contain all data from response
-    refute_nil user_instance.cip_documents.first.virtual_documents.first.id
-    refute_nil user_instance.cip_documents.first.virtual_documents.first.status
-    refute_nil user_instance.cip_documents.first.virtual_documents.first.last_updated
-    refute_nil user_instance.cip_documents.first.virtual_documents.first.type
+    refute_nil user_instance.kycs.first.virtual_documents.first.id
+    refute_nil user_instance.kycs.first.virtual_documents.first.status
+    refute_nil user_instance.kycs.first.virtual_documents.first.last_updated
+    refute_nil user_instance.kycs.first.virtual_documents.first.type
     # 3 + 1 because the phone number from base doc is auto-added to documents
-    assert_equal 1, user_instance.cip_documents.first.virtual_documents.count
+    assert_equal 1, user_instance.kycs.first.virtual_documents.count
   end
 
   def test_find_user_with_non_existent_id_raises_error
@@ -87,7 +87,7 @@ class UserTest < Minitest::Test
     user_instances = SynapsePayRest::User.all(client: test_client)
     user_instance = user_instances.first
     assert_instance_of Array, user_instances
-    assert_equal user_instances.length, 15
+    assert_equal 20, user_instances.length
     assert_instance_of SynapsePayRest::User, user_instance
     assert_operator user_instance.id.length, :>, 0
     assert_instance_of Array, user_instance.logins
@@ -105,14 +105,19 @@ class UserTest < Minitest::Test
 
   def test_all_with_per_page
     page = SynapsePayRest::User.all(client: test_client, per_page: 10)
-    assert_equal page.length, 10
+    assert_equal 10, page.length
   end
 
   def test_search
-    results = SynapsePayRest::User.search(client: test_client, query: 'Betty')
-    assert results.any? { |user| user.legal_names.include? 'Betty White' }
+    query   = 'Betty'
+    results = SynapsePayRest::User.search(client: test_client, query: query)
 
-    results2 = SynapsePayRest::User.search(client: test_client, query: 'Frank')
+    assert results.all? do |user|
+      user.legal_names.find { |name| name.include?(query)} ||
+        user.logins.find { |login| login.email.include? query }
+    end
+
+    results2 = SynapsePayRest::User.search(client: test_client, query: 'asdfkl;fja')
     assert_empty results2
   end
 
@@ -149,39 +154,19 @@ class UserTest < Minitest::Test
     refute_includes api_response2['phone_numbers'], new_phone_number
   end
 
-  def test_create_cip_document
-    social_doc_info = {
-      category: :social,
-      type: 'FACEBOOK',
-      value: 'https://www.facebook.com/marcopolo'
-    }
-    social_doc = SynapsePayRest::SocialDocument.new(social_doc_info)
-    cip_info = {
-      email: 'piper@pie.com',
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Piper',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      social_documents: [social_doc]
-    }
-    @user.create_cip_document(cip_info)
+  def test_create_kyc
+    kyc_info = test_kyc_base_info
+    kyc_info.delete(:user)
+    social_doc = test_social_document
+    kyc_info[:social_documents] = [social_doc]
+    @user.create_kyc(kyc_info)
 
-    refute_empty @user.cip_documents
-    assert_equal social_doc, @user.cip_documents.first.social_documents.first
-    assert_equal @user, @user.cip_documents.first.user
+    refute_empty @user.kycs
+    assert_equal social_doc, @user.kycs.first.social_documents.first
+    assert_equal @user, @user.kycs.first.user
   end
 
-  def test_with_multiple_cip_docs
+  def test_with_multiple_kycs
     skip 'pending'
   end
 
@@ -190,12 +175,19 @@ class UserTest < Minitest::Test
     @user.create_node
   end
 
-  def test_user_nodes
-    skip 'pending'
-    assert_instance_of SynapsePayRest::Node, node_list.first
+  def test_fetch_nodes
+    @user.fetch_nodes
   end
 
-  def test_user_find_node
+  def test_nodes_reader_method
+    skip 'pending'
+    assert_empty @user.nodes
+
+    # TODO: add node
+    assert_instance_of SynapsePayRest::Node, @user.nodes.first
+  end
+
+  def test_find_node
     skip 'pending'
   end
 

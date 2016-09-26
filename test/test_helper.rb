@@ -25,9 +25,8 @@ def test_client
   SynapsePayRest::Client.new(options: options)
 end
 
-# TODO: can definitely optimize these to remove GET and just pass id info
-def client_with_user
-  payload = {
+def test_user_payload1
+  {
     'logins' => [
       {
         'email' => 'rubyTest@synapsepay.com',
@@ -47,20 +46,51 @@ def client_with_user
       'is_business' => false
     }
   }
-  user_response = test_client.users.create(payload: payload)
-  client = test_client
+end
+
+def test_user_payload2
+  {
+    'logins' => [
+      {
+        'email' => 'rubyTest2@synapsepay.com',
+        'password' =>  'test1234',
+        'read_only' => false
+      }
+    ],
+    'phone_numbers' => [
+      '901.444.4444'
+    ],
+    'legal_names' => [
+      'TEST MCTESTERSON'
+    ],
+    'extra' => {
+      'note' => 'Uninteresting user',
+      'supp_id' => '122eddfgbeafrfvbbb',
+      'is_business' => false
+    }
+  }
+end
+
+def test_client_with_user
+  user_response  = test_client.users.create(payload: test_user_payload1)
+  client         = test_client
   client.user_id = user_response['_id']
-  client.http_client.user_id = user_response['_id']
   client.http_client.user_id = user_response['_id']
   client
 end
 
-# create different number of nodes for different tests
-def client_with_nodes
-  client = client_with_user
-  user = oauth_user(client, client.user_id)
+def test_client_with_two_users
+  user_response = test_client.users.create(payload: test_user_payload1)
+  # add second user
+  test_client.users.create(payload: test_user_payload2)
+  client         = test_client
+  client.user_id = user_response['_id']
+  client.http_client.user_id = user_response['_id']
+  client
+end
 
-  payload = {
+def test_node_payload1
+  {
     'type' => 'ACH-US',
     'info' => {
       'bank_id' => 'synapse_nomfa',
@@ -68,20 +98,42 @@ def client_with_nodes
       'bank_name' => 'fake'
     }
   }
-  client.nodes.add(payload: payload)
+end
+
+def test_node_payload2
+  {
+    'type' => 'SYNAPSE-US',
+    'info' => {
+      'nickname' => 'Synapse Account'
+    }
+  }
+end
+
+def test_client_with_node
+  client = test_client_with_user
+  oauth_user(client, client.user_id)
+  client.nodes.add(payload: test_node_payload1)
+  client
+end
+
+def test_client_with_two_nodes
+  client = test_client_with_user
+  oauth_user(client, client.user_id)
+  client.nodes.add(payload: test_node_payload1)
+  client.nodes.add(payload: test_node_payload2)
   client
 end
 
 # create different number of users for different tests
-def client_with_transactions
-  client    = client_with_nodes
+def test_client_with_two_transactions
+  client    = test_client_with_two_nodes
   nodes     = client.nodes.get['nodes']
   from_node = nodes.first
   to_node   = nodes.last
 
   transaction_payload1 = {
     'to' => {
-      'type' => 'ACH-US',
+      'type' => to_node['type'],
       'id' => to_node['_id']
     },
     'amount' => {
@@ -94,7 +146,7 @@ def client_with_transactions
   }
   transaction_payload2 = {
     'to' => {
-      'type' => 'ACH-US',
+      'type' => to_node['type'],
       'id' => to_node['_id']
     },
     'amount' => {
@@ -105,6 +157,7 @@ def client_with_transactions
       'ip' => '192.168.0.1'
     }
   }
+
   client.trans.create(node_id: from_node['_id'], payload: transaction_payload1)
   client.trans.create(node_id: from_node['_id'], payload: transaction_payload2)
   client
@@ -123,53 +176,6 @@ def test_user
     phone_numbers: ['415-555-5555'],
     legal_names: ['Betty White']
   )
-end
-
-def test_user_with_one_cip_document
-
-  cip_info = {
-    email: 'piper@pie.com',
-    phone_number: '4444444',
-    ip: '127002',
-    name: 'Piper',
-    alias: 'Hallowell',
-    entity_type: 'F',
-    entity_scope: 'Arts & Entertainment',
-    birth_day: 1,
-    birth_month: 2,
-    birth_year: 1933,
-    address_street: '333 14th St',
-    address_city: 'SF',
-    address_subdivision: 'CA',
-    address_postal_code: '94114',
-    address_country_code: 'US',
-    social_documents: [test_social_document]
-  }
-  test_user.create_cip_document(cip_info)
-end
-
-def test_user_with_cip_document_with_three_documents
-  cip_info = {
-    email: 'piper@pie.com',
-    phone_number: '4444444',
-    ip: '127002',
-    name: 'Piper',
-    alias: 'Hallowell',
-    entity_type: 'F',
-    entity_scope: 'Arts & Entertainment',
-    birth_day: 1,
-    birth_month: 2,
-    birth_year: 1933,
-    address_street: '333 14th St',
-    address_city: 'SF',
-    address_subdivision: 'CA',
-    address_postal_code: '94114',
-    address_country_code: 'US',
-    physical_documents: [test_physical_document],
-    social_documents: [test_social_document],
-    virtual_documents: [test_virtual_document]
-  }
-  test_user.create_cip_document(cip_info)
 end
 
 def test_physical_document
@@ -193,32 +199,7 @@ def test_virtual_document
   )
 end
 
-def test_cip_document_with_documents
-  cip_info = {
-    user: test_user,
-    email: 'piper@pie.com',
-    phone_number: '4444444',
-    ip: '127002',
-    name: 'Piper',
-    alias: 'Hallowell',
-    entity_type: 'F',
-    entity_scope: 'Arts & Entertainment',
-    birth_day: 1,
-    birth_month: 2,
-    birth_year: 1933,
-    address_street: '333 14th St',
-    address_city: 'SF',
-    address_subdivision: 'CA',
-    address_postal_code: '94114',
-    address_country_code: 'US',
-    physical_documents: [test_physical_document],
-    social_documents: [test_social_document],
-    virtual_documents: [test_virtual_document]
-  }
-  SynapsePayRest::CipDocument.create(cip_info)
-end
-
-def test_cip_document_info
+def test_kyc_base_info
   {
     user: test_user,
     email: 'piper@pie.com',
@@ -237,4 +218,31 @@ def test_cip_document_info
     address_postal_code: '94114',
     address_country_code: 'US'
   }
+end
+
+def test_kyc_base_info_with_three_documents
+  test_kyc_base_info.merge({
+    physical_documents: [test_physical_document],
+    social_documents: [test_social_document],
+    virtual_documents: [test_virtual_document]
+  })
+end
+
+def test_user_with_one_kyc
+  args = test_kyc_base_info
+  args.delete(:user)
+  test_user.create_kyc(args)
+end
+
+def test_kyc_with_three_documents
+  SynapsePayRest::Kyc.create(test_kyc_base_info_with_three_documents)
+end
+
+def test_user_with_kyc_with_three_documents
+  args = test_kyc_base_info_with_three_documents
+  # create_kyc does not accept a user argument
+  args.delete(:user)
+  user = test_user
+  user.create_kyc(args)
+  user
 end

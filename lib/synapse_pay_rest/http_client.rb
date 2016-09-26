@@ -6,7 +6,7 @@ module SynapsePayRest
     attr_accessor :base_url, :config, :user_id
 
     # TODO: log responses as well as requests
-    def initialize(config, base_url, user_id: nil, logging: true)
+    def initialize(config, base_url, user_id: nil, logging: false)
       @config = config
       @base_url = base_url
       RestClient.log = 'stdout' if logging

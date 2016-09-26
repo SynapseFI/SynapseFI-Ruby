@@ -35,5 +35,6 @@ class ClientTest < Minitest::Test
 
   def test_logging_flag
     skip 'pending'
+    # TODO: should log request and response
   end
 end

@@ -1,22 +1,45 @@
+require 'pry'
+
+# clients
 require 'synapse_pay_rest/client'
 require 'synapse_pay_rest/http_client'
-require 'synapse_pay_rest/error'
-require 'synapse_pay_rest/version'
-# base API clients
+
+# base API
 require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
 require 'synapse_pay_rest/api/transactions'
-# model abstractions
-require 'synapse_pay_rest/models/question'
-require 'synapse_pay_rest/models/document'
-require 'synapse_pay_rest/models/social_document'
-require 'synapse_pay_rest/models/virtual_document'
-require 'synapse_pay_rest/models/physical_document'
-require 'synapse_pay_rest/models/cip_document'
-require 'synapse_pay_rest/models/user'
-require 'synapse_pay_rest/models/node'
-require 'synapse_pay_rest/models/transaction'
-require 'pry'
+
+# library
+require 'synapse_pay_rest/error'
+require 'synapse_pay_rest/version'
+
+# user-related models
+require 'synapse_pay_rest/models/user/user'
+require 'synapse_pay_rest/models/user/kyc'
+require 'synapse_pay_rest/models/user/document'
+require 'synapse_pay_rest/models/user/physical_document'
+require 'synapse_pay_rest/models/user/social_document'
+require 'synapse_pay_rest/models/user/virtual_document'
+require 'synapse_pay_rest/models/user/question'
+
+# node-related models
+require 'synapse_pay_rest/models/node/node'
+require 'synapse_pay_rest/models/node/synapse_node'
+require 'synapse_pay_rest/models/node/synapse_us_node.rb'
+require 'synapse_pay_rest/models/node/synapse_ind_node.rb'
+require 'synapse_pay_rest/models/node/synapse_np_node.rb'
+require 'synapse_pay_rest/models/node/ach_us_node.rb'
+require 'synapse_pay_rest/models/node/eft_node'
+require 'synapse_pay_rest/models/node/eft_ind_node.rb'
+require 'synapse_pay_rest/models/node/eft_np_node.rb'
+require 'synapse_pay_rest/models/node/wire_node.rb'
+require 'synapse_pay_rest/models/node/wire_us_node.rb'
+require 'synapse_pay_rest/models/node/wire_int_node.rb'
+require 'synapse_pay_rest/models/node/reserve_us_node.rb'
+require 'synapse_pay_rest/models/node/iou_node.rb'
+
+# transaction-related models
+require 'synapse_pay_rest/models/transaction/transaction'
 
 module SynapsePayRest
   # deprecated classes

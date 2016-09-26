@@ -2,38 +2,18 @@ require 'test_helper'
 
 class UsersTest < Minitest::Test
   def setup
-    @client = client_with_user
+    @client = test_client_with_user
     @user = oauth_user(@client, @client.user_id)
   end
 
   def test_users_create
-    payload = {
-      'logins' => [
-        {
-          'email' => 'rubyTest@synapsepay.com',
-          'password' => 'test1234',
-          'read_only' => false
-        }
-      ],
-      'phone_numbers' => [
-        '901.111.1111'
-      ],
-      'legal_names' => [
-        'RUBY TEST USER'
-      ],
-      'extra' => {
-        'note' => 'Interesting user',
-        'supp_id' => '122eddfgbeafrfvbbb',
-        'is_business' => false
-      }
-    }
-    payload_created_user = test_client.users.create(payload: payload)
+    payload_created_user = test_client.users.create(payload: test_user_payload1)
 
     refute_nil payload_created_user['_id']
   end
 
   def test_users_get
-    users = test_client.users.get
+    users = @client.users.get
 
     assert_equal '200', users['http_code']
     assert_equal '0', users['error_code']
@@ -42,7 +22,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_pagination
-    users = test_client.users.get(options: {page: 2, per_page: 3})
+    users = test_client.users.get(page: 2, per_page: 3)
 
     assert_equal '200', users['http_code']
     assert_equal '0', users['error_code']
@@ -51,7 +31,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_query
-    users = test_client.users.get(options: {query: 'Doe'})
+    users = test_client.users.get(query: 'Doe')
 
     assert_equal '200', users['http_code']
     assert_equal '0', users['error_code']

@@ -2,18 +2,18 @@ require 'test_helper'
 
 class TransactionsTest < Minitest::Test
   def setup
-    @client = client_with_transactions
+    @client = test_client_with_two_transactions
     @nodes  = @client.nodes.get['nodes']
   end
 
   def test_transactions_create
     transaction_payload = {
       'to' => {
-        'type' => 'ACH-US',
-        'id' => @nodes.last['_id']
+        'type' => 'SYNAPSE-US',
+        'id'   => @nodes.last['_id']
       },
       'amount' => {
-        'amount' => 55,
+        'amount'   => 55,
         'currency' => 'USD'
       },
       'extra' => {
@@ -67,15 +67,31 @@ class TransactionsTest < Minitest::Test
   end
 
   def test_transactions_delete
-    transactions = @client.trans.get(node_id: @nodes.first['_id'])['trans']
-    delete_response = @client.trans.delete(
-      node_id: @nodes.first['_id'],
+    client = test_client_with_two_nodes
+    nodes  = client.nodes.get['nodes']
+
+    transaction_payload = {
+      'to' => {
+        'type' => 'ACH-US',
+        'id'   => nodes.first['_id']
+      },
+      'amount' => {
+        'amount'   => 22,
+        'currency' => 'USD'
+      },
+      'extra' => {
+        'ip' => '192.168.0.1'
+      }
+    }
+
+    trans_create_response = client.trans.create(node_id: nodes.first['_id'], payload: transaction_payload)
+    transactions = client.trans.get(node_id: nodes.first['_id'])['trans']
+    delete_response = client.trans.delete(
+      node_id: nodes.first['_id'],
       trans_id: transactions.first['_id']
     )
-
     status = delete_response['recent_status']['status']
-    assert status, 'CANCELED'
-    # confirm number of trans reduced
-    transactions2 = @client.trans.get(node_id: @nodes.first['_id'])['trans']
+
+    assert_equal 'CANCELED', status
   end
 end

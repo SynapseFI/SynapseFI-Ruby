@@ -1,8 +1,8 @@
 require 'test_helper'
 
-class CipDocumentTest < Minitest::Test
+class KycTest < Minitest::Test
   def setup
-    @cip_doc = test_cip_document_with_documents
+    @kyc = test_kyc_with_three_documents
   end
 
   def test_initialize_params_can_be_read
@@ -43,10 +43,10 @@ class CipDocumentTest < Minitest::Test
       social_documents: [social_doc],
       virtual_documents: [virtual_doc]
     }
-    cip_doc = SynapsePayRest::CipDocument.create(args)
+    kyc = SynapsePayRest::Kyc.create(args)
 
     args.each do |arg, value|
-      assert_equal cip_doc.send(arg), value
+      assert_equal kyc.send(arg), value
     end
   end
 
@@ -67,7 +67,7 @@ class CipDocumentTest < Minitest::Test
     virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
     physical_doc = SynapsePayRest::PhysicalDocument.new(physical_doc_info)
 
-    cip_info = {
+    kyc_info = {
       user: test_user,
       email: 'piper@pie.com',
       phone_number: '4444444',
@@ -88,15 +88,15 @@ class CipDocumentTest < Minitest::Test
       social_documents: [social_doc],
       virtual_documents: [virtual_doc]
     }
-    cip_doc = SynapsePayRest::CipDocument.create(cip_info)
+    kyc = SynapsePayRest::Kyc.create(kyc_info)
 
     # verify docs associated with User object
-    assert_equal cip_doc.physical_documents.length, 1
-    assert_equal cip_doc.social_documents.length, 1
-    assert_equal cip_doc.virtual_documents.length, 1
-    assert_includes cip_doc.social_documents, social_doc
-    assert_includes cip_doc.virtual_documents, virtual_doc
-    assert_includes cip_doc.physical_documents, physical_doc
+    assert_equal kyc.physical_documents.length, 1
+    assert_equal kyc.social_documents.length, 1
+    assert_equal kyc.virtual_documents.length, 1
+    assert_includes kyc.social_documents, social_doc
+    assert_includes kyc.virtual_documents, virtual_doc
+    assert_includes kyc.physical_documents, physical_doc
   end
 
   def test_submit
@@ -116,7 +116,7 @@ class CipDocumentTest < Minitest::Test
     virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
     physical_doc = SynapsePayRest::PhysicalDocument.new(physical_doc_info)
 
-    cip_info = {
+    kyc_info = {
       user: test_user,
       email: 'piper@pie.com',
       phone_number: '4444444',
@@ -137,12 +137,12 @@ class CipDocumentTest < Minitest::Test
       social_documents: [social_doc],
       virtual_documents: [virtual_doc]
     }
-    cip_doc = SynapsePayRest::CipDocument.create(cip_info)
+    kyc = SynapsePayRest::Kyc.create(kyc_info)
 
-    refute_nil cip_doc.id
+    refute_nil kyc.id
     # verify with API that documents were added
-    response_docs = test_client.users.get(user_id: cip_doc.user.id)['documents']
-    assert [social_doc.cip_document.id, virtual_doc.cip_document.id, physical_doc.cip_document.id].all? do |id|
+    response_docs = test_client.users.get(user_id: kyc.user.id)['documents']
+    assert [social_doc.kyc.id, virtual_doc.kyc.id, physical_doc.kyc.id].all? do |id|
       id == response_docs['_id']
     end
     assert response_docs.first['social_docs'].any? { |doc| doc['document_type'] == social_doc.type }
@@ -151,12 +151,11 @@ class CipDocumentTest < Minitest::Test
   end
 
   def test_update
-    user = test_user_with_cip_document_with_three_documents
-    cip_doc = user.cip_documents.first
-    social_doc = cip_doc.social_documents.find { |doc| doc.type == 'PHONE_NUMBER' }
+    user = test_user_with_kyc_with_three_documents
+    kyc  = user.kycs.first
+    social_doc = kyc.social_documents.find { |doc| doc.type == 'PHONE_NUMBER' }
     social_doc_original_value = social_doc.value
-    original_email = cip_doc.email
-    id_before = cip_doc.id
+    original_email = kyc.email
 
     response_before_update = test_client.users.get(user_id: user.id)
     response_before_update_phone_numbers = response_before_update['documents'].first['social_docs'].select do |doc|
@@ -170,9 +169,8 @@ class CipDocumentTest < Minitest::Test
       social_documents: [social_doc]
     }
 
-    cip_doc.update(things_to_update)
-    new_email = cip_doc.email
-    id_after = cip_doc.id
+    kyc.update(things_to_update)
+    new_email = kyc.email
 
     # verify changed in instance
     refute_equal original_email, new_email
@@ -184,7 +182,7 @@ class CipDocumentTest < Minitest::Test
     response_after_update_phone_number = response_after_update_phone_numbers.find { |ph| ph['id'] == social_doc.id }
 
     # id should match id in response
-    assert_equal response_after_update['documents'].first['id'], cip_doc.id
+    assert_equal response_after_update['documents'].first['id'], kyc.id
     # see that updated times have changed
     before_checksum = response_before_update_phone_numbers.map {|ph| ph['last_updated']}.reduce(:+)
     after_checksum = response_after_update_phone_numbers.map {|ph| ph['last_updated']}.reduce(:+)
@@ -196,7 +194,8 @@ class CipDocumentTest < Minitest::Test
     # TODO: test last updated changes on virtual/physical docs
   end
 
-  def test_add_document_to_cip_with_existing_docs
+  # TODO: need to determine when overwritten and when multiple of same type
+  def test_add_document_to_kyc_with_existing_docs
     skip 'pending'
   end
 

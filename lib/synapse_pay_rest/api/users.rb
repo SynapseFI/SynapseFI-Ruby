@@ -23,7 +23,7 @@ module SynapsePayRest
     end
 
     # if user_id is nil returns all users
-    def get(user_id: nil, options: {})
+    def get(user_id: nil, **options)
       path = create_user_path(user_id: user_id)
 
       if options[:user_id]
