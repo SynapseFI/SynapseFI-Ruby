@@ -1,10 +1,6 @@
 require 'test_helper'
 
 class UserTest < Minitest::Test
-  def setup
-    @user = test_user
-  end
-
   def test_create
     info = {
       client: test_client,
@@ -126,6 +122,8 @@ class UserTest < Minitest::Test
   end
 
   def test_update
+    user = test_user
+
     new_login = {
       email: 'new@email.com',
       password: 'test1234',
@@ -135,35 +133,36 @@ class UserTest < Minitest::Test
     new_phone_number = '99999999'
 
     # add some info
-    @user.update(
+    user.update(
       login: new_login,
       legal_name: new_legal_name,
       phone_number: new_phone_number
     )
-    api_response = test_client.users.get(user_id: @user.id)
+    api_response = test_client.users.get(user_id: user.id)
     # verify that it's added
     assert api_response['logins'].any? { |login| login['email'] == new_login[:email] }
     assert_includes api_response['legal_names'], new_legal_name
     assert_includes api_response['phone_numbers'], new_phone_number
 
     # remove some info
-    @user.update(remove_login: {email: new_login[:email]}, remove_phone_number: new_phone_number)
-    api_response2 = test_client.users.get(user_id: @user.id)
+    user.update(remove_login: {email: new_login[:email]}, remove_phone_number: new_phone_number)
+    api_response2 = test_client.users.get(user_id: user.id)
     # verify that it's removed
     refute api_response2['logins'].any? { |login| login['email'] == new_login[:email] }
     refute_includes api_response2['phone_numbers'], new_phone_number
   end
 
   def test_create_kyc
+    user = test_user
     kyc_info = test_kyc_base_info
     kyc_info.delete(:user)
     social_doc = test_social_document
     kyc_info[:social_documents] = [social_doc]
-    @user.create_kyc(kyc_info)
+    user.create_kyc(kyc_info)
 
-    refute_empty @user.kycs
-    assert_equal social_doc, @user.kycs.first.social_documents.first
-    assert_equal @user, @user.kycs.first.user
+    refute_empty user.kycs
+    assert_equal social_doc, user.kycs.first.social_documents.first
+    assert_equal user, user.kycs.first.user
   end
 
   def test_with_multiple_kycs
@@ -172,19 +171,22 @@ class UserTest < Minitest::Test
 
   def test_user_create_node
     skip 'pending'
-    @user.create_node
+    user = test_user
+    user.create_node
   end
 
   def test_fetch_nodes
-    @user.fetch_nodes
+    user = test_user
+    user.fetch_nodes
   end
 
   def test_nodes_reader_method
     skip 'pending'
-    assert_empty @user.nodes
+    user = test_user
+    assert_empty user.nodes
 
     # TODO: add node
-    assert_instance_of SynapsePayRest::Node, @user.nodes.first
+    assert_instance_of SynapsePayRest::Node, user.nodes.first
   end
 
   def test_find_node

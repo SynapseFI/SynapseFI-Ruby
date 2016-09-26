@@ -1,10 +1,6 @@
 require 'test_helper'
 
 class KycTest < Minitest::Test
-  def setup
-    @kyc = test_kyc_with_three_documents
-  end
-
   def test_initialize_params_can_be_read
     social_doc_info = {
       type: 'FACEBOOK',
