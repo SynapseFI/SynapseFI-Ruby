@@ -11,16 +11,26 @@ class NodeTest < Minitest::Test
     args = {
       user: @user,
       nickname: 'Test Synapse Account',
-      supp_id: 'abc123',
-      gateway_restricted: false
+      supp_id: 'abc123'
     }
     node = SynapsePayRest::SynapseUsNode.create(args)
 
+    other_instance_vars = [:type, :is_active, :account_id, :balance, :currency,
+                           :name_on_account, :allowed]
+
     assert_instance_of SynapsePayRest::SynapseUsNode, node
-    assert_equal @user, node
+    assert_equal @user, node.user
     assert_includes @user.nodes, node
     # verify instance vars readable and mapped to values
-    args.each { |k, v| assert_equal args[k], v }
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_ach_us_via_account_routing_numbers
@@ -31,15 +41,25 @@ class NodeTest < Minitest::Test
       routing_number: '051000017',
       account_type: 'PERSONAL',
       account_class: 'CHECKING',
-      supp_id: 'abc123',
-      gateway_restricted: false
+      supp_id: 'abc123'
     }
     node = SynapsePayRest::AchUsNode.create(args)
 
+    other_instance_vars = [:type, :is_active, :bank_long_name, :name_on_account,
+                           :allowed]
+
     assert_instance_of SynapsePayRest::AchUsNode, node
-    assert_includes @user.nodes, node
     assert_equal @user, node.user
+    assert_includes @user.nodes, node
     # verify instance vars readable and mapped to values
-    args.each { |k, v| assert_equal args[k], v }
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 end

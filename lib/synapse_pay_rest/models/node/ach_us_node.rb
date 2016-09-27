@@ -25,22 +25,22 @@ module SynapsePayRest
       end
 
       def create_from_response(user, response)
-        binding.pry
         node_data = response['nodes'].last
         node = self.new(
           user: user,
-          type: 'SYNAPSE-US',
+          type: 'ACH-US',
           id:              node_data['_id'],
           is_active:       node_data['is_active'],
-          account_id:      node_data['info']['account_id'],
-          balance:         node_data['info']['balance']['amount'],
-          currency:        node_data['info']['balance']['currency'],
+          account_number:  node_data['info']['account_num'],
+          routing_number:  node_data['info']['routing_num'],
+          bank_long_name:  node_data['info']['bank_long_name'],
+          account_class:   node_data['info']['class'],
+          account_type:    node_data['info']['type'],
           name_on_account: node_data['info']['name_on_account'],
           nickname:        node_data['info']['nickname'],
           allowed:         node_data['allowed'],
           supp_id:         node_data['extra']['supp_id']
         )
-        binding.pry
         user.nodes << node
         node
       end
