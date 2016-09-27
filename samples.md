@@ -51,12 +51,24 @@ create_payload = {
   }
 }
 
-create_response = client.users.create(payload: create_payload)
+create_user_response = client.users.create(payload: create_payload)
 
 
 # Get User
 
-user_response = client.users.get(user_id: USER_ID)
+user_response = client.users.get(user_id: create_user_response['_id'])
+
+
+
+# Refresh User
+
+oauth_payload = {
+  "refresh_token" => user_response['refresh_token']
+}
+
+oauth_response = client.users.refresh(payload: oauth_payload)
+
+```
 
 
 # Update a User
@@ -80,8 +92,8 @@ client.users.update(payload: update_payload)
 # Add Documents
 
 # use users#encode_attachment to base64 encode a file for inclusion in the payload
-govt_id_attachment = @client.users.encode_attachment(file_path: FILE_PATH)
-selfie_attachment = @client.users.encode_attachment(file_path: FILE_PATH)
+govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
+selfie_attachment  = client.users.encode_attachment(file_path: FILE_PATH)
 
 add_documents_payload = {
   'documents' => [{
@@ -127,7 +139,7 @@ add_docs_response = client.users.update(payload: add_documents_payload)
 kyc_document = add_docs_response['documents'].last   # most recently submitted set of KYC docs
 
 # the meta field will be present if there are KBA questions
-ssn = kyc_document['virtual_docs'].find { |doc| doc['document_type'] == 'SSN' && doc['meta']}
+ssn = kyc_document['virtual_docs'].find { |doc| doc['document_type'] == 'SSN' && doc['status'] == 'SUBMITTED|MFA_PENDING'}
 
 kba_payload = {
   'documents' => [{
@@ -150,17 +162,6 @@ kba_payload = {
 }
 
 kba_response = client.users.update(payload: kba_payload)
-
-
-# Refresh User
-
-oauth_payload = {
-  "refresh_token" =>  USER_REFRESH_TOKEN
-}
-
-oauth_response = client.users.refresh(payload: oauth_payload)
-
-```
 
 
 ## Node API Calls
