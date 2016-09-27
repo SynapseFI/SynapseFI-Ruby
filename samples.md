@@ -87,7 +87,7 @@ update_payload = {
 client.users.update(payload: update_payload)
 
 
-# Add Documents
+# Add Base Document and Virtual/Physical/Social Documents
 
 # use Users#encode_attachment to base64 encode a file for inclusion in the payload
 govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
@@ -96,7 +96,7 @@ selfie_attachment  = client.users.encode_attachment(file_path: FILE_PATH)
 add_documents_payload = {
   'documents' => [{
     'email' => 'test2@test.com',
-    'phone_number' => '901-942-8167',
+    'phone_number' => '555-942-8167',
     'ip' => '12134323',
     'name' => 'Snoopie',
     'alias' => 'Meow',
@@ -132,15 +132,15 @@ add_documents_payload = {
 add_docs_response = client.users.update(payload: add_documents_payload)
 
 
-# Answer KBA Questions
+# Answer KBA Questions for Virtual Document
 
-kyc_document = add_docs_response['documents'].last   # to get most recent (or only) submitted set of KYC docs
+base_document = add_docs_response['documents'].last   # to get most recent (or only) submitted set of KYC docs
 
-ssn = kyc_document['virtual_docs'].find { |doc| doc['status'] == 'SUBMITTED|MFA_PENDING'}
+ssn = base_document['virtual_docs'].find { |doc| doc['status'] == 'SUBMITTED|MFA_PENDING'}
 
 kba_payload = {
   'documents' => [{
-    'id' => kyc_document['id'],
+    'id' => base_document['id'],
     'virtual_docs' => [{
       'id' => ssn['id'],
       'meta' => {
@@ -159,6 +159,25 @@ kba_payload = {
 }
 
 kba_response = client.users.update(payload: kba_payload)
+
+
+# Update Existing Base Document
+
+new_govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
+
+update_existing_docs_payload = {
+  'documents' => [{
+    'id' => base_document['id'],
+    'email' => 'test3@test.com',
+    'phone_number' => '555-5555',
+    'physical_docs' => [{
+      'document_value' => new_govt_id_attachment,
+      'document_type' => 'GOVT_ID'
+    }]
+  }]
+}
+
+update_existing_docs_response = client.users.update(payload: update_existing_docs_payload)
 
 ```
 
