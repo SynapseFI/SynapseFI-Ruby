@@ -1,6 +1,6 @@
 module SynapsePayRest
   # this is a collection of personal info + documents
-  # TODO: write to_payload methods
+  # TODO: write to_hash methods
   class Kyc
     attr_accessor :user, :email, :phone_number, :ip, :name, :alias, :entity_type,
                 :entity_scope, :birth_day, :birth_month, :birth_year,

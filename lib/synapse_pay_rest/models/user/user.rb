@@ -43,14 +43,15 @@ module SynapsePayRest
           'logins'        => logins,
           'phone_numbers' => phone_numbers,
           'legal_names'   => legal_names,
-          'extra'         => {}
         }
-        # TODO: refactor
         # optional payload fields
-        payload['extra']['note']        = options[:note] if options[:note]
-        payload['extra']['supp_id']     = options[:supp_id] if options[:supp_id]
-        payload['extra']['is_business'] = options[:is_business] if options[:is_business]
-        payload['extra']['kyc_tag']     = options[:kyc_tag] if options[:kyc_tag]
+        extra = {}
+        extra['note']        = options[:note] if options[:note]
+        extra['supp_id']     = options[:supp_id] if options[:supp_id]
+        extra['is_business'] = options[:is_business] if options[:is_business]
+        extra['kyc_tag']     = options[:kyc_tag] if options[:kyc_tag]
+        payload['extra'] = extra if extra.any?
+
         payload
       end
 

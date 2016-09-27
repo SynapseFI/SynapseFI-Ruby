@@ -169,12 +169,6 @@ class UserTest < Minitest::Test
     skip 'pending'
   end
 
-  def test_user_create_node
-    skip 'pending'
-    user = test_user
-    user.create_node
-  end
-
   def test_fetch_nodes
     user = test_user
     user.fetch_nodes
@@ -203,5 +197,14 @@ class UserTest < Minitest::Test
 
   def test_mfa_on_update_document
     skip 'pending'
+  end
+
+  def test_user_create_node
+    skip 'pending'
+  end
+
+  def test_user_nodes
+    skip 'pending'
+    assert_instance_of SynapsePayRest::Node, node_list.first
   end
 end
