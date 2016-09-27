@@ -22,11 +22,11 @@ module SynapsePayRest
       response
     end
 
-    def get(user_id: nil, options: {})
+    def get(user_id: nil, **options)
       path = create_user_path(user_id: user_id)
 
       # factor single user and all users into separate methods
-      if options[:user_id]
+      if user_id
         response = client.get(path)
         client.update_headers(user_id: response['_id']) if response['_id']
         return response
@@ -46,7 +46,9 @@ module SynapsePayRest
 
     def update(payload: raise("payload is required"))
       path = create_user_path(user_id: client.user_id)
-      client.patch(path, payload)
+      response = client.patch(path, payload)
+      client.update_headers(user_id: response['_id']) if response['_id']
+      response
     end
 
     def create(payload: raise("payload is required"))
@@ -56,17 +58,38 @@ module SynapsePayRest
       response
     end
 
-    def add_doc(payload: raise("payload is required"))
-      path = create_user_path(user_id: client.user_id)
-      client.patch(path, payload)
+    def encode_attachment(file_path: raise("file_path is required"), file_type: nil)
+      # try to find file_type
+      if file_type.nil?
+        content_types = MIME::Types.type_for(file_path)
+        file_type = content_types.first.content_type if content_types.any?
+      end
+
+      # if file_type not found in previous step
+      if file_type.nil?
+        raise("File type not found. Specify a file_type argument.")
+      end
+
+      file_contents = open(file_path) { |f| f.read }
+      encoded = Base64.encode64(file_contents)
+      mime_padding = "data:#{file_type};base64,"
+      mime_padding + encoded
     end
 
+    # this is just an alias for update. leaving here for legacy users.
     def answer_kba(payload: raise("payload is required"))
-      path = create_user_path(user_id: client.user_id)
-      client.patch(path, payload)
+      update(payload: payload)
     end
 
+    # this is just an alias for update. leaving here for legacy users.
+    def add_doc(payload: raise("payload is required"))
+      update(payload: payload)
+    end
+
+    # deprecated
     def attach_file(file_path: raise("file_path is required"))
+      warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
+
       file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
@@ -77,7 +100,10 @@ module SynapsePayRest
       end
     end
 
+    # deprecated
     def attach_file_with_file_type(file_path: raise("file_path is required"), file_type: raise("file_type is required"))
+      warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
+
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }
       encoded = Base64.encode64(file_contents)

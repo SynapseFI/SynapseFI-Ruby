@@ -26,14 +26,15 @@ module SynapsePayRest
     end
 
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil, client_id: nil, client_secret: nil, ip_address: nil)
-      self.user_id  = user_id if user_id
+      # this doesn't really belongs in headers
+      self.user_id = user_id if user_id
+
       config['fingerprint']   = fingerprint if fingerprint
       config['oauth_key']     = oauth_key if oauth_key
       config['client_id']     = client_id if client_id
       config['client_secret'] = client_secret if client_secret
       config['ip_address']    = ip_address if ip_address
     end
-
 
     def post(path, payload)
       response = with_error_handling { RestClient.post(full_url(path), payload.to_json, get_headers) }
