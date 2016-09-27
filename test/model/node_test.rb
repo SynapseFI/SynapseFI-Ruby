@@ -15,7 +15,7 @@ class NodeTest < Minitest::Test
     }
     node = SynapsePayRest::SynapseUsNode.create(args)
 
-    other_instance_vars = [:type, :is_active, :account_id, :balance, :currency,
+    other_instance_vars = [:is_active, :account_id, :balance, :currency,
                            :name_on_account, :allowed]
 
     assert_instance_of SynapsePayRest::SynapseUsNode, node
@@ -45,7 +45,7 @@ class NodeTest < Minitest::Test
     }
     node = SynapsePayRest::AchUsNode.create(args)
 
-    other_instance_vars = [:type, :is_active, :bank_long_name, :name_on_account,
+    other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :allowed]
 
     assert_instance_of SynapsePayRest::AchUsNode, node
@@ -61,5 +61,33 @@ class NodeTest < Minitest::Test
       end
     end
     other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_create_ach_us_via_bank_login
+    args = {
+      user: @user,
+      bank_name: 'bofa',
+      username: 'synapse_nomfa',
+      password: 'test1234'
+    }
+    nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
+                           :allowed, :bank_name, :balance, :currency, :routing_number,
+                           :account_number, :account_class, :account_type]
+
+    assert_instance_of Array, nodes
+
+    nodes.each do |node|
+      assert_instance_of SynapsePayRest::AchUsNode, node
+      assert_equal @user, node.user
+      assert_includes @user.nodes, node
+      # verify instance vars readable and mapped to values
+      other_instance_vars.each { |var| refute_nil node.send(var) }
+    end
+  end
+
+  def test_create_ach_us_via_bank_login_with_mfa_questions
+    skip 'pending'
   end
 end

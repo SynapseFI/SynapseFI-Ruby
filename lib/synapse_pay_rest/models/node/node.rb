@@ -3,7 +3,7 @@ module SynapsePayRest
     attr_reader :user, :id, :nickname, :supp_id, :currency,
                 :account_number, :routing_number, :name_on_account, :address,
                 :bank_name, :bank_id, :bank_pw, :account_number, :routing_number,
-                :type, :account_class, :account_type, :correspondent_routing_number,
+                :account_class, :account_type, :correspondent_routing_number,
                 :correspondent_bank_name, :correspondent_address, :ifsc, :swift,
                 :correspondent_swift, :account_id, :balance, :is_active, :allowed,
                 :bank_long_name
