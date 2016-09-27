@@ -89,7 +89,7 @@ client.users.update(payload: update_payload)
 
 # Add Documents
 
-# use users#encode_attachment to base64 encode a file for inclusion in the payload
+# use Users#encode_attachment to base64 encode a file for inclusion in the payload
 govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
 selfie_attachment  = client.users.encode_attachment(file_path: FILE_PATH)
 
@@ -160,6 +160,7 @@ kba_payload = {
 
 kba_response = client.users.update(payload: kba_payload)
 
+```
 
 ## Node API Calls
 
