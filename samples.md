@@ -68,8 +68,6 @@ oauth_payload = {
 
 oauth_response = client.users.refresh(payload: oauth_payload)
 
-```
-
 
 # Update a User
 
@@ -136,10 +134,9 @@ add_docs_response = client.users.update(payload: add_documents_payload)
 
 # Answer KBA Questions
 
-kyc_document = add_docs_response['documents'].last   # most recently submitted set of KYC docs
+kyc_document = add_docs_response['documents'].last   # to get most recent (or only) submitted set of KYC docs
 
-# the meta field will be present if there are KBA questions
-ssn = kyc_document['virtual_docs'].find { |doc| doc['document_type'] == 'SSN' && doc['status'] == 'SUBMITTED|MFA_PENDING'}
+ssn = kyc_document['virtual_docs'].find { |doc| doc['status'] == 'SUBMITTED|MFA_PENDING'}
 
 kba_payload = {
   'documents' => [{
