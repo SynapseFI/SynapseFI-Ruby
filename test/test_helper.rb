@@ -18,7 +18,6 @@ def test_client
     'fingerprint' => ENV.fetch('FINGERPRINT'),
     'client_id' => ENV.fetch('CLIENT_ID'),
     'client_secret' => ENV.fetch('CLIENT_SECRET'),
-    'ip_address' => ENV.fetch('IP_ADDRESS'),
     'development_mode' => true
   }
 
@@ -30,7 +29,6 @@ def client_with_user
     'fingerprint' => ENV.fetch('FINGERPRINT'),
     'client_id' => ENV.fetch('CLIENT_ID'),
     'client_secret' => ENV.fetch('CLIENT_SECRET'),
-    'ip_address' => ENV.fetch('IP_ADDRESS'),
     'development_mode' => true
   }
 
