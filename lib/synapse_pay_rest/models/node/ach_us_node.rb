@@ -1,7 +1,7 @@
 module SynapsePayRest
   class AchUsNode < Node
-    attr_reader 
 
+    # TODO: add error message when trying to perform methods on unverified node
     class << self
       def payload_for_create(nickname:, account_number:, routing_number:, 
         account_type:, account_class:, **options)
@@ -37,7 +37,7 @@ module SynapsePayRest
           account_type:    node_data['info']['type'],
           name_on_account: node_data['info']['name_on_account'],
           nickname:        node_data['info']['nickname'],
-          allowed:         node_data['allowed'],
+          permissions:     node_data['allowed'],
           supp_id:         node_data['extra']['supp_id']
         )
         user.nodes << node
@@ -50,7 +50,12 @@ module SynapsePayRest
         payload = payload_for_create_via_bank_login(bank_name: bank_name, username: username, password: password)
         user.authenticate
         response = user.client.nodes.add(payload: payload)
-        create_from_bank_login_response(user, response)
+        # MFA questions
+        if response['mfa']
+          create_unverified_node(user, response)
+        else
+          create_from_bank_login_response(user, response)
+        end
       end
 
       def payload_for_create_via_bank_login(bank_name:, username:, password:)
@@ -80,21 +85,47 @@ module SynapsePayRest
             nickname:        node_data['info']['nickname'],
             balance:         node_data['info']['balance']['amount'],
             currency:        node_data['info']['balance']['currency'],
-            allowed:         node_data['allowed'],
-            supp_id:         node_data['extra']['supp_id']
+            permissions:     node_data['allowed'],
+            supp_id:         node_data['extra']['supp_id'],
+            verified:        true
           )
         end
         user.nodes.push(*nodes)
         nodes
       end
+      
+      def create_unverified_node(user, response)
+        unverified_node = UnverifiedNode.new(
+          user: user,
+          mfa_access_token: response['mfa']['access_token'],
+          mfa_message:      response['mfa']['message'],
+          mfa_verified:     false
+        )
+        user.nodes << unverified_node
+        unverified_node
+      end
     end
 
-    def verify_mfa
-      # TODO
+    def initialize(**options)
+      options.each { |key, value| instance_variable_set("@#{key}", value) }
     end
 
-    def verify_microdeposits
-      # TODO
+    # TODO: raise error if already verified
+    # TODO: raise error if too many attempts
+    # TODO: validate inputs as floats
+    def verify_microdeposits(amount1:, amount2:)
+      payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
+      response = user.client.nodes.patch(node_id: id, payload: payload)
+      @permissions = response['allowed']
+      self
+    end
+
+    private
+
+    def verify_microdeposits_payload(amount1:, amount2:)
+      {
+        'micro' => [amount1, amount2]
+      }
     end
   end
 end

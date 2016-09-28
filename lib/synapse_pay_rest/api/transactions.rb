@@ -9,16 +9,6 @@ module SynapsePayRest
       @client = client
     end
 
-    def create(node_id: raise('node_id is required'), payload: raise('payload is required'))
-      path = create_transaction_path(node_id: node_id)
-      client.post(path, payload)
-    end
-
-    def update(node_id: raise('node_id is required'), trans_id: raise('trans_id is required'), payload: raise('payload is required'))
-      path = create_transaction_path(node_id: node_id, trans_id: trans_id)
-      client.patch(path, payload)
-    end
-
     # if trans_id is nil then returns all transactions
     def get(node_id: raise('node_id is required'), trans_id: nil, **options)
       path = create_transaction_path(node_id: node_id, trans_id: trans_id)
@@ -33,6 +23,16 @@ module SynapsePayRest
       # https://github.com/rest-client/rest-client#usage-raw-url
       path += '?' + params.join('&') if params.any?
       client.get(path)
+    end
+
+    def create(node_id: raise('node_id is required'), payload: raise('payload is required'))
+      path = create_transaction_path(node_id: node_id)
+      client.post(path, payload)
+    end
+
+    def update(node_id: raise('node_id is required'), trans_id: raise('trans_id is required'), payload: raise('payload is required'))
+      path = create_transaction_path(node_id: node_id, trans_id: trans_id)
+      client.patch(path, payload)
     end
 
     def delete(node_id: raise('node_id is required'), trans_id: raise('trans_id is required'))

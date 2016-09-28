@@ -64,7 +64,7 @@ class NodesTest < Minitest::Test
       }
     }
     add_response = @client.nodes.add(payload: add_payload)
-
+    
     assert_equal add_response['http_code'], '200'
     assert_equal add_response['error_code'], '0'
 

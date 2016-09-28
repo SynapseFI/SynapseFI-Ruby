@@ -29,7 +29,7 @@ module SynapsePayRest
           currency:        node_data['info']['balance']['currency'],
           name_on_account: node_data['info']['name_on_account'],
           nickname:        node_data['info']['nickname'],
-          allowed:         node_data['allowed'],
+          permissions:     node_data['allowed'],
           supp_id:         node_data['extra']['supp_id']
         )
         user.nodes << node

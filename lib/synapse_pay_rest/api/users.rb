@@ -14,14 +14,6 @@ module SynapsePayRest
       @client = client
     end
 
-    # TODO: refactor to automate oauth
-    def refresh(payload: raise('payload is required'))
-      path = "/oauth/#{@client.user_id}"
-      response = @client.post(path, payload)
-      client.update_headers(oauth_key: response['oauth_key']) if response['oauth_key']
-      response
-    end
-
     def get(user_id: nil, **options)
       path = create_user_path(user_id: user_id)
 
@@ -44,16 +36,24 @@ module SynapsePayRest
       client.get(path)
     end
 
-    def update(payload: raise('payload is required'))
-      path = create_user_path(user_id: client.user_id)
-      response = client.patch(path, payload)
+    def create(payload: raise('payload is required'))
+      path = create_user_path
+      response = client.post(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
       response
     end
 
-    def create(payload: raise('payload is required'))
-      path = create_user_path
-      response = client.post(path, payload)
+    # TODO: refactor to automate oauth
+    def refresh(payload: raise('payload is required'))
+      path = "/oauth/#{@client.user_id}"
+      response = @client.post(path, payload)
+      client.update_headers(oauth_key: response['oauth_key']) if response['oauth_key']
+      response
+    end
+
+    def update(payload: raise('payload is required'))
+      path = create_user_path(user_id: client.user_id)
+      response = client.patch(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
       response
     end

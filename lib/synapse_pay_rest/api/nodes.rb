@@ -9,11 +9,6 @@ module SynapsePayRest
       @client = client
     end
 
-    def add(payload: raise('payload is required'))
-      path = create_node_path
-      client.post(path, payload)
-    end
-
     # if node_id is nil then returns all nodes
     def get(node_id: nil, **options)
       # TODO: Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
@@ -29,22 +24,35 @@ module SynapsePayRest
       client.get(path)
     end
 
-    # TODO: separate this into different methods
-    def verify(node_id: nil, payload: raise('payload is required'))
-      if node_id
-        # verify microdeposits
-        path = create_node_path(node_id: node_id)
-        @client.patch(path, payload)
-      else
-        # verify MFA question(s)
-        path = create_node_path
-        @client.post(path, payload)
-      end
+    def post(payload: raise('payload is required'))
+      path = create_node_path
+      client.post(path, payload)
+    end
+
+    def patch(node_id: raise('node_id is required'), payload: raise('payload is required'))
+      path = create_node_path(node_id: node_id)
+      @client.patch(path, payload)
     end
 
     def delete(node_id: raise('node_id is required'))
       path = create_node_path(node_id: node_id)
       client.delete(path)
+    end
+
+    # alias for post
+    def add(payload: raise('payload is required'))
+      post(payload: payload)
+    end
+
+    # just forwards args to other methods now
+    def verify(node_id: nil, payload: raise('payload is required'))
+      if node_id
+        # verify microdeposits
+        patch(node_id: node_id, payload: payload)
+      else
+        # verify MFA question(s)
+        post(payload: payload)
+      end
     end
 
     private
