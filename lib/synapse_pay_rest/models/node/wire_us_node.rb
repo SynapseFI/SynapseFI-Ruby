@@ -1,4 +1,4 @@
 module SynapsePayRest
-  class WireUSNode < WireNode
+  class WireUsNode < WireNode
   end
 end

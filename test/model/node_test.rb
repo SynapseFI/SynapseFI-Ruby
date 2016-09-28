@@ -134,4 +134,94 @@ class NodeTest < Minitest::Test
   def test_create_ach_us_via_bank_login_with_wrong_mfa_answers
     skip 'pending'
   end
+
+  def test_find
+    node = Node.find(user: @user, id: @user.nodes.first.id)
+    assert_kind_of SynapsePayRest::Node, node
+    assert_instance_of SynapsePayRest::AchUsNode, node
+    # TODO: probably need to overwrite existing node in user.nodes
+    assert_equal @user.nodes.first, node
+  end
+
+  def test_all
+    # create 2 nodes on @user
+    args = {
+      user: @user,
+      bank_name: 'bofa',
+      username: 'synapse_nomfa',
+      password: 'test1234'
+    }
+    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    nodes = SynapsePayRest::Node.all(user: @user)
+
+    assert_equal 2, nodes.length
+    nodes.each do |node|
+      assert_kind_of SynapsePayRest::Node, node
+      assert_instance_of SynapsePayRest::AchUsNode, node
+      assert_includes @user.nodes, node
+    end
+  end
+
+  def test_all_with_page_and_per_page
+    # create 2 nodes on @user
+    args = {
+      user: @user,
+      bank_name: 'bofa',
+      username: 'synapse_nomfa',
+      password: 'test1234'
+    }
+    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    page1 = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
+    assert_equal 1, page1.length
+    assert_kind_of SynapsePayRest::Node, page1.first
+    assert_instance_of SynapsePayRest::AchUsNode, page1.first
+    # TODO: if caching removed, then need to change this
+    assert_includes @user.nodes, page1.first
+
+    page2 = SynapsePayRest::Node.all(user: @user, page: 2, per_page: 1)
+    assert_equal 1, page2.length
+    assert_kind_of SynapsePayRest::Node, page2.first
+    assert_instance_of SynapsePayRest::AchUsNode, page2.first
+    # TODO: if caching removed, then need to change this
+    assert_includes @user.nodes, page2.first
+    refute_equal page1.first.id, page2.first.id
+
+    long_page = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 2)
+    assert_equal 2, long_page.length
+  end
+
+  # TODO: test with more types
+  def test_by_type
+    # create 2 nodes on @user
+    args = {
+      user: @user,
+      bank_name: 'bofa',
+      username: 'synapse_nomfa',
+      password: 'test1234'
+    }
+    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    ach_us_results = SynapsePayRest::Node.by_type(user: @user, type: 'ACH-US')
+    assert_equal 2, ach_us_results.length
+
+    synapse_us_results = SynapsePayRest::Node.by_type(user: @user, type: 'SYNAPSE-US')
+    assert_empty synapse_us_results.length
+  end
+
+  def test_all_with_no_nodes
+    nodes = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
+    assert_empty nodes
+  end
+
+  def test_destroy
+    user = test_user_with_two_nodes
+
+    assert_equal 2, user.nodes.length
+    user.nodes.first.destroy
+    assert_equal 1, user.nodes.length
+    user.nodes.first.destroy
+    assert_empty user.nodes
+  end
 end

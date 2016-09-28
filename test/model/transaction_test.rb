@@ -1,15 +1,11 @@
-# require 'test_helper'
+require 'test_helper'
 
-# class TransactionTest < Minitest::Test
-  # TODO: test ACH return scenarios
-#   def setup
-#   end
+class TransactionTest < Minitest::Test
+  def test_create
+    skip 'pending'
+  end
 
-#   def test_user_create_node(node)
-#   end
-
-#   def test_user_nodes
-
-#     assert_instance_of SynapsePayRest::Node, node_list.first
-#   end
-# end
+  def test_ach_returns
+    skip 'pending'
+  end
+end

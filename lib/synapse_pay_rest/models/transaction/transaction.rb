@@ -1,5 +1,11 @@
 module SynapsePayRest
   class Transaction
-    # TODO: handle ach return codes
+    class << self
+      def create
+      end
+    end
+
+    def initialize(**options)
+    end
   end
 end

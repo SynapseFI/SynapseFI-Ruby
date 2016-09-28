@@ -246,3 +246,15 @@ def test_user_with_base_document_with_three_documents
   user.create_base_document(args)
   user
 end
+
+def test_user_with_two_nodes
+  user = test_user
+  args = {
+    user: user,
+    bank_name: 'bofa',
+    username: 'synapse_nomfa',
+    password: 'test1234'
+  }
+  nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+  user
+end

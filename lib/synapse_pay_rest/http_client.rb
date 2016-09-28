@@ -73,6 +73,8 @@ module SynapsePayRest
       # to be parsable by JSON. The only one that should be captured are the
       # are the HTTP Client responses.
       # For example, doesn't handle 404 (e.g. when searchin a user_id that doesn't exist)
+      # doesn't handle #<RestClient::Exceptions::OpenTimeout: Timed out connecting to server>
+      # #<Errno::ECONNREFUSED:0x007fcc2519c820>
       case e.response.code
       when 400
         return e.response

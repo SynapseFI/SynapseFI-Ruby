@@ -91,6 +91,10 @@ class UserTest < Minitest::Test
     assert_instance_of Array, user_instance.legal_names
   end
 
+  def test_all_with_no_users
+    skip 'pending'
+  end
+
   def test_all_with_page
     page1 = SynapsePayRest::User.all(client: test_client, page: 1)
     page2 = SynapsePayRest::User.all(client: test_client, page: 2)

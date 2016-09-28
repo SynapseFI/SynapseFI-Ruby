@@ -106,10 +106,6 @@ module SynapsePayRest
       end
     end
 
-    def initialize(**options)
-      options.each { |key, value| instance_variable_set("@#{key}", value) }
-    end
-
     # TODO: raise error if already verified
     # TODO: raise error if too many attempts
     # TODO: validate inputs as floats
