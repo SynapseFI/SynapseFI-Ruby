@@ -199,7 +199,7 @@ def test_virtual_document
   )
 end
 
-def test_kyc_base_info
+def test_base_document_base_info
   {
     user: test_user,
     email: 'piper@pie.com',
@@ -220,29 +220,29 @@ def test_kyc_base_info
   }
 end
 
-def test_kyc_base_info_with_three_documents
-  test_kyc_base_info.merge({
+def test_base_document_base_info_with_three_documents
+  test_base_document_base_info.merge({
     physical_documents: [test_physical_document],
     social_documents: [test_social_document],
     virtual_documents: [test_virtual_document]
   })
 end
 
-def test_user_with_one_kyc
-  args = test_kyc_base_info
+def test_user_with_one_base_document
+  args = test_base_document_base_info
   args.delete(:user)
-  test_user.create_kyc(args)
+  test_user.create_base_document(args)
 end
 
-def test_kyc_with_three_documents
-  SynapsePayRest::Kyc.create(test_kyc_base_info_with_three_documents)
+def test_base_document_with_three_documents
+  SynapsePayRest::BaseDocument.create(test_base_document_base_info_with_three_documents)
 end
 
-def test_user_with_kyc_with_three_documents
-  args = test_kyc_base_info_with_three_documents
-  # create_kyc does not accept a user argument
+def test_user_with_base_document_with_three_documents
+  args = test_base_document_base_info_with_three_documents
+  # create_base_document does not accept a user argument
   args.delete(:user)
   user = test_user
-  user.create_kyc(args)
+  user.create_base_document(args)
   user
 end

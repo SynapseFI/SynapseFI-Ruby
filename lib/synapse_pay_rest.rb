@@ -15,7 +15,7 @@ require 'synapse_pay_rest/version'
 
 # user-related models
 require 'synapse_pay_rest/models/user/user'
-require 'synapse_pay_rest/models/user/kyc'
+require 'synapse_pay_rest/models/user/base_document'
 require 'synapse_pay_rest/models/user/document'
 require 'synapse_pay_rest/models/user/physical_document'
 require 'synapse_pay_rest/models/user/social_document'

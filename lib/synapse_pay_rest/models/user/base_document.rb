@@ -1,6 +1,6 @@
 module SynapsePayRest
   # TODO: write to_hash methods
-  class Kyc
+  class BaseDocument
     attr_accessor :user, :email, :phone_number, :ip, :name, :alias, :entity_type,
                 :entity_scope, :birth_day, :birth_month, :birth_year,
                 :address_street, :address_city, :address_subdivision,
@@ -14,32 +14,32 @@ module SynapsePayRest
       address_street:, address_city:, address_subdivision:, address_postal_code:,
       address_country_code:, physical_documents: [], social_documents: [],
       virtual_documents: [])
-        kyc = Kyc.new(user: user, email: email, phone_number: phone_number,
+        base_document = BaseDocument.new(user: user, email: email, phone_number: phone_number,
         ip: ip, name: name, alias: binding.local_variable_get(:alias), entity_type: entity_type,
         entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
         birth_year: birth_year, address_street: address_street, address_city: address_city,
         address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
         address_country_code: address_country_code, physical_documents: physical_documents,
         social_documents: social_documents, virtual_documents: virtual_documents)
-        kyc.submit
+        base_document.submit
       end
 
-      # parses multiple kyc documents from response
+      # parses multiple base_documents from response
       def create_from_response(user, response)
-        kycs_data = response['documents']
-        kycs_data.map do |kyc_data|
-          physical_docs = kyc_data['physical_docs'].map do |data|
+        base_documents_data = response['documents']
+        base_documents_data.map do |base_document_data|
+          physical_docs = base_document_data['physical_docs'].map do |data|
             PhysicalDocument.create_from_response_fields(data)
           end
-          social_docs = kyc_data['social_docs'].map do |data|
+          social_docs = base_document_data['social_docs'].map do |data|
             SocialDocument.create_from_response_fields(data)
           end
-          virtual_docs = kyc_data['virtual_docs'].map do |data|
+          virtual_docs = base_document_data['virtual_docs'].map do |data|
             VirtualDocument.create_from_response_fields(data)
           end
 
-          Kyc.new(user: user, id: kyc_data['id'], name: kyc_data['name'],
-            permission_scope: kyc_data['permission_scope'], physical_documents: physical_docs,
+          BaseDocument.new(user: user, id: base_document_data['id'], name: base_document_data['name'],
+            permission_scope: base_document_data['permission_scope'], physical_documents: physical_docs,
             social_documents: social_docs, virtual_documents: virtual_docs)
         end
       end
@@ -53,9 +53,9 @@ module SynapsePayRest
       @social_documents   ||= []
       @virtual_documents  ||= []
 
-      # associate this kyc doc with each doc
+      # associate this base_document doc with each doc
       [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
-        doc.kyc = self
+        doc.base_document = self
       end
     end
     
@@ -71,7 +71,7 @@ module SynapsePayRest
       self
     end
 
-    # TODO: validates changes are valid fields in kyc
+    # TODO: validates changes are valid fields in base_document
     # TODO: handle when user tries to update a new doc instead of existing
     # TODO: important to determine which documents overwrite and which duplicate
     def update(**changes)
@@ -159,12 +159,12 @@ module SynapsePayRest
 
     def update_values_with_response_data(response)
       if id
-        # updated values, find kyc doc by id
-        kyc_fields = response['documents'].find { |doc| doc['id'] == id}
+        # updated values, find base_document doc by id
+        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
       else
-        # first time values, use latest kyc doc if multiple
-        kyc_fields = response['documents'].last
-        self.id = kyc_fields['id']
+        # first time values, use latest base_document doc if multiple
+        base_document_fields = response['documents'].last
+        self.id = base_document_fields['id']
         self
       end
     end
@@ -172,31 +172,31 @@ module SynapsePayRest
     # TODO: move some of this logic to Document
     def update_document_values_with_response_data(response)
       if id
-        # updated values, find kyc doc by id. id 
-        kyc_fields = response['documents'].find { |doc| doc['id'] == id}
+        # updated values, find base_document doc by id. id 
+        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
         # sometimes id from API changes :(
-        if kyc_fields.nil? 
-          kyc_fields = response['documents'].last
-          self.id = kyc_fields['id']
+        if base_document_fields.nil? 
+          base_document_fields = response['documents'].last
+          self.id = base_document_fields['id']
         end
       else
-        # first time values, use latest kyc doc if multiple
-        kyc_fields = response['documents'].last
-        self.id = kyc_fields['id']
+        # first time values, use latest base_document doc if multiple
+        base_document_fields = response['documents'].last
+        self.id = base_document_fields['id']
       end
 
       [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
 
         if doc.is_a? PhysicalDocument
-          same_types = kyc_fields['physical_docs'].select do |resp_doc|
+          same_types = base_document_fields['physical_docs'].select do |resp_doc|
             resp_doc['document_type'] == doc.type
           end
         elsif doc.is_a? SocialDocument
-          same_types = kyc_fields['social_docs'].select do |resp_doc|
+          same_types = base_document_fields['social_docs'].select do |resp_doc|
             resp_doc['document_type'] == doc.type
           end
         elsif doc.is_a? VirtualDocument
-          same_types = kyc_fields['virtual_docs'].select do |resp_doc|
+          same_types = base_document_fields['virtual_docs'].select do |resp_doc|
             resp_doc['document_type'] == doc.type
           end
         end
@@ -215,7 +215,7 @@ module SynapsePayRest
         if [:physical_documents, :social_documents, :virtual_documents].include? field
           new_value.each do |doc|
             doc.id = id
-            doc.kyc = self
+            doc.base_document = self
             physical_documents << doc if doc.is_a? PhysicalDocument
             social_documents << doc if doc.is_a? SocialDocument
             virtual_documents << doc if doc.is_a? VirtualDocument

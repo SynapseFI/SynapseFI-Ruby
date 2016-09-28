@@ -1,8 +1,8 @@
 module SynapsePayRest
   class User
     attr_reader :client, :logins, :phone_numbers, :legal_names, :note, :supp_id,
-                :is_business, :kyc_tag, :nodes
-    attr_accessor :id, :refresh_token, :kycs
+                :is_business, :base_document_tag, :nodes
+    attr_accessor :id, :refresh_token, :base_documents
 
     class << self
       # TODO: simplify the logins argument
@@ -49,7 +49,7 @@ module SynapsePayRest
         extra['note']        = options[:note] if options[:note]
         extra['supp_id']     = options[:supp_id] if options[:supp_id]
         extra['is_business'] = options[:is_business] if options[:is_business]
-        extra['kyc_tag']     = options[:kyc_tag] if options[:kyc_tag]
+        extra['base_document_tag']     = options[:base_document_tag] if options[:base_document_tag]
         payload['extra'] = extra if extra.any?
 
         payload
@@ -67,12 +67,12 @@ module SynapsePayRest
           note:          response['extra']['note'],
           supp_id:       response['extra']['supp_id'],
           is_business:   response['extra']['is_business'],
-          kyc_tag:       response['extra']['kyc_tag']
+          base_document_tag:       response['extra']['base_document_tag']
         )
 
         unless response['documents'].empty?
-          kycs = Kyc.create_from_response(user, response)
-          user.kycs = kycs
+          base_documents = BaseDocument.create_from_response(user, response)
+          user.base_documents = base_documents
         end
 
         user
@@ -82,7 +82,7 @@ module SynapsePayRest
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @client.http_client.user_id = @id
-      @kycs  ||= []
+      @base_documents  ||= []
       @nodes ||= []
     end
 
@@ -97,21 +97,21 @@ module SynapsePayRest
 
     # TODO: refactor
     # TODO: validate arg format
-    def create_kyc(email:, phone_number:, ip:, name:,
+    def create_base_document(email:, phone_number:, ip:, name:,
       alias:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
       address_street:, address_city:, address_subdivision:, address_postal_code:,
       address_country_code:, physical_documents: [], social_documents: [],
       virtual_documents: [])
-      kyc = Kyc.create(user: self, email: email, phone_number: phone_number,
+      base_document = BaseDocument.create(user: self, email: email, phone_number: phone_number,
         ip: ip, name: name, alias: binding.local_variable_get(:alias), entity_type: entity_type,
         entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
         birth_year: birth_year, address_street: address_street, address_city: address_city,
         address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
         address_country_code: address_country_code, physical_documents: physical_documents,
         social_documents: social_documents, virtual_documents: virtual_documents)
-      @kycs << kyc
+      @base_documents << base_document
 
-      kyc
+      base_document
     end
 
     def authenticate

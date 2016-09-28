@@ -53,7 +53,7 @@ class UserTest < Minitest::Test
   end
 
   def test_find
-    user = test_user_with_kyc_with_three_documents
+    user = test_user_with_base_document_with_three_documents
     user_instance = SynapsePayRest::User.find(client: test_client, id: user.id)
     user_data_from_api = test_client.users.get(user_id: user.id)
 
@@ -61,18 +61,18 @@ class UserTest < Minitest::Test
     assert_equal user_data_from_api['_id'], user_instance.id
     assert_equal user_data_from_api['logins'], user_instance.logins
     # confirm documents survive being submitted and fetched
-    refute_empty user_instance.kycs
-    refute_nil user_instance.kycs.first.id
-    refute_empty user_instance.kycs.first.social_documents
-    refute_empty user_instance.kycs.first.physical_documents
-    refute_empty user_instance.kycs.first.virtual_documents
+    refute_empty user_instance.base_documents
+    refute_nil user_instance.base_documents.first.id
+    refute_empty user_instance.base_documents.first.social_documents
+    refute_empty user_instance.base_documents.first.physical_documents
+    refute_empty user_instance.base_documents.first.virtual_documents
     # confirm documents contain all data from response
-    refute_nil user_instance.kycs.first.virtual_documents.first.id
-    refute_nil user_instance.kycs.first.virtual_documents.first.status
-    refute_nil user_instance.kycs.first.virtual_documents.first.last_updated
-    refute_nil user_instance.kycs.first.virtual_documents.first.type
+    refute_nil user_instance.base_documents.first.virtual_documents.first.id
+    refute_nil user_instance.base_documents.first.virtual_documents.first.status
+    refute_nil user_instance.base_documents.first.virtual_documents.first.last_updated
+    refute_nil user_instance.base_documents.first.virtual_documents.first.type
     # 3 + 1 because the phone number from base doc is auto-added to documents
-    assert_equal 1, user_instance.kycs.first.virtual_documents.count
+    assert_equal 1, user_instance.base_documents.first.virtual_documents.count
   end
 
   def test_find_user_with_non_existent_id_raises_error
@@ -152,20 +152,20 @@ class UserTest < Minitest::Test
     refute_includes api_response2['phone_numbers'], new_phone_number
   end
 
-  def test_create_kyc
+  def test_create_base_document
     user = test_user
-    kyc_info = test_kyc_base_info
-    kyc_info.delete(:user)
+    base_document_info = test_base_document_base_info
+    base_document_info.delete(:user)
     social_doc = test_social_document
-    kyc_info[:social_documents] = [social_doc]
-    user.create_kyc(kyc_info)
+    base_document_info[:social_documents] = [social_doc]
+    user.create_base_document(base_document_info)
 
-    refute_empty user.kycs
-    assert_equal social_doc, user.kycs.first.social_documents.first
-    assert_equal user, user.kycs.first.user
+    refute_empty user.base_documents
+    assert_equal social_doc, user.base_documents.first.social_documents.first
+    assert_equal user, user.base_documents.first.user
   end
 
-  def test_with_multiple_kycs
+  def test_with_multiple_base_documents
     skip 'pending'
   end
 

@@ -7,7 +7,7 @@ class NodeTest < Minitest::Test
 
   # TODO: test with both maximum and minimum fields
   # TODO: run through all node types when finished
-  def test_create_synapse_us
+  def test_create_synapse_us_node
     args = {
       user: @user,
       nickname: 'Test Synapse Account',

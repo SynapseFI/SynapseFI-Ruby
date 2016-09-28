@@ -126,7 +126,7 @@ class UsersTest < Minitest::Test
     refute_nil response['_id']
   end
 
-  def test_add_documents_via_kyc2
+  def test_add_documents_via_base_document2
     govt_id_attachment = @client.users.encode_attachment(file_path: fixture_path('id.png'))
     selfie_attachment = @client.users.encode_attachment(file_path: fixture_path('id.png'))
 
@@ -167,16 +167,16 @@ class UsersTest < Minitest::Test
     }
 
     response = @client.users.update(payload: add_documents_payload)
-    kyc = response['documents'].last
+    base_document = response['documents'].last
 
-    assert_operator kyc.length, :>=, 4
-    assert kyc['physical_docs'].any? { |doc| doc['document_type'] == 'GOVT_ID' }
-    assert kyc['physical_docs'].any? { |doc| doc['document_type'] == 'SELFIE' }
-    assert kyc['virtual_docs'].any? { |doc| doc['document_type'] == 'SSN' }
-    assert kyc['social_docs'].any? { |doc| doc['document_type'] == 'FACEBOOK' }
+    assert_operator base_document.length, :>=, 4
+    assert base_document['physical_docs'].any? { |doc| doc['document_type'] == 'GOVT_ID' }
+    assert base_document['physical_docs'].any? { |doc| doc['document_type'] == 'SELFIE' }
+    assert base_document['virtual_docs'].any? { |doc| doc['document_type'] == 'SSN' }
+    assert base_document['social_docs'].any? { |doc| doc['document_type'] == 'FACEBOOK' }
   end
 
-  def test_add_documents_via_kyc2_with_kba
+  def test_add_documents_via_base_document2_with_kba
     govt_id_attachment = @client.users.encode_attachment(file_path: fixture_path('id.png'))
     selfie_attachment = @client.users.encode_attachment(file_path: fixture_path('id.png'))
 
@@ -217,20 +217,20 @@ class UsersTest < Minitest::Test
     }
 
     add_docs_response = @client.users.update(payload: add_documents_payload)
-    kyc = add_docs_response['documents'].last
+    base_document = add_docs_response['documents'].last
 
-    assert_operator kyc.length, :>=, 4
-    assert kyc['physical_docs'].any? { |doc| doc['document_type'] == 'GOVT_ID' }
-    assert kyc['physical_docs'].any? { |doc| doc['document_type'] == 'SELFIE' }
-    assert kyc['virtual_docs'].any? { |doc| doc['document_type'] == 'SSN' }
-    assert kyc['social_docs'].any? { |doc| doc['document_type'] == 'FACEBOOK' }
+    assert_operator base_document.length, :>=, 4
+    assert base_document['physical_docs'].any? { |doc| doc['document_type'] == 'GOVT_ID' }
+    assert base_document['physical_docs'].any? { |doc| doc['document_type'] == 'SELFIE' }
+    assert base_document['virtual_docs'].any? { |doc| doc['document_type'] == 'SSN' }
+    assert base_document['social_docs'].any? { |doc| doc['document_type'] == 'FACEBOOK' }
 
-    ssn = kyc['virtual_docs'].find { |doc| doc['document_type'] == 'SSN' && doc['status'] == 'SUBMITTED|MFA_PENDING'}
+    ssn = base_document['virtual_docs'].find { |doc| doc['document_type'] == 'SSN' && doc['status'] == 'SUBMITTED|MFA_PENDING'}
     assert_equal 'SUBMITTED|MFA_PENDING', ssn['status']
 
     kba_payload = {
       'documents' => [{
-        'id' => kyc['id'],
+        'id' => base_document['id'],
         'virtual_docs' => [{
           'id' => ssn['id'],
           'meta' => {

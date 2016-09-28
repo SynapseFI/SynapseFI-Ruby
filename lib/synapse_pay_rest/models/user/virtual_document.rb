@@ -26,11 +26,11 @@ module SynapsePayRest
     end
 
     def submit_kba
-      user = kyc.user
+      user = base_document.user
       response = user.client.users.update(payload: payload_for_kba)
 
-      kyc_info = response['documents'].find { |d| d['id'] == kyc.id }
-      ssn_docs = kyc_info['virtual_docs'].select { |doc_info| doc_info['document_type'] == 'SSN' }
+      base_document_info = response['documents'].find { |d| d['id'] == base_document.id }
+      ssn_docs = base_document_info['virtual_docs'].select { |doc_info| doc_info['document_type'] == 'SSN' }
       ssn_doc_info = ssn_docs.max_by { |doc_info| doc_info['last_updated'] }
       update_from_response_fields(ssn_doc_info)
 
@@ -49,7 +49,7 @@ module SynapsePayRest
     def payload_for_kba
       {
         'documents' => [{
-          'id' => kyc.id,
+          'id' => base_document.id,
           'virtual_docs' => [{
             'id' => id,
             'meta' => {

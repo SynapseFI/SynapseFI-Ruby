@@ -2,7 +2,7 @@ module SynapsePayRest
   # this is for social/physical/virtual documents
   class Document
     # TODO: validate category, values, and type based on possible options (different based on whether created or fetched)
-    attr_accessor :kyc, :status, :id, :type, :value, :last_updated
+    attr_accessor :base_document, :status, :id, :type, :value, :last_updated
 
     class << self
       def create(type:, value:)
