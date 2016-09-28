@@ -31,23 +31,23 @@ users_response = client.users.get
 # Create User
 
 create_payload = {
-  "logins" =>  [
+  'logins' =>  [
     {
-      "email" =>  "rubyTest@synapsepay.com",
-      "password" =>  "test1234",
-      "read_only" => false
+      'email' =>  'rubyTest@synapsepay.com',
+      'password' =>  'test1234',
+      'read_only' => false
     }
   ],
-  "phone_numbers" =>  [
-    "901.111.1111"
+  'phone_numbers' =>  [
+    '901.111.1111'
   ],
-  "legal_names" =>  [
-    "RUBY TEST USER"
+  'legal_names' =>  [
+    'RUBY TEST USER'
   ],
-  "extra" =>  {
-    "note" =>  "Interesting user",
-    "supp_id" =>  "122eddfgbeafrfvbbb",
-    "is_business" =>  false
+  'extra' =>  {
+    'note' =>  'Interesting user',
+    'supp_id' =>  '122eddfgbeafrfvbbb',
+    'is_business' =>  false
   }
 }
 
@@ -63,7 +63,7 @@ user_response = client.users.get(user_id: create_user_response['_id'])
 # Refresh User
 
 oauth_payload = {
-  "refresh_token" => user_response['refresh_token']
+  'refresh_token' => user_response['refresh_token']
 }
 
 oauth_response = client.users.refresh(payload: oauth_payload)
@@ -72,15 +72,15 @@ oauth_response = client.users.refresh(payload: oauth_payload)
 # Update a User
 
 update_payload = {
-  "refresh_token" => user_response['refresh_token'],
-  "update" => {
-    "login" => {
-      "email" => "test2ruby@email.com",
-      "password" => "test1234",
-      "read_only" => true
+  'refresh_token' => user_response['refresh_token'],
+  'update' => {
+    'login' => {
+      'email' => 'test2ruby@email.com',
+      'password' => 'test1234',
+      'read_only' => true
     },
-    "phone_number" => "9019411111",
-    "legal_name" => "Some new name"
+    'phone_number' => '9019411111',
+    'legal_name' => 'Some new name'
   }
 }
 
@@ -194,12 +194,12 @@ nodes_response = client.nodes.get
 # Add SYNAPSE-US Node
 
 synapse_node_payload = {
-  "type" => "SYNAPSE-US",
-  "info" => {
-    "nickname" => "My Synapse Wallet"
+  'type' => 'SYNAPSE-US',
+  'info' => {
+    'nickname' => 'My Synapse Wallet'
   },
-  "extra" => {
-    "supp_id" => "123sa"
+  'extra' => {
+    'supp_id' => '123sa'
   }
 }
 
@@ -209,11 +209,11 @@ synapse_node_response = client.nodes.add(payload: synapse_node_payload)
 # Add ACH-US node through account login
 
 login_payload = {
-  "type" => "ACH-US",
-  "info" => {
-    "bank_id" => "synapse_good",
-    "bank_pw" => "test1234",
-    "bank_name" => "fake"
+  'type' => 'ACH-US',
+  'info' => {
+    'bank_id' => 'synapse_good',
+    'bank_pw' => 'test1234',
+    'bank_name' => 'fake'
   }
 }
 
@@ -223,8 +223,8 @@ login_response = client.nodes.add(payload: login_payload)
 # Verify ACH-US Node via MFA
 
 mfa_payload = {
-  "access_token" => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
-  "mfa_answer" => "test_answer"
+  'access_token' => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
+  'mfa_answer' => 'test_answer'
 }
 
 mfa_response = client.nodes.verify(payload: mfa_payload)
@@ -233,17 +233,17 @@ mfa_response = client.nodes.verify(payload: mfa_payload)
 # Add ACH-US Node through Account and Routing Number Details
 
 acct_rout_payload = {
-  "type" => "ACH-US",
-  "info" => {
-    "nickname" => "Ruby Library Savings Account",
-    "name_on_account" => "Ruby Library",
-    "account_num" => "72347235423",
-    "routing_num" => "051000017",
-    "type" => "PERSONAL",
-    "class" => "CHECKING"
+  'type' => 'ACH-US',
+  'info' => {
+    'nickname' => 'Ruby Library Savings Account',
+    'name_on_account' => 'Ruby Library',
+    'account_num' => '72347235423',
+    'routing_num' => '051000017',
+    'type' => 'PERSONAL',
+    'class' => 'CHECKING'
   },
-  "extra" => {
-    "supp_id" => "123sa"
+  'extra' => {
+    'supp_id' => '123sa'
   }
 }
 
@@ -253,7 +253,7 @@ acct_rout_response = client.nodes.add(payload: acct_rout_payload)
 # Verify ACH-US Node via Micro-Deposits
 
 micro_payload = {
-  "micro" => [0.1,0.1]
+  'micro' => [0.1,0.1]
 }
 
 micro_response = client.nodes.verify(node_id: NODE_ID, payload: micro_payload)
@@ -277,26 +277,25 @@ transactions_response = client.trans.get(node_id: NODE_ID)
 #Create a Transaction
 
 trans_payload = {
-  "to" => {
-    "type" => "SYNAPSE-US",
-    "id" => "560adb4e86c27331bb5ac86e"
+  'to' => {
+    'type' => 'SYNAPSE-US',
+    'id' => '560adb4e86c27331bb5ac86e'
   },
-  "amount" => {
-    "amount" => 1.10,
-    "currency" => "USD"
+  'amount' => {
+    'amount' => 1.10,
+    'currency' => 'USD'
   },
-  "extra" => {
-    "supp_id" => "1283764wqwsdd34wd13212",
-    "note" => "Deposit to bank account",
-    "webhook" => "http => //requestb.in/q94kxtq9",
-    "process_on" => 1,
-    "ip" => "192.168.0.1"
+  'extra' => {
+    'supp_id' => '1283764wqwsdd34wd13212',
+    'note' => 'Deposit to bank account',
+    'process_on' => 1,
+    'ip' => '192.168.0.1'
   },
-  "fees" => [{
-    "fee" => 1.00,
-    "note" => "Facilitator Fee",
-    "to" => {
-      "id" => "55d9287486c27365fe3776fb"
+  'fees' => [{
+    'fee' => 1.00,
+    'note' => 'Facilitator Fee',
+    'to' => {
+      'id' => '55d9287486c27365fe3776fb'
     }
   }]
 }
@@ -312,7 +311,7 @@ transaction_response = client.trans.get(node_id: NODE_ID, trans_id: TRANS_ID)
 # Update Transaction
 
 update_payload = {
-  "comment" =>  "hi"
+  'comment' =>  'hi'
 }
 
 update_response = client.trans.update(node_id: NODE_ID, trans_id: TRANS_ID, payload: update_payload)
