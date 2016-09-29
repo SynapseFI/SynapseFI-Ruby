@@ -66,53 +66,10 @@ module SynapsePayRest
     # TODO: fix this
     def with_error_handling
       yield
-    rescue => e
-      # By the way, this is a really bad idea.
-      # See: https://www.relishapp.com/womply/ruby-style-guide/docs/exceptions
-      # The exceptions should be enumerated. Not all exceptions are going
-      # to be parsable by JSON. The only one that should be captured are the
-      # are the HTTP Client responses.
-      # For example, doesn't handle 404 (e.g. when searchin a user_id that doesn't exist)
-      # doesn't handle #<RestClient::Exceptions::OpenTimeout: Timed out connecting to server>
-      # #<Errno::ECONNREFUSED:0x007fcc2519c820>
-      case e.response.code
-      when 400
-        return e.response
-      when 401
-        return e.response
-      when 409
-        return e.response
-      when 500
-        return e.response
-      when 405
-        return handle_method_not_allowed
-      when 502
-        # Raise a gateway error
-        return handle_gateway_error
-      when 504
-        # Raise a timeout error
-        return handle_timeout_error
-      else
-        # Raise a generic error
-        return handle_unknown_error
-      end
-    end
 
-    def handle_method_not_allowed
-      return {'success' => false, 'reason' => 'The method is not allowed. Check your id parameters.'}.to_json
-    end
-
-    def handle_gateway_error
-      return {'success' => false, 'reason' => 'The gateway appears to be down.  Check synapsepay.com or try again later.'}.to_json
-    end
-
-    def handle_timeout_error
-      return {'success' => false, 'reason' => 'A timeout has occurred.'}.to_json
-    end
-
-    # these are bad. should let the user know the http error.
-    def handle_unknown_error
-      return {'success' => false, 'reason' => 'Unknown error in library. Contact synapsepay.'}.to_json
+    rescue RestClient::Exception => e
+      body = JSON.parse(e.response.body)
+      raise Error.error_from_response(body, e.response.code)
     end
   end
 end
