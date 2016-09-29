@@ -1,6 +1,7 @@
 module SynapsePayRest
   class Node
     # TODO: this seems janky but there is a circular dep otherwise w/ the current implementation
+    # TODO: check out how it's done in error.rb
     require 'synapse_pay_rest/models/node/synapse_node'
     require 'synapse_pay_rest/models/node/synapse_us_node.rb'
     require 'synapse_pay_rest/models/node/synapse_ind_node.rb'

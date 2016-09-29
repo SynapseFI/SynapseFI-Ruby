@@ -33,6 +33,7 @@ class NodeTest < Minitest::Test
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
+  # TODO: handle incorrect credentials
   def test_create_ach_us_via_account_routing_numbers
     args = {
       user: @user,
@@ -72,6 +73,7 @@ class NodeTest < Minitest::Test
     skip 'pending'
   end
 
+  # TOOD: handle incorrect login info
   def test_create_ach_us_via_bank_login
     args = {
       user: @user,

@@ -87,7 +87,7 @@ module SynapsePayRest
         klass.new(message: message, code: error_code, response: body)
       end
 
-    private
+      private
 
       def parse_error(body)
         if body.nil? || body.empty?
@@ -96,7 +96,6 @@ module SynapsePayRest
           [body['error']['en'], body['error_code']]
         end
       end
-
     end
 
     # Initializes a new Error object
