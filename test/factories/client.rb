@@ -29,7 +29,7 @@ end
 
 def test_client_with_node
   client = test_client_with_user
-  refresh_user(client, client.user_id)
+  refresh_user(client, client.client.user_id)
   client.nodes.add(payload: test_ach_us_login_no_mfa_payload)
   client
 end

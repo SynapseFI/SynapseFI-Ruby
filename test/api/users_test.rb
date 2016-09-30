@@ -7,7 +7,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_create
-    response = test_client.users.create(payload: test_users_create_payload)
+    response = @client.users.create(payload: test_users_create_payload)
     refute_nil response['_id']
   end
 
@@ -21,7 +21,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_pagination
-    response = test_client.users.get(page: 2, per_page: 3)
+    response = @client.users.get(page: 2, per_page: 3)
 
     assert_equal '200', response['http_code']
     assert_equal '0', response['error_code']
@@ -30,7 +30,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_query
-    response = test_client.users.get(query: 'Doe')
+    response = @client.users.get(query: 'Doe')
 
     assert_equal '200', response['http_code']
     assert_equal '0', response['error_code']

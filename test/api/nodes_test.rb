@@ -3,19 +3,11 @@ require 'test_helper'
 class NodesTest < Minitest::Test
   def setup
     @client = test_client_with_user
-    @user = refresh_user(@client, @client.user_id)
+    @user   = refresh_user(@client, @client.client.user_id)
   end
 
-  def test_nodes_add_with_bank_login_no_kba
-    payload = {
-      'type' => 'ACH-US',
-      'info' => {
-        'bank_id' => 'synapse_nomfa',
-        'bank_pw' => 'test1234',
-        'bank_name' => 'fake'
-      }
-    }
-    response = @client.nodes.add(payload: payload)
+  def test_nodes_add_with_bank_login_no_mfa
+    response = @client.nodes.add(payload: test_ach_us_login_no_mfa_payload)
 
     assert_equal response['http_code'], '200'
     assert_equal response['error_code'], '0'
@@ -23,56 +15,30 @@ class NodesTest < Minitest::Test
   end
 
   def test_nodes_add_with_bank_login_and_verify_mfa_questions
-    add_payload = {
-      'type' => 'ACH-US',
-      'info' => {
-        'bank_id' => 'synapse_good',
-        'bank_pw' => 'test1234',
-        'bank_name' => 'fake'
-      }
-    }
-    add_response = @client.nodes.add(payload: add_payload)
+    add_response = @client.nodes.add(payload: test_ach_us_login_with_mfa_payload)
 
     assert_equal add_response['http_code'], '202'
     assert_equal add_response['error_code'], '10'
     refute_nil add_response['mfa']
 
-    mfa_payload = {
-      'access_token' => add_response['mfa']['access_token'],
-      'mfa_answer' => 'test_answer'
-    }
-    mfa_response = @client.nodes.verify(payload: mfa_payload)
-    
+    access_token = add_response['mfa']['access_token']
+    mfa_response = @client.nodes.verify(payload: test_mfa_payload(access_token: access_token))
+
     assert_equal mfa_response['http_code'], '200'
     assert_equal mfa_response['error_code'], '0'
     assert_operator mfa_response['nodes'].length, :>, 0
   end
 
-  def test_nodes_add_with_account_and_routing_and_verify_microdeposits
-    add_payload = {
-      'type' => 'ACH-US',
-      'info' => {
-        'nickname' => 'Ruby Library Savings Account',
-        'name_on_account' => 'Ruby Library',
-        'account_num' => '72347235423',
-        'routing_num' => '051000017',
-        'type' => 'PERSONAL',
-        'class' => 'CHECKING'
-      },
-      'extra' => {
-        'supp_id' => '123sa'
-      }
-    }
-    add_response = @client.nodes.add(payload: add_payload)
-    
+  def test_nodes_add_with_account_and_routing_and_verify_with_correct_microdeposits
+    add_response = @client.nodes.add(payload: test_ach_us_manual_payload)
+
     assert_equal add_response['http_code'], '200'
     assert_equal add_response['error_code'], '0'
 
-    microdeposit_payload = {'micro' => [0.1, 0.1]}
     node_id = add_response['nodes'][0]['_id']
     microdeposit_response = @client.nodes.verify(
       node_id: node_id,
-      payload: microdeposit_payload
+      payload: test_microdeposit_payload
     )
 
     refute_nil microdeposit_response['_id']
