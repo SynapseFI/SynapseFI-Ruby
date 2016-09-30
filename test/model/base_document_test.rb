@@ -20,10 +20,10 @@ class BaseDocumentTest < Minitest::Test
 
     args = {
       user: test_user,
-      email: 'piper@pie.com',
+      email: "phoebe+#{rand(100000000)}@pie.com",
       phone_number: '4444444',
       ip: '127002',
-      name: 'Piper',
+      name: 'Phoebe Hallowell',
       alias: 'Hallowell',
       entity_type: 'F',
       entity_scope: 'Arts & Entertainment',
@@ -65,10 +65,10 @@ class BaseDocumentTest < Minitest::Test
 
     base_document_info = {
       user: test_user,
-      email: 'piper@pie.com',
+      email: "phoebe+#{rand(100000000)}@pie.com",
       phone_number: '4444444',
       ip: '127002',
-      name: 'Piper',
+      name: 'Phoebe Hallowell',
       alias: 'Hallowell',
       entity_type: 'F',
       entity_scope: 'Arts & Entertainment',
@@ -114,10 +114,10 @@ class BaseDocumentTest < Minitest::Test
 
     base_document_info = {
       user: test_user,
-      email: 'piper@pie.com',
+      email: "phoebe+#{rand(100000000)}@pie.com",
       phone_number: '4444444',
       ip: '127002',
-      name: 'Piper',
+      name: 'Phoebe Hallowell',
       alias: 'Hallowell',
       entity_type: 'F',
       entity_scope: 'Arts & Entertainment',

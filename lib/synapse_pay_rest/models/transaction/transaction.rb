@@ -6,7 +6,7 @@ module SynapsePayRest
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
           amount: amount, currency: currency, ip: ip, **options)
         node.user.authenticate
-        response = node.user.client.create(node_id: node.id, payload: payload)
+        response = node.user.client.nodes.create(node_id: node.id, payload: payload)
       end
 
       private

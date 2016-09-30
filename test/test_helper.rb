@@ -13,6 +13,8 @@ def fixture_path(file_name)
   "#{TEST_ROOT}/fixtures/#{file_name}"
 end
 
+# TODO: refactor a lot of this into customizable fixtures
+
 def test_client
   options = {
     'client_id' => ENV.fetch('CLIENT_ID'),
@@ -202,11 +204,11 @@ end
 def test_base_document_base_info
   {
     user: test_user,
-    email: 'piper@pie.com',
+    email: "piper+#{rand(100000000)}@pie.com",
     phone_number: '4444444',
     ip: '127002',
-    name: 'Piper',
-    alias: 'Hallowell',
+    name: 'Piper Hallowell',
+    alias: 'Pipesicle',
     entity_type: 'F',
     entity_scope: 'Arts & Entertainment',
     birth_day: 1,

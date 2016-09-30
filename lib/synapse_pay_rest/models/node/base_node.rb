@@ -37,6 +37,7 @@ module SynapsePayRest
 
       # this is customized in each subclass based on the response format for that type
       def create_from_response(user, response)
+        # TODO: create UnknownNodeType or something if somehow called on BaseNode
       end
 
       def create_multiple_from_response(user, response)
@@ -52,11 +53,7 @@ module SynapsePayRest
     def destroy
       user.authenticate
       response = user.client.nodes.delete(node_id: id)
-      if response['success']
-        user.nodes.delete(self)
-      else
-        # TODO: handle error
-      end
+      user.nodes.delete(self)
     end
   end
 end

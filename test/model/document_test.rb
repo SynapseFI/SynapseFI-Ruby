@@ -2,7 +2,7 @@ require 'test_helper'
 
 class DocumentTest < Minitest::Test
   def test_it_has_a_base_document
-    base_document      = test_base_document_with_three_documents
+    base_document = test_base_document_with_three_documents
     document = base_document.virtual_documents.first
 
     assert_kind_of SynapsePayRest::BaseDocument, document.base_document
@@ -13,7 +13,7 @@ class DocumentTest < Minitest::Test
       type: 'SSN',
       value: '1111-2222'
     }
-    base_document      = test_base_document_with_three_documents
+    base_document = test_base_document_with_three_documents
     document = SynapsePayRest::VirtualDocument.new(args)
     base_document.update(virtual_documents: [test_virtual_document])
 
