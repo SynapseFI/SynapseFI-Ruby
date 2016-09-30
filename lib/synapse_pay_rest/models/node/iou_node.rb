@@ -1,4 +1,4 @@
 module SynapsePayRest
-  class IouNode < Node
+  class IouNode < BaseNode
   end
 end

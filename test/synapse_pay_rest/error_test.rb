@@ -12,4 +12,12 @@ class ErrorTest < Minitest::Test
     assert_equal '400', error.code
     assert_equal response, error.response
   end
+
+  def test_404_error_code_with_real_request
+    nonexistent_user_id = '11111111111111'
+
+    assert_raises SynapsePayRest::Error::NotFound do
+      test_client.users.get(user_id: nonexistent_user_id)
+    end
+  end
 end

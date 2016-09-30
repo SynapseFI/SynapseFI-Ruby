@@ -63,10 +63,9 @@ module SynapsePayRest
       "#{base_url}#{path}"
     end
 
-    # TODO: fix this
+    # TODO: see if there's a better way to do this
     def with_error_handling
       yield
-
     rescue RestClient::Exception => e
       body = JSON.parse(e.response.body)
       raise Error.error_from_response(body, e.response.code)

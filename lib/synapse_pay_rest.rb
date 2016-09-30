@@ -23,6 +23,29 @@ require 'synapse_pay_rest/models/user/virtual_document'
 require 'synapse_pay_rest/models/user/question'
 
 # node-related models
+# ancestor of all nodes
+require 'synapse_pay_rest/models/node/base_node'
+# synapse
+require 'synapse_pay_rest/models/node/synapse_node'
+require 'synapse_pay_rest/models/node/synapse_us_node.rb'
+require 'synapse_pay_rest/models/node/synapse_ind_node.rb'
+require 'synapse_pay_rest/models/node/synapse_np_node.rb'
+# ach
+require 'synapse_pay_rest/models/node/ach_us_node.rb'
+require 'synapse_pay_rest/models/node/unverified_node.rb'
+# eft
+require 'synapse_pay_rest/models/node/eft_node'
+require 'synapse_pay_rest/models/node/eft_ind_node.rb'
+require 'synapse_pay_rest/models/node/eft_np_node.rb'
+# wire
+require 'synapse_pay_rest/models/node/wire_node.rb'
+require 'synapse_pay_rest/models/node/wire_us_node.rb'
+require 'synapse_pay_rest/models/node/wire_int_node.rb'
+# reserve
+require 'synapse_pay_rest/models/node/reserve_us_node.rb'
+# iou
+require 'synapse_pay_rest/models/node/iou_node.rb'
+# factory
 require 'synapse_pay_rest/models/node/node'
 
 # transaction-related models

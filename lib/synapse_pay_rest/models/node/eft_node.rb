@@ -1,4 +1,4 @@
 module SynapsePayRest
-  class EftNode < Node
+  class EftNode < BaseNode
   end
 end

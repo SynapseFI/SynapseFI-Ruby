@@ -138,78 +138,64 @@ class NodeTest < Minitest::Test
   end
 
   def test_find
-    node = Node.find(user: @user, id: @user.nodes.first.id)
-    assert_kind_of SynapsePayRest::Node, node
-    assert_instance_of SynapsePayRest::AchUsNode, node
-    # TODO: probably need to overwrite existing node in user.nodes
-    assert_equal @user.nodes.first, node
-  end
-
-  def test_all
-    # create 2 nodes on @user
     args = {
       user: @user,
       bank_name: 'bofa',
       username: 'synapse_nomfa',
       password: 'test1234'
     }
-    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+    nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
-    nodes = SynapsePayRest::Node.all(user: @user)
+    assert_equal nodes.first.id, node.id
+    assert_kind_of SynapsePayRest::BaseNode, node
+    assert_instance_of SynapsePayRest::AchUsNode, node
+    assert_includes @user.nodes, node
+  end
+
+  def test_all
+    user = test_user_with_two_nodes
+    nodes = SynapsePayRest::Node.all(user: user)
 
     assert_equal 2, nodes.length
     nodes.each do |node|
-      assert_kind_of SynapsePayRest::Node, node
+      assert_kind_of SynapsePayRest::BaseNode, node
       assert_instance_of SynapsePayRest::AchUsNode, node
-      assert_includes @user.nodes, node
+      assert_includes user.nodes, node
     end
   end
 
   def test_all_with_page_and_per_page
-    # create 2 nodes on @user
-    args = {
-      user: @user,
-      bank_name: 'bofa',
-      username: 'synapse_nomfa',
-      password: 'test1234'
-    }
-    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+    user = test_user_with_two_nodes
 
-    page1 = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
+    page1 = SynapsePayRest::Node.all(user: user, page: 1, per_page: 1)
     assert_equal 1, page1.length
-    assert_kind_of SynapsePayRest::Node, page1.first
+    assert_kind_of SynapsePayRest::BaseNode, page1.first
     assert_instance_of SynapsePayRest::AchUsNode, page1.first
     # TODO: if caching removed, then need to change this
-    assert_includes @user.nodes, page1.first
+    assert_includes user.nodes, page1.first
 
-    page2 = SynapsePayRest::Node.all(user: @user, page: 2, per_page: 1)
+    page2 = SynapsePayRest::Node.all(user: user, page: 2, per_page: 1)
     assert_equal 1, page2.length
-    assert_kind_of SynapsePayRest::Node, page2.first
+    assert_kind_of SynapsePayRest::BaseNode, page2.first
     assert_instance_of SynapsePayRest::AchUsNode, page2.first
     # TODO: if caching removed, then need to change this
-    assert_includes @user.nodes, page2.first
+    assert_includes user.nodes, page2.first
     refute_equal page1.first.id, page2.first.id
 
-    long_page = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 2)
+    long_page = SynapsePayRest::Node.all(user: user, page: 1, per_page: 2)
     assert_equal 2, long_page.length
   end
 
   # TODO: test with more types
   def test_by_type
-    # create 2 nodes on @user
-    args = {
-      user: @user,
-      bank_name: 'bofa',
-      username: 'synapse_nomfa',
-      password: 'test1234'
-    }
-    SynapsePayRest::AchUsNode.create_via_bank_login(args)
+    user = test_user_with_two_nodes
 
-    ach_us_results = SynapsePayRest::Node.by_type(user: @user, type: 'ACH-US')
+    ach_us_results = SynapsePayRest::Node.by_type(user: user, type: 'ACH-US')
     assert_equal 2, ach_us_results.length
 
-    synapse_us_results = SynapsePayRest::Node.by_type(user: @user, type: 'SYNAPSE-US')
-    assert_empty synapse_us_results.length
+    synapse_us_results = SynapsePayRest::Node.by_type(user: user, type: 'SYNAPSE-US')
+    assert_empty synapse_us_results
   end
 
   def test_all_with_no_nodes
@@ -223,7 +209,7 @@ class NodeTest < Minitest::Test
     assert_equal 2, user.nodes.length
     user.nodes.first.destroy
     assert_equal 1, user.nodes.length
-    user.nodes.first.destroy
+    user.nodes.last.destroy
     assert_empty user.nodes
   end
 end

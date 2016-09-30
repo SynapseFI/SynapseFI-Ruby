@@ -108,9 +108,9 @@ class NodesTest < Minitest::Test
     assert_equal delete_response['http_code'], '200'
     assert_equal delete_response['error_code'], '0'
 
-    verify_deleted_response = client.nodes.get(node_id: node_id)
-
-    assert_nil verify_deleted_response['_id']
-    refute verify_deleted_response['success']
+    # verify node deleted
+    assert_raises SynapsePayRest::Error::NotFound do
+      client.nodes.get(node_id: node_id)
+    end
   end
 end

@@ -18,19 +18,18 @@ module SynapsePayRest
       end
 
       def create_from_response(user, response)
-        node_data = response['nodes'].last
         node = self.new(
-          user: user,
-          type: 'SYNAPSE-US',
-          id:              node_data['_id'],
-          is_active:       node_data['is_active'],
-          account_id:      node_data['info']['account_id'],
-          balance:         node_data['info']['balance']['amount'],
-          currency:        node_data['info']['balance']['currency'],
-          name_on_account: node_data['info']['name_on_account'],
-          nickname:        node_data['info']['nickname'],
-          permissions:     node_data['allowed'],
-          supp_id:         node_data['extra']['supp_id']
+          user:            user,
+          type:            'SYNAPSE-US',
+          id:              response['_id'],
+          is_active:       response['is_active'],
+          account_id:      response['info']['account_id'],
+          balance:         response['info']['balance']['amount'],
+          currency:        response['info']['balance']['currency'],
+          name_on_account: response['info']['name_on_account'],
+          nickname:        response['info']['nickname'],
+          permissions:     response['allowed'],
+          supp_id:         response['extra']['supp_id']
         )
         user.nodes << node
         node

@@ -62,8 +62,8 @@ module SynapsePayRest
       500 => SynapsePayRest::Error::InternalServerError,
       502 => SynapsePayRest::Error::BadGateway,
       503 => SynapsePayRest::Error::ServiceUnavailable,
-      504 => SynapsePayRest::Error::GatewayTimeout,
-    }
+      504 => SynapsePayRest::Error::GatewayTimeout
+    }.freeze
 
     # The SynapsePay API Error Code
     #

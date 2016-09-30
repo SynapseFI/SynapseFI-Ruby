@@ -25,7 +25,7 @@ class TransactionTest < Minitest::Test
       fee_note: 'Facilitator Fee',
       fee_to_id: to_node.id
     }
-    transaction = Transaction.create(args)
+    transaction = SynapsePayRest::Transaction.create(args)
 
     # TODO: whatever instance variables should populate from response
     other_instance_vars = []

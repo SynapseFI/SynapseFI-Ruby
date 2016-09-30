@@ -126,51 +126,51 @@ module SynapsePayRest
     # end
 
     # TODO: validate arg values in allowed range
-    def fetch_nodes(page: 1, per_page: 20, type: nil)
-      authenticate
-      response = client.nodes.get(page: page, per_page: per_page, type: type)
-      # TODO
-    end
+    # def fetch_nodes(page: 1, per_page: 20, type: nil)
+    #   authenticate
+    #   response = client.nodes.get(page: page, per_page: per_page, type: type)
+    #   # TODO
+    # end
 
-    def fetch_node(id:)
-    end
+    # def fetch_node(id:)
+    # end
 
-    def create_node_synapse_us()
-      @nodes << node
-    end
+    # def create_node_synapse_us()
+    #   @nodes << node
+    # end
 
     # TODO: handle MFA
-    def create_node_ach_us_via_bank_login()
-      @nodes << node
-    end
+    # def create_node_ach_us_via_bank_login()
+    #   @nodes << node
+    # end
 
-    def create_node_ach_us()
-      @nodes << node
-    end
+    # def create_node_ach_us()
+    #   @nodes << node
+    # end
 
-    def create_node_wire_us()
-    end
+    # def create_node_wire_us()
+    # end
 
-    def create_node_wire_int()
-    end
+    # def create_node_wire_int()
+    # end
 
-    def create_node_reserve_us()
-    end
+    # def create_node_reserve_us()
+    # end
 
-    def create_node_synapse_ind()
-    end
+    # def create_node_synapse_ind()
+    # end
 
-    def create_node_synapse_np()
-    end
+    # def create_node_synapse_np()
+    # end
 
-    def create_node_eft_ind()
-    end
+    # def create_node_eft_ind()
+    # end
 
-    def create_node_eft_np()
-    end
+    # def create_node_eft_np()
+    # end
 
-    def create_node_iou()
-    end
+    # def create_node_iou()
+    # end
 
     private
 
@@ -186,12 +186,6 @@ module SynapsePayRest
       payload['update']['phone_number'] = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload
-    end
-
-    def payload_for_fetch_nodes
-      payload = {
-
-      }
     end
   end
 end
