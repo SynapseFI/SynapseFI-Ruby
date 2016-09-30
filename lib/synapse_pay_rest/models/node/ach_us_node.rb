@@ -50,7 +50,7 @@ module SynapsePayRest
       end
 
       def create_from_response(user, response)
-        node = self.new(
+        self.new(
           user:            user,
           id:              response['_id'],
           is_active:       response['is_active'],
@@ -64,13 +64,11 @@ module SynapsePayRest
           permissions:     response['allowed'],
           supp_id:         response['extra']['supp_id']
         )
-        user.nodes << node
-        node
       end
 
       def create_from_bank_login_response(user, response)
         response.map do |node_data|
-          node = self.new(
+          self.new(
             user:            user,
             id:              node_data['_id'],
             is_active:       node_data['is_active'],
@@ -88,20 +86,16 @@ module SynapsePayRest
             supp_id:         node_data['extra']['supp_id'],
             verified:        true
           )
-          user.nodes << node
-          node
         end
       end
       
       def create_unverified_node(user, response)
-        unverified_node = UnverifiedNode.new(
+        UnverifiedNode.new(
           user: user,
           mfa_access_token: response['mfa']['access_token'],
           mfa_message:      response['mfa']['message'],
           mfa_verified:     false
         )
-        user.nodes << unverified_node
-        unverified_node
       end
     end
 

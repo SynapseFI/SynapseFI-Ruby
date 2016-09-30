@@ -1,6 +1,7 @@
 module SynapsePayRest
   # factory methods
   # TODO: mixin some of these for node classes instead of duplicating
+  # TODO: (maybe) write == method to check if nodes have same id
   module Node
     NODE_TYPES_TO_CLASSES = {
       'ACH-US'      => AchUsNode,
@@ -43,6 +44,7 @@ module SynapsePayRest
       private
 
       # determines the proper node type to instantiate from the response
+      # #create_from_response is implemented differently in each BaseNode subclass
       def create_from_response(user, response)
         klass = NODE_TYPES_TO_CLASSES[response['type']]
         # TODO: catch error here in case key lookup fails

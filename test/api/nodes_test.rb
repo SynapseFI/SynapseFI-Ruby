@@ -3,7 +3,7 @@ require 'test_helper'
 class NodesTest < Minitest::Test
   def setup
     @client = test_client_with_user
-    @user = oauth_user(@client, @client.user_id)
+    @user = refresh_user(@client, @client.user_id)
   end
 
   def test_nodes_add_with_bank_login_no_kba

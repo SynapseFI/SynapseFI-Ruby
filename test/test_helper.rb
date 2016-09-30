@@ -2,128 +2,20 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'synapse_pay_rest'
 require 'minitest/autorun'
 require 'minitest/reporters'
+require 'faker'
 require 'dotenv'
+
 Dotenv.load
 
 Minitest::Reporters.use!([Minitest::Reporters::SpecReporter.new])
 
 TEST_ROOT = File.dirname(File.expand_path('.', __FILE__))
 
+# require test factories
+Dir["#{TEST_ROOT}/factories/*.rb"].each {|file| require file }
+
 def fixture_path(file_name)
   "#{TEST_ROOT}/fixtures/#{file_name}"
-end
-
-# TODO: refactor a lot of this into customizable fixtures
-
-def test_client
-  options = {
-    'client_id' => ENV.fetch('CLIENT_ID'),
-    'client_secret' => ENV.fetch('CLIENT_SECRET'),
-    'fingerprint' => 'test_fp',
-    'ip_address' => '127.0.0.1',
-    'development_mode' => true
-  }
-
-  SynapsePayRest::Client.new(options: options)
-end
-
-def test_user_payload1
-  {
-    'logins' => [
-      {
-        'email' => 'rubyTest@synapsepay.com',
-        'password' =>  'test1234',
-        'read_only' => false
-      }
-    ],
-    'phone_numbers' => [
-      '901.111.1111'
-    ],
-    'legal_names' => [
-      'RUBY TEST USER'
-    ],
-    'extra' => {
-      'note' => 'Interesting user',
-      'supp_id' => '122eddfgbeafrfvbbb',
-      'is_business' => false
-    }
-  }
-end
-
-def test_user_payload2
-  {
-    'logins' => [
-      {
-        'email' => 'rubyTest2@synapsepay.com',
-        'password' =>  'test1234',
-        'read_only' => false
-      }
-    ],
-    'phone_numbers' => [
-      '901.444.4444'
-    ],
-    'legal_names' => [
-      'TEST MCTESTERSON'
-    ],
-    'extra' => {
-      'note' => 'Uninteresting user',
-      'supp_id' => '122eddfgbeafrfvbbb',
-      'is_business' => false
-    }
-  }
-end
-
-def test_client_with_user
-  user_response  = test_client.users.create(payload: test_user_payload1)
-  client         = test_client
-  client.user_id = user_response['_id']
-  client.http_client.user_id = user_response['_id']
-  client
-end
-
-def test_client_with_two_users
-  user_response = test_client.users.create(payload: test_user_payload1)
-  # add second user
-  test_client.users.create(payload: test_user_payload2)
-  client         = test_client
-  client.user_id = user_response['_id']
-  client.http_client.user_id = user_response['_id']
-  client
-end
-
-def test_node_payload1
-  {
-    'type' => 'ACH-US',
-    'info' => {
-      'bank_id' => 'synapse_nomfa',
-      'bank_pw' => 'test1234',
-      'bank_name' => 'fake'
-    }
-  }
-end
-
-def test_node_payload2
-  {
-    'type' => 'SYNAPSE-US',
-    'info' => {
-      'nickname' => 'Synapse Account'
-    }
-  }
-end
-
-def test_client_with_node
-  client = test_client_with_user
-  oauth_user(client, client.user_id)
-  client.nodes.add(payload: test_node_payload1)
-  client
-end
-
-def test_client_with_two_nodes
-  client = test_client_with_user
-  oauth_user(client, client.user_id)
-  client.nodes.add(payload: test_node_payload1)
-  client.nodes.add(payload: test_node_payload2)
-  client
 end
 
 # create different number of users for different tests
@@ -165,7 +57,7 @@ def test_client_with_two_transactions
   client
 end
 
-def oauth_user(client, user_id)
+def refresh_user(client, user_id)
   user = client.users.get(user_id: user_id)
   client.users.refresh(payload: {'refresh_token' => user['refresh_token']})
   user

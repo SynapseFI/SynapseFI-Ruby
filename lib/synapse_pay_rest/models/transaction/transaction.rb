@@ -1,5 +1,7 @@
 module SynapsePayRest
   class Transaction
+    # TODO: (maybe) write == method to check if trans have same id
+
     class << self
       # TODO: validate args types
       def create(node:, to_type:, to_id:, amount:, currency:, ip:, **options)

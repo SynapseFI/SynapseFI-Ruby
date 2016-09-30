@@ -1,7 +1,8 @@
 module SynapsePayRest
   class Client
-    attr_accessor :http_client, :users, :nodes, :transactions, :user_id
+    attr_accessor :http_client, :users, :nodes, :transactions
 
+    # TODO: split options into separate keyword args
     def initialize(options: raise('options is required'), user_id: nil, logging: false)
       base_url = if options['development_mode']
                    'https://sandbox.synapsepay.com/api/3'

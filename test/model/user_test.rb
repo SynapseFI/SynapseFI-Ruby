@@ -174,16 +174,16 @@ class UserTest < Minitest::Test
   end
 
   def test_fetch_nodes
+    skip 'pending'
     user = test_user
     user.fetch_nodes
   end
 
-  def test_nodes_reader_method
-    skip 'pending'
+  def test_nodes
     user = test_user
     assert_empty user.nodes
-
-    # TODO: add node
+    
+    
     assert_instance_of SynapsePayRest::Node, user.nodes.first
   end
 

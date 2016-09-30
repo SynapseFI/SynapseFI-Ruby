@@ -18,7 +18,7 @@ module SynapsePayRest
       end
 
       def create_from_response(user, response)
-        node = self.new(
+        self.new(
           user:            user,
           type:            'SYNAPSE-US',
           id:              response['_id'],
@@ -31,8 +31,6 @@ module SynapsePayRest
           permissions:     response['allowed'],
           supp_id:         response['extra']['supp_id']
         )
-        user.nodes << node
-        node
       end
     end
   end

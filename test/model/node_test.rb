@@ -33,7 +33,6 @@ class NodeTest < Minitest::Test
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
-  # TODO: handle incorrect credentials
   def test_create_ach_us_via_account_routing_numbers
     args = {
       user: @user,
@@ -67,6 +66,10 @@ class NodeTest < Minitest::Test
     # verify microdeposits
     node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permissions
+  end
+
+  def test_create_ach_us_with_wrong_acct_routing
+    skip 'pending'
   end
 
   def test_create_ach_us_with_wrong_microdeposit
@@ -131,6 +134,10 @@ class NodeTest < Minitest::Test
       # verify instance vars readable and mapped to values
       other_instance_vars.each { |var| refute_nil node.send(var) }
     end
+  end
+
+  def test_create_ach_us_via_bank_login_with_wrong_login
+    skip 'pending'
   end
 
   def test_create_ach_us_via_bank_login_with_wrong_mfa_answers

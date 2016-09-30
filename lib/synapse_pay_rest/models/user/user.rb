@@ -1,5 +1,6 @@
 module SynapsePayRest
   class User
+    # TODO: (maybe) write == method to check if users have same id
     attr_reader :client, :logins, :phone_numbers, :legal_names, :note, :supp_id,
                 :is_business, :base_document_tag, :nodes
     attr_accessor :id, :refresh_token, :base_documents
@@ -82,15 +83,12 @@ module SynapsePayRest
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @client.http_client.user_id = @id
       @base_documents  ||= []
-      @nodes ||= []
     end
 
     # TODO: validate some kind of proper input was entered
     # TODO: add convenience methods for add login, add email, etc.
     def update(**options)
-      payload = payload_for_update(options)
-      client.users.update(payload: payload)
-
+      client.users.update(payload: payload_for_update(options))
       self
     end
 
@@ -114,11 +112,15 @@ module SynapsePayRest
     end
 
     def authenticate
-      client.users.refresh(payload: {'refresh_token' => refresh_token})
+      client.users.refresh(payload: payload_for_refresh)
     end
 
     # TODO: need to test with and w/o fingerprint
     def verify_fingerprint
+    end
+
+    def nodes(**options)
+      Node.all(user: self, **options)
     end
 
     # TODO: low priority
@@ -186,6 +188,10 @@ module SynapsePayRest
       payload['update']['phone_number'] = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload
+    end
+
+    def payload_for_refresh
+      {'refresh_token' => refresh_token}
     end
   end
 end

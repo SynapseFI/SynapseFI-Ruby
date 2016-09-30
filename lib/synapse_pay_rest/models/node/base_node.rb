@@ -35,7 +35,7 @@ module SynapsePayRest
 
       private
 
-      # this is customized in each subclass based on the response format for that type
+      # this is implemented differently in each subclass
       def create_from_response(user, response)
         # TODO: create UnknownNodeType or something if somehow called on BaseNode
       end
