@@ -36,8 +36,23 @@ end
 
 def test_client_with_two_nodes
   client = test_client_with_user
-  refresh_user(client, client.user_id)
+  refresh_user(client, client.client.user_id)
   client.nodes.add(payload: test_ach_us_login_no_mfa_payload)
   client.nodes.add(payload: test_synapse_us_payload)
+  client
+end
+
+def test_client_with_two_transactions
+  client    = test_client_with_two_nodes
+  nodes     = client.nodes.get['nodes']
+  from      = nodes.first
+  to        = nodes.last
+  payload1  = test_transaction_payload(from_id: from['_id'], from_type: from['type'],
+                                       to_id: to['_id'], to_type: to['type'])
+  payload2  = test_transaction_payload(from_id: from['_id'], from_type: from['type'],
+                                       to_id: to['_id'], to_type: to['type'])
+
+  client.trans.create(node_id: from['_id'], payload: payload1)
+  client.trans.create(node_id: from['_id'], payload: payload2)
   client
 end

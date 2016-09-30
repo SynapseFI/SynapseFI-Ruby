@@ -18,45 +18,6 @@ def fixture_path(file_name)
   "#{TEST_ROOT}/fixtures/#{file_name}"
 end
 
-# create different number of users for different tests
-def test_client_with_two_transactions
-  client    = test_client_with_two_nodes
-  nodes     = client.nodes.get['nodes']
-  from_node = nodes.first
-  to_node   = nodes.last
-
-  transaction_payload1 = {
-    'to' => {
-      'type' => to_node['type'],
-      'id' => to_node['_id']
-    },
-    'amount' => {
-      'amount' => 22,
-      'currency' => 'USD'
-    },
-    'extra' => {
-      'ip' => '192.168.0.1'
-    }
-  }
-  transaction_payload2 = {
-    'to' => {
-      'type' => to_node['type'],
-      'id' => to_node['_id']
-    },
-    'amount' => {
-      'amount' => 44,
-      'currency' => 'USD'
-    },
-    'extra' => {
-      'ip' => '192.168.0.1'
-    }
-  }
-
-  client.trans.create(node_id: from_node['_id'], payload: transaction_payload1)
-  client.trans.create(node_id: from_node['_id'], payload: transaction_payload2)
-  client
-end
-
 def refresh_user(client, user_id)
   user = client.users.get(user_id: user_id)
   client.users.refresh(payload: {'refresh_token' => user['refresh_token']})
