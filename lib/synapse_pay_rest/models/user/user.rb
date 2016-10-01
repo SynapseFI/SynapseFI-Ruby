@@ -176,7 +176,7 @@ module SynapsePayRest
 
     private
 
-    def payload_for_update(options)
+    def payload_for_update(**options)
       payload = {
         'refresh_token' => refresh_token,
         'update' => {}

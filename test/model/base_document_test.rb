@@ -2,43 +2,7 @@ require 'test_helper'
 
 class BaseDocumentTest < Minitest::Test
   def test_initialize_params_can_be_read
-    social_doc_info = {
-      type: 'FACEBOOK',
-      value: 'https://www.facebook.com/mariachi'
-    }
-    virtual_doc_info = {
-      type: 'SSN',
-      value: '2222'
-    }
-    physical_doc_info = {
-      type: 'GOVT_ID',
-      value: fixture_path('id.png')
-    }
-    social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
-    virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
-    physical_doc = SynapsePayRest::PhysicalDocument.new(physical_doc_info)
-
-    args = {
-      user: test_user,
-      email: "phoebe+#{rand(100000000)}@pie.com",
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Phoebe Hallowell',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      physical_documents: [physical_doc],
-      social_documents: [social_doc],
-      virtual_documents: [virtual_doc]
-    }
+    args = test_base_document_fields_with_three_documents
     base_document = SynapsePayRest::BaseDocument.create(args)
 
     args.each do |arg, value|
@@ -47,44 +11,10 @@ class BaseDocumentTest < Minitest::Test
   end
 
   def test_initialize_with_documents_adds_them_to_documents_array
-    social_doc_info = {
-      type: 'FACEBOOK',
-      value: 'https://www.facebook.com/mariachi'
-    }
-    virtual_doc_info = {
-      type: 'SSN',
-      value: '2222'
-    }
-    physical_doc_info = {
-      type: 'GOVT_ID',
-      value: fixture_path('id.png')
-    }
-    social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
-    virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
-    physical_doc = SynapsePayRest::PhysicalDocument.new(physical_doc_info)
-
-    base_document_info = {
-      user: test_user,
-      email: "phoebe+#{rand(100000000)}@pie.com",
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Phoebe Hallowell',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      physical_documents: [physical_doc],
-      social_documents: [social_doc],
-      virtual_documents: [virtual_doc]
-    }
-    base_document = SynapsePayRest::BaseDocument.create(base_document_info)
+    base_document = SynapsePayRest::BaseDocument.create(test_base_document_fields_with_three_documents)
+    physical_doc = base_document.physical_documents.first
+    social_doc   = base_document.social_documents.first
+    virtual_doc  = base_document.virtual_documents.first
 
     # verify docs associated with User object
     assert_equal base_document.physical_documents.length, 1
@@ -96,49 +26,16 @@ class BaseDocumentTest < Minitest::Test
   end
 
   def test_submit
-    social_doc_info = {
-      type: 'FACEBOOK',
-      value: 'https://www.facebook.com/mariachi'
-    }
-    virtual_doc_info = {
-      type: 'SSN',
-      value: '2222'
-    }
-    physical_doc_info = {
-      type: 'GOVT_ID',
-      value: fixture_path('id.png')
-    }
-    social_doc   = SynapsePayRest::SocialDocument.new(social_doc_info)
-    virtual_doc  = SynapsePayRest::VirtualDocument.new(virtual_doc_info)
-    physical_doc = SynapsePayRest::PhysicalDocument.new(physical_doc_info)
-
-    base_document_info = {
-      user: test_user,
-      email: "phoebe+#{rand(100000000)}@pie.com",
-      phone_number: '4444444',
-      ip: '127002',
-      name: 'Phoebe Hallowell',
-      alias: 'Hallowell',
-      entity_type: 'F',
-      entity_scope: 'Arts & Entertainment',
-      birth_day: 1,
-      birth_month: 2,
-      birth_year: 1933,
-      address_street: '333 14th St',
-      address_city: 'SF',
-      address_subdivision: 'CA',
-      address_postal_code: '94114',
-      address_country_code: 'US',
-      physical_documents: [physical_doc],
-      social_documents: [social_doc],
-      virtual_documents: [virtual_doc]
-    }
-    base_document = SynapsePayRest::BaseDocument.create(base_document_info)
+    base_document = SynapsePayRest::BaseDocument.create(test_base_document_fields_with_three_documents)
+    physical_doc = base_document.physical_documents.first
+    social_doc   = base_document.social_documents.first
+    virtual_doc  = base_document.virtual_documents.first
 
     refute_nil base_document.id
     # verify with API that documents were added
     response_docs = test_client.users.get(user_id: base_document.user.id)['documents']
-    assert [social_doc.base_document.id, virtual_doc.base_document.id, physical_doc.base_document.id].all? do |id|
+    assert [social_doc.base_document.id, virtual_doc.base_document.id,
+            physical_doc.base_document.id].all? do |id|
       id == response_docs['_id']
     end
     assert response_docs.first['social_docs'].any? { |doc| doc['document_type'] == social_doc.type }

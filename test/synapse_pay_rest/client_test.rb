@@ -3,8 +3,8 @@ require 'test_helper'
 class ClientTest < Minitest::Test
   def setup
     @options = {
-      'client_id' => ENV.fetch('CLIENT_ID'),
-      'client_secret' => ENV.fetch('CLIENT_SECRET'),
+      'client_id'        => ENV.fetch('CLIENT_ID'),
+      'client_secret'    => ENV.fetch('CLIENT_SECRET'),
       'development_mode' => true
     }
   end

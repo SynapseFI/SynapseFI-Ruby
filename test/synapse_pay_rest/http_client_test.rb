@@ -3,7 +3,7 @@ require 'test_helper'
 class HTTPClientTest < Minitest::Test
   def setup
     @client = test_client_with_user
-    refresh_user(@client, @client.user_id)
+    refresh_user(@client, @client.client.user_id)
     @http_client = @client.client
   end
 
@@ -17,7 +17,7 @@ class HTTPClientTest < Minitest::Test
 
   def test_get_headers
     headers = @http_client.get_headers
-    config = @http_client.config
+    config  = @http_client.config
     # client_id|client_secret
     assert_equal headers['X-SP-GATEWAY'], "#{config['client_id']}|#{config['client_secret']}"
     # oauth_key|fingerprint
