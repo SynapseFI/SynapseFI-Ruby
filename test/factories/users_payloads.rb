@@ -35,7 +35,7 @@ def test_users_update_payload(refresh_token:,
                               phone_number: Faker::PhoneNumber.phone_number,
                               legal_name: Faker::Name.name,
                               remove_phone_number: '123456')
-  payload = {
+  {
     'refresh_token' => refresh_token,
     'update' => {
       'login' => {

@@ -8,11 +8,7 @@ class NodeTest < Minitest::Test
   # TODO: test with both maximum and minimum fields
   # TODO: run through all node types when finished
   def test_create_synapse_us_node
-    args = {
-      user: @user,
-      nickname: 'Test Synapse Account',
-      supp_id: 'abc123'
-    }
+    args = test_synapse_us_create_args(user: @user)
     node = SynapsePayRest::SynapseUsNode.create(args)
 
     other_instance_vars = [:is_active, :account_id, :balance, :currency,
@@ -34,15 +30,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_ach_us_via_account_routing_numbers
-    args = {
-      user: @user,
-      nickname: 'Test ACH Account',
-      account_number: '23456543234567543234567',
-      routing_number: '051000017',
-      account_type: 'PERSONAL',
-      account_class: 'CHECKING',
-      supp_id: 'abc123'
-    }
+    args = test_ach_us_create_args(user: @user)
     node = SynapsePayRest::AchUsNode.create(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
@@ -78,12 +66,7 @@ class NodeTest < Minitest::Test
 
   # TOOD: handle incorrect login info
   def test_create_ach_us_via_bank_login
-    args = {
-      user: @user,
-      bank_name: 'bofa',
-      username: 'synapse_nomfa',
-      password: 'test1234'
-    }
+    args = test_ach_us_create_via_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
@@ -103,12 +86,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_ach_us_via_bank_login_with_mfa_questions
-    args = {
-      user: @user,
-      bank_name: 'bofa',
-      username: 'synapse_good',
-      password: 'test1234'
-    }
+    args = test_ach_us_create_via_login_args(user: @user, username: 'synapse_good')
     unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
@@ -145,12 +123,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_find
-    args = {
-      user: @user,
-      bank_name: 'bofa',
-      username: 'synapse_nomfa',
-      password: 'test1234'
-    }
+    args = test_ach_us_create_via_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
     node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
@@ -179,14 +152,12 @@ class NodeTest < Minitest::Test
     assert_equal 1, page1.length
     assert_kind_of SynapsePayRest::BaseNode, page1.first
     assert_instance_of SynapsePayRest::AchUsNode, page1.first
-    # TODO: if caching removed, then need to change this
     assert_includes user.nodes, page1.first
 
     page2 = SynapsePayRest::Node.all(user: user, page: 2, per_page: 1)
     assert_equal 1, page2.length
     assert_kind_of SynapsePayRest::BaseNode, page2.first
     assert_instance_of SynapsePayRest::AchUsNode, page2.first
-    # TODO: if caching removed, then need to change this
     assert_includes user.nodes, page2.first
     refute_equal page1.first.id, page2.first.id
 

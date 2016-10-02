@@ -1,9 +1,26 @@
-def test_user
+def test_user(client: test_client,
+              logins: [{
+                email: Faker::Internet.email, 
+                password: Faker::Internet.password, 
+                read_only: false
+              }],
+              phone_numbers: [Faker::PhoneNumber.phone_number],
+              legal_names: [Faker::Name.name],
+              note: Faker::Hipster.sentence(3),
+              supp_id: Faker::Number.number(10).to_s,
+              is_business: false)
   SynapsePayRest::User.create(
     client: test_client,
-    logins: [{email: Faker::Internet.email}],
+    logins: [{
+      email: Faker::Internet.email, 
+      password: Faker::Internet.password, 
+      read_only: false
+    }],
     phone_numbers: [Faker::PhoneNumber.phone_number],
-    legal_names: [Faker::Name.name]
+    legal_names: [Faker::Name.name],
+    note: Faker::Hipster.sentence(3),
+    supp_id: Faker::Number.number(10).to_s,
+    is_business: false
   )
 end
 
@@ -59,12 +76,7 @@ end
 
 def test_user_with_two_nodes
   user = test_user
-  args = {
-    user: user,
-    bank_name: 'bofa',
-    username: 'synapse_nomfa',
-    password: 'test1234'
-  }
+  args = test_ach_us_create_via_login_args(user: user)
   nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
   user
 end

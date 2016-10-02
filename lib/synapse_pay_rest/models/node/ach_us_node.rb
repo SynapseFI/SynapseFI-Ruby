@@ -1,6 +1,6 @@
 module SynapsePayRest
   class AchUsNode < BaseNode
-
+    attr_reader 
     # TODO: add error message when trying to perform methods on unverified node
     class << self
       # TODO: validate bank_name in supported banks
@@ -13,7 +13,7 @@ module SynapsePayRest
         if response['mfa']
           create_unverified_node(user, response)
         else
-          create_from_bank_login_response(user, response['nodes'])
+          create_multiple_from_response(user, response['nodes'])
         end
       end
 
@@ -50,12 +50,13 @@ module SynapsePayRest
       end
 
       def create_from_response(user, response)
-        self.new(
+        args = {
           user:            user,
           id:              response['_id'],
           is_active:       response['is_active'],
           account_number:  response['info']['account_num'],
           routing_number:  response['info']['routing_num'],
+          bank_name:       response['info']['bank_name'],
           bank_long_name:  response['info']['bank_long_name'],
           account_class:   response['info']['class'],
           account_type:    response['info']['type'],
@@ -63,35 +64,16 @@ module SynapsePayRest
           nickname:        response['info']['nickname'],
           permissions:     response['allowed'],
           supp_id:         response['extra']['supp_id']
-        )
-      end
-
-      def create_from_bank_login_response(user, response)
-        response.map do |node_data|
-          self.new(
-            user:            user,
-            id:              node_data['_id'],
-            is_active:       node_data['is_active'],
-            account_number:  node_data['info']['account_num'],
-            routing_number:  node_data['info']['routing_num'],
-            bank_name:       node_data['info']['bank_name'],
-            bank_long_name:  node_data['info']['bank_long_name'],
-            account_class:   node_data['info']['class'],
-            account_type:    node_data['info']['type'],
-            name_on_account: node_data['info']['name_on_account'],
-            nickname:        node_data['info']['nickname'],
-            balance:         node_data['info']['balance']['amount'],
-            currency:        node_data['info']['balance']['currency'],
-            permissions:     node_data['allowed'],
-            supp_id:         node_data['extra']['supp_id'],
-            verified:        true
-          )
-        end
+        }
+        args[:balance] = response['info']['balance']['amount'] if response['info']['balance']
+        args[:currency] = response['info']['balance']['currency'] if response['info']['balance']
+        
+        self.new(args)
       end
       
       def create_unverified_node(user, response)
         UnverifiedNode.new(
-          user: user,
+          user:             user,
           mfa_access_token: response['mfa']['access_token'],
           mfa_message:      response['mfa']['message'],
           mfa_verified:     false

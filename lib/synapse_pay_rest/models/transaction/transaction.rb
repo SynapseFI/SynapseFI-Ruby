@@ -49,5 +49,9 @@ module SynapsePayRest
 
     def initialize(**options)
     end
+
+    def ==(other)
+      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+    end
   end
 end

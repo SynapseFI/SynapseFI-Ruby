@@ -16,8 +16,7 @@ module SynapsePayRest
 
       if response['success']
         @mfa_verified = true
-        AchUsNode.create_from_bank_login_response(user, response['nodes'])
-        user.nodes.delete(self)
+        AchUsNode.create_multiple_from_response(user, response['nodes'])
       else
         # TODO: raise error for wrong mfa answer / too many tries
       end

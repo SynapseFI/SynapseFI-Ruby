@@ -1,9 +1,8 @@
 module SynapsePayRest
   class User
-    # TODO: (maybe) write == method to check if users have same id
-    attr_reader :client, :logins, :phone_numbers, :legal_names, :note, :supp_id,
-                :is_business, :base_document_tag, :nodes
-    attr_accessor :id, :refresh_token, :base_documents
+    attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
+                :supp_id, :is_business, :base_document_tag
+    attr_accessor :refresh_token, :base_documents
 
     class << self
       # TODO: simplify the logins argument
@@ -111,6 +110,13 @@ module SynapsePayRest
       base_document
     end
 
+    # TODO: low priority
+    # def add_login(email:, password: nil)
+    # end
+
+    # def remove_login(email:, password: nil)
+    # end
+
     def authenticate
       client.users.refresh(payload: payload_for_refresh)
     end
@@ -123,56 +129,43 @@ module SynapsePayRest
       Node.all(user: self, **options)
     end
 
-    # TODO: low priority
-    # def add_login(email:, password: nil)
-    # end
+    def find_node(id:)
+      Node.find(user: self, id: id)
+    end
 
-    # TODO: validate arg values in allowed range
-    # def fetch_nodes(page: 1, per_page: 20, type: nil)
-    #   authenticate
-    #   response = client.nodes.get(page: page, per_page: per_page, type: type)
-    #   # TODO
-    # end
+    def create_ach_us_node()
+    end
 
-    # def fetch_node(id:)
-    # end
+    def create_eft_ind_node()
+    end
 
-    # def create_node_synapse_us()
-    #   @nodes << node
-    # end
+    def create_eft_np_node()
+    end
 
-    # TODO: handle MFA
-    # def create_node_ach_us_via_bank_login()
-    #   @nodes << node
-    # end
+    def create_iou_node()
+    end
 
-    # def create_node_ach_us()
-    #   @nodes << node
-    # end
+    def create_reserve_us_node()
+    end
 
-    # def create_node_wire_us()
-    # end
+    def create_synapse_ind_node()
+    end
 
-    # def create_node_wire_int()
-    # end
+    def create_synapse_np_node()
+    end
+    
+    def create_synapse_us_node()
+    end
 
-    # def create_node_reserve_us()
-    # end
+    def create_wire_us_node()
+    end
 
-    # def create_node_synapse_ind()
-    # end
+    def create_wire_int_node()
+    end
 
-    # def create_node_synapse_np()
-    # end
-
-    # def create_node_eft_ind()
-    # end
-
-    # def create_node_eft_np()
-    # end
-
-    # def create_node_iou()
-    # end
+    def ==(other)
+      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+    end
 
     private
 

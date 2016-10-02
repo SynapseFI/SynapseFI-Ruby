@@ -6,7 +6,7 @@ module SynapsePayRest
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
                 :correspondent_routing_number, :correspondent_bank_name,
                 :correspondent_address, :correspondent_swift, :account_id, :balance,
-                :ifsc, :swift, :bank_long_name
+                :ifsc, :swift, :bank_long_name, :balance
 
     class << self
       def create(user:, nickname:, **options)
@@ -33,15 +33,13 @@ module SynapsePayRest
         all(user: user, page: page, per_page: per_page, type: type)
       end
 
-      private
-
       # this is implemented differently in each subclass
       def create_from_response(user, response)
         # TODO: create UnknownNodeType or something if somehow called on BaseNode
       end
 
       def create_multiple_from_response(user, response)
-        response.map { |node_data| subclass_from_response(user, node_data)}
+        response.map { |node_data| create_from_response(user, node_data)}
       end
     end
 
@@ -53,7 +51,11 @@ module SynapsePayRest
     def destroy
       user.authenticate
       response = user.client.nodes.delete(node_id: id)
-      user.nodes.delete(self)
+      nil
+    end
+
+    def ==(other)
+      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
     end
   end
 end
