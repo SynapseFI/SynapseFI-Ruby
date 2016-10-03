@@ -133,34 +133,48 @@ module SynapsePayRest
       Node.find(user: self, id: id)
     end
 
-    def create_ach_us_node()
+    def create_ach_us_node(**options)
+      AchUsNode.create(user: self, **options)
     end
 
-    def create_eft_ind_node()
+    def create_ach_us_nodes_via_bank_login(**options)
+      AchUsNode.create_via_bank_login(user: self, **options)
     end
 
-    def create_eft_np_node()
+    def create_eft_ind_node(**options)
+      EftIndNode.create(user: self, **options)
     end
 
-    def create_iou_node()
+    def create_eft_np_node(**options)
+      EftNpNode.create(user: self, **options)
     end
 
-    def create_reserve_us_node()
+    def create_iou_node(**options)
+      IouNode.create(user: self, **options)
     end
 
-    def create_synapse_ind_node()
+    def create_reserve_us_node(**options)
+      ReserveUsNode.create(user: self, **options)
     end
 
-    def create_synapse_np_node()
+    def create_synapse_ind_node(**options)
+      SynapseIndNode.create(user: self, **options)
+    end
+
+    def create_synapse_np_node(**options)
+      SynapseNpNode.create(user: self, **options)
     end
     
-    def create_synapse_us_node()
+    def create_synapse_us_node(**options)
+      SynapseUsNode.create(user: self, **options)
     end
 
-    def create_wire_us_node()
+    def create_wire_us_node(**options)
+      WireUsNode.create(user: self, **options)
     end
 
-    def create_wire_int_node()
+    def create_wire_int_node(**options)
+      WireIntNode.create(user: self, **options)
     end
 
     def ==(other)

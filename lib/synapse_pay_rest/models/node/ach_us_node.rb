@@ -52,6 +52,7 @@ module SynapsePayRest
       def create_from_response(user, response)
         args = {
           user:            user,
+          type:            response['type'],
           id:              response['_id'],
           is_active:       response['is_active'],
           account_number:  response['info']['account_num'],
@@ -67,7 +68,6 @@ module SynapsePayRest
         }
         args[:balance] = response['info']['balance']['amount'] if response['info']['balance']
         args[:currency] = response['info']['balance']['currency'] if response['info']['balance']
-        
         self.new(args)
       end
       

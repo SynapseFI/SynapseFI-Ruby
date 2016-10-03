@@ -16,10 +16,10 @@ def test_ach_us_create_args(user: test_user,
   }
 end
 
-def test_ach_us_create_via_login_args(user: test_user,
-                                      bank_name: 'bofa',
-                                      username: 'synapse_nomfa',
-                                      password: 'test1234')
+def test_ach_us_create_via_bank_login_args(user: test_user,
+                                           bank_name: 'bofa',
+                                           username: 'synapse_nomfa',
+                                           password: 'test1234')
   {
     user: user,
     bank_name: bank_name,
@@ -36,4 +36,14 @@ def test_synapse_us_create_args(user: test_user,
     nickname: nickname,
     supp_id: supp_id
   }
+end
+
+def test_two_ach_us_nodes(user: test_user)
+  args = test_ach_us_create_via_bank_login_args(user: user)
+  user.create_ach_nodes_via_bank_login(args)
+end
+
+def test_synapse_us_node(user: test_user)
+  args = test_synapse_us_create_args(user: user)
+  user.create_synapse_us_node(args)
 end

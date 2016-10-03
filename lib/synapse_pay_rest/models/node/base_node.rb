@@ -6,7 +6,7 @@ module SynapsePayRest
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
                 :correspondent_routing_number, :correspondent_bank_name,
                 :correspondent_address, :correspondent_swift, :account_id, :balance,
-                :ifsc, :swift, :bank_long_name, :balance
+                :ifsc, :swift, :bank_long_name, :balance, :type
 
     class << self
       def create(user:, nickname:, **options)

@@ -20,7 +20,7 @@ module SynapsePayRest
       def create_from_response(user, response)
         self.new(
           user:            user,
-          type:            'SYNAPSE-US',
+          type:            response['type'],
           id:              response['_id'],
           is_active:       response['is_active'],
           account_id:      response['info']['account_id'],

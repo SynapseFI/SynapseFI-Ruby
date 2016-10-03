@@ -5,40 +5,66 @@ class TransactionTest < Minitest::Test
     @user = test_user_with_two_nodes
   end
 
-  def test_create
+  def test_create_with_fee
+    from_node = @user.nodes.first
+    to_node   = @user.nodes.last
+
+    fee_node_args = test_synapse_us_create_args
+    fee_node_args.delete(:user)
+    fee_node = @user.create_synapse_us_node(fee_node_args)
+
+    refute_equal from_node.id, to_node.id
+    # need to add a type field
+    args = test_transaction_create_args(
+      node: from_node,
+      to_type: to_node.type,
+      to_id: to_node.id,
+      fee_to_id: fee_node.id
+    )
+    transaction = SynapsePayRest::Transaction.create(args)
+
+    # TODO: whatever instance variables should populate from response
+    other_instance_vars = [
+      :node, :amount, :currency, :client_id, :client_name, :created_on,
+      :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
+      :recent_status, :timeline, :from, :to, :to_type, :to_id
+    ]
+
+    assert_kind_of SynapsePayRest::BaseNode, transaction.node
+    assert_equal from_node, transaction.node
+    assert_equal to_node.id, transaction.to['id']
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      # this gets replaced by process_on
+      next if var_name == :process_in
+      if var_name == :process_on
+        assert_operator transaction.send(var_name), :>, Time.new.to_i
+      else
+        assert_equal value, transaction.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil transaction.send(var) }
+  end
+
+  def test_create_without_fee
     from_node = @user.nodes.first
     to_node   = @user.nodes.last
 
     refute_equal from_node.id, to_node.id
-
-    args = {
+    # need to add a type field
+    args = test_transaction_create_args(
       node: from_node,
-      to_type: 'SYNAPSE-US',
+      to_type: to_node.type,
       to_id: to_node.id,
-      amount: 1.10,
-      currency: 'USD',
-      supp_id: '1283764wqwsdd34wd13212',
-      note: 'Deposit to bank account',
-      process_on: 1,
-      ip: '192.168.0.1',
-      fee_amount: 1.00,
-      fee_note: 'Facilitator Fee',
-      fee_to_id: to_node.id
-    }
+      fee_to_id: nil,
+      fee_amount: nil,
+      fee_note: nil
+    )
     transaction = SynapsePayRest::Transaction.create(args)
 
-    # TODO: whatever instance variables should populate from response
-    other_instance_vars = []
-
-    assert_instance_of SynapsePayRest::Transaction, transaction.from_node
-    assert_instance_of SynapsePayRest::Transaction, transaction.to_node
-    assert_equal from_node, transaction.from_node
-    assert_equal to_node, transaction.to_node
-    # verify instance vars readable and mapped to values
-    args.each do |var_name, value|
-      assert_equal value, transaction.send(var_name)
-    end
-    other_instance_vars.each { |var| refute_nil node.send(var) }
+    assert_kind_of SynapsePayRest::BaseNode, transaction.node
+    assert_equal from_node, transaction.node
+    assert_equal to_node.id, transaction.to['id']
   end
 
   def test_create_with_insufficient_funds
@@ -51,6 +77,16 @@ class TransactionTest < Minitest::Test
   end
 
   def test_ach_returns
+    skip 'pending'
+  end
+
+  def test_find
+  end
+
+  def test_all
+  end
+
+  def test_destroy
     skip 'pending'
   end
 end

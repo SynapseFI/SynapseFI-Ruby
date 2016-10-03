@@ -12,7 +12,7 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::SynapseUsNode.create(args)
 
     other_instance_vars = [:is_active, :account_id, :balance, :currency,
-                           :name_on_account, :permissions]
+                           :name_on_account, :permissions, :type]
 
     assert_instance_of SynapsePayRest::SynapseUsNode, node
     assert_equal @user, node.user
@@ -34,7 +34,7 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::AchUsNode.create(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permissions]
+                           :permissions, :type]
 
     assert_instance_of SynapsePayRest::AchUsNode, node
     assert_equal @user, node.user
@@ -66,12 +66,12 @@ class NodeTest < Minitest::Test
 
   # TOOD: handle incorrect login info
   def test_create_ach_us_via_bank_login
-    args = test_ach_us_create_via_login_args(user: @user)
+    args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :permissions, :bank_name, :balance, :currency, :routing_number,
-                           :account_number, :account_class, :account_type]
+                           :account_number, :account_class, :account_type, :type]
 
     assert_instance_of Array, nodes
     assert_equal 2, nodes.length
@@ -86,7 +86,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_ach_us_via_bank_login_with_mfa_questions
-    args = test_ach_us_create_via_login_args(user: @user, username: 'synapse_good')
+    args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
     unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
@@ -99,7 +99,7 @@ class NodeTest < Minitest::Test
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :permissions, :bank_name, :balance, :currency, :routing_number,
-                           :account_number, :account_class, :account_type]
+                           :account_number, :account_class, :account_type, :type]
 
     nodes = @user.nodes
     assert_instance_of Array, nodes
@@ -123,7 +123,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_find
-    args = test_ach_us_create_via_login_args(user: @user)
+    args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
     node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 

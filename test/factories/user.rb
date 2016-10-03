@@ -76,7 +76,7 @@ end
 
 def test_user_with_two_nodes
   user = test_user
-  args = test_ach_us_create_via_login_args(user: user)
+  args = test_ach_us_create_via_bank_login_args(user: user)
   nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
   user
 end
