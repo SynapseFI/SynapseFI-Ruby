@@ -145,7 +145,16 @@ class UserTest < Minitest::Test
   end
 
   def test_with_multiple_base_documents
-    skip 'pending'
+    user = test_user
+    args1 = test_base_document_args_with_three_documents
+    args1.delete(:user)
+    args2 = test_base_document_args_with_three_documents
+    args2.delete(:user)
+    user.create_base_document(args1)
+    user.create_base_document(args2)
+
+    assert_equal 2, user.base_documents.length
+    refute_equal user.base_documents.first, user.base_documents.last
   end
 
   def test_add_login
@@ -202,10 +211,6 @@ class UserTest < Minitest::Test
     skip 'pending'
   end
 
-  def test_create_node
-    skip 'pending'
-  end
-
   def test_nodes
     user = test_user
     assert_empty user.nodes
@@ -218,6 +223,116 @@ class UserTest < Minitest::Test
 
   def test_find_node
     skip 'pending'
+  end
+
+  def test_create_ach_us_node
+    user = test_user
+    args = test_ach_us_create_args
+    args.delete(:user)
+    node = user.create_ach_us_node(args)
+
+    assert_instance_of SynapsePayRest::AchUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_ach_us_nodes_via_bank_login
+    user = test_user
+    args = test_ach_us_create_via_bank_login_args
+    args.delete(:user)
+    nodes = user.create_ach_us_nodes_via_bank_login(args)
+
+    assert_instance_of SynapsePayRest::AchUsNode, nodes.first
+    assert_includes user.nodes, nodes.first
+  end
+
+  def test_create_eft_ind_node
+    user = test_user
+    args = test_eft_ind_create_args
+    args.delete(:user)
+    node = user.create_eft_ind_node(args)
+
+    assert_instance_of SynapsePayRest::EftIndNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_eft_np_node
+    user = test_user
+    args = test_eft_np_create_args
+    args.delete(:user)
+    node = user.create_eft_np_node(args)
+
+    assert_instance_of SynapsePayRest::EftNpNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_iou_node
+    user = test_user
+    args = test_iou_create_args
+    args.delete(:user)
+    node = user.create_iou_node(args)
+
+    assert_instance_of SynapsePayRest::IouNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_reserve_us_node
+    user = test_user
+    args = test_reserve_us_create_args
+    args.delete(:user)
+    node = user.create_reserve_us_node(args)
+
+    assert_instance_of SynapsePayRest::ReserveUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_synapse_ind_node
+    user = test_user
+    args = test_synapse_ind_create_args
+    args.delete(:user)
+    node = user.create_synapse_ind_node(args)
+
+    assert_instance_of SynapsePayRest::SynapseIndNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_synapse_np_node
+    user = test_user
+    args = test_synapse_np_create_args
+    args.delete(:user)
+    node = user.create_synapse_np_node(args)
+
+    assert_instance_of SynapsePayRest::SynapseNpNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_synapse_us_node
+    user = test_user
+    args = test_synapse_us_create_args
+    args.delete(:user)
+    node = user.create_synapse_us_node(args)
+
+    assert_instance_of SynapsePayRest::SynapseUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_wire_us_node
+    user = test_user
+    args = test_wire_us_create_args
+    args.delete(:user)
+    node = user.create_wire_us_node(args)
+
+    assert_instance_of SynapsePayRest::WireUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_wire_int_node
+    user = test_user
+    args = test_wire_int_args
+    args.delete(:user)
+    node = user.create_wire_int_node(args)
+
+    assert_instance_of SynapsePayRest::WireIntNode, node
+    assert_includes user.nodes, node
   end
 
   def test_mfa_on_signin

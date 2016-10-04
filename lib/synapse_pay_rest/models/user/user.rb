@@ -1,8 +1,8 @@
 module SynapsePayRest
   class User
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
-                :supp_id, :is_business, :base_document_tag, :base_documents
-    attr_accessor :refresh_token
+                :supp_id, :is_business, :base_document_tag
+    attr_accessor :refresh_token, :base_documents
 
     class << self
       # TODO: simplify the logins argument

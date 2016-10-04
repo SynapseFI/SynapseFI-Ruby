@@ -5,28 +5,81 @@ class NodeTest < Minitest::Test
     @user = test_user
   end
 
-  # TODO: test with both maximum and minimum fields
-  # TODO: run through all node types when finished
-  def test_create_synapse_us_node
-    args = test_synapse_us_create_args(user: @user)
-    node = SynapsePayRest::SynapseUsNode.create(args)
+  def test_find
+    args = test_ach_us_create_via_bank_login_args(user: @user)
+    nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
-    other_instance_vars = [:is_active, :account_id, :balance, :currency,
-                           :name_on_account, :permissions, :type]
-
-    assert_instance_of SynapsePayRest::SynapseUsNode, node
-    assert_equal @user, node.user
+    assert_equal nodes.first.id, node.id
+    assert_kind_of SynapsePayRest::BaseNode, node
+    assert_instance_of SynapsePayRest::AchUsNode, node
     assert_includes @user.nodes, node
-    # verify instance vars readable and mapped to values
-    args.each do |var_name, value|
-      if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
-      else
-        assert_equal value, node.send(var_name)
-      end
+  end
+
+  def test_all
+    user = test_user_with_two_nodes
+    nodes = SynapsePayRest::Node.all(user: user)
+
+    assert_equal 2, nodes.length
+    nodes.each do |node|
+      assert_kind_of SynapsePayRest::BaseNode, node
+      assert_instance_of SynapsePayRest::AchUsNode, node
+      assert_includes user.nodes, node
     end
-    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_all_with_page_and_per_page
+    user = test_user_with_two_nodes
+
+    page1 = SynapsePayRest::Node.all(user: user, page: 1, per_page: 1)
+    assert_equal 1, page1.length
+    assert_kind_of SynapsePayRest::BaseNode, page1.first
+    assert_instance_of SynapsePayRest::AchUsNode, page1.first
+    assert_includes user.nodes, page1.first
+
+    page2 = SynapsePayRest::Node.all(user: user, page: 2, per_page: 1)
+    assert_equal 1, page2.length
+    assert_kind_of SynapsePayRest::BaseNode, page2.first
+    assert_instance_of SynapsePayRest::AchUsNode, page2.first
+    assert_includes user.nodes, page2.first
+    refute_equal page1.first.id, page2.first.id
+
+    long_page = SynapsePayRest::Node.all(user: user, page: 1, per_page: 2)
+    assert_equal 2, long_page.length
+  end
+
+  # TODO: test with more types
+  def test_by_type
+    user = test_user_with_two_nodes
+
+    ach_us_results = SynapsePayRest::Node.by_type(user: user, type: 'ACH-US')
+    assert_equal 2, ach_us_results.length
+
+    synapse_us_results = SynapsePayRest::Node.by_type(user: user, type: 'SYNAPSE-US')
+    assert_empty synapse_us_results
+  end
+
+  def test_all_with_no_nodes
+    nodes = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
+    assert_empty nodes
+  end
+
+  def test_transactions
+    skip 'pending'
+  end
+
+  def test_find_transaction
+    skip 'pending'
+  end
+
+  def test_destroy
+    user = test_user_with_two_nodes
+
+    assert_equal 2, user.nodes.length
+    user.nodes.first.destroy
+    assert_equal 1, user.nodes.length
+    user.nodes.last.destroy
+    assert_empty user.nodes
   end
 
   def test_create_ach_us_via_account_routing_numbers
@@ -122,80 +175,91 @@ class NodeTest < Minitest::Test
     skip 'pending'
   end
 
-  def test_find
-    args = test_ach_us_create_via_bank_login_args(user: @user)
-    nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
-    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
+  def test_create_eft_ind_node
+    args = test_eft_ind_create_args(user: @user)
+    node = SynapsePayRest::EftIndNode.create(args)
 
-    assert_equal nodes.first.id, node.id
-    assert_kind_of SynapsePayRest::BaseNode, node
-    assert_instance_of SynapsePayRest::AchUsNode, node
+    assert_instance_of SynapsePayRest::EftIndNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_eft_np_node
+    args = test_eft_np_create_args(user: @user)
+    node = SynapsePayRest::EftNpNode.create(args)
+
+    assert_instance_of SynapsePayRest::EftNpNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_iou_node
+    args = test_iou_create_args(user: @user)
+    node = SynapsePayRest::IouNode.create(args)
+
+    assert_instance_of SynapsePayRest::IouNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_reserve_us_node
+    args = test_reserve_us_create_args(user: @user)
+    node = SynapsePayRest::ReserveUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::ReserveUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_synapse_ind_node
+    args = test_synapse_ind_create_args(user: @user)
+    node = SynapsePayRest::SynapseIndNode.create(args)
+
+    assert_instance_of SynapsePayRest::SynapseIndNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_synapse_np_node
+    args = test_synapse_np_create_args(user: @user)
+    node = SynapsePayRest::SynapseNpNode.create(args)
+
+    assert_instance_of SynapsePayRest::SynapseNpNode, node
+    assert_includes user.nodes, node
+  end
+
+  # TODO: test with both maximum and minimum fields
+  # TODO: run through all node types when finished
+  def test_create_synapse_us_node
+    args = test_synapse_us_create_args(user: @user)
+    node = SynapsePayRest::SynapseUsNode.create(args)
+
+    other_instance_vars = [:is_active, :account_id, :balance, :currency,
+                           :name_on_account, :permissions, :type]
+
+    assert_instance_of SynapsePayRest::SynapseUsNode, node
+    assert_equal @user, node.user
     assert_includes @user.nodes, node
-  end
-
-  def test_all
-    user = test_user_with_two_nodes
-    nodes = SynapsePayRest::Node.all(user: user)
-
-    assert_equal 2, nodes.length
-    nodes.each do |node|
-      assert_kind_of SynapsePayRest::BaseNode, node
-      assert_instance_of SynapsePayRest::AchUsNode, node
-      assert_includes user.nodes, node
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
     end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
-  def test_all_with_page_and_per_page
-    user = test_user_with_two_nodes
+  def test_create_wire_us_node
+    args = test_wire_us_create_args(user: @user)
+    node = SynapsePayRest::WireUsNode.create(args)
 
-    page1 = SynapsePayRest::Node.all(user: user, page: 1, per_page: 1)
-    assert_equal 1, page1.length
-    assert_kind_of SynapsePayRest::BaseNode, page1.first
-    assert_instance_of SynapsePayRest::AchUsNode, page1.first
-    assert_includes user.nodes, page1.first
-
-    page2 = SynapsePayRest::Node.all(user: user, page: 2, per_page: 1)
-    assert_equal 1, page2.length
-    assert_kind_of SynapsePayRest::BaseNode, page2.first
-    assert_instance_of SynapsePayRest::AchUsNode, page2.first
-    assert_includes user.nodes, page2.first
-    refute_equal page1.first.id, page2.first.id
-
-    long_page = SynapsePayRest::Node.all(user: user, page: 1, per_page: 2)
-    assert_equal 2, long_page.length
+    assert_instance_of SynapsePayRest::WireUsNode, node
+    assert_includes user.nodes, node
   end
 
-  # TODO: test with more types
-  def test_by_type
-    user = test_user_with_two_nodes
+  def test_create_wire_int_node
+    args = test_wire_int_args(user: @user)
+    node = SynapsePayRest::WireIntNode.create(args)
 
-    ach_us_results = SynapsePayRest::Node.by_type(user: user, type: 'ACH-US')
-    assert_equal 2, ach_us_results.length
-
-    synapse_us_results = SynapsePayRest::Node.by_type(user: user, type: 'SYNAPSE-US')
-    assert_empty synapse_us_results
-  end
-
-  def test_all_with_no_nodes
-    nodes = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
-    assert_empty nodes
-  end
-
-  def test_transactions
-    skip 'pending'
-  end
-
-  def test_find_transaction
-    skip 'pending'
-  end
-
-  def test_destroy
-    user = test_user_with_two_nodes
-
-    assert_equal 2, user.nodes.length
-    user.nodes.first.destroy
-    assert_equal 1, user.nodes.length
-    user.nodes.last.destroy
-    assert_empty user.nodes
+    assert_instance_of SynapsePayRest::WireIntNode, node
+    assert_includes user.nodes, node
   end
 end
