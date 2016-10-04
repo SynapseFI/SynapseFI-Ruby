@@ -256,7 +256,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_wire_int_node
-    args = test_wire_int_args(user: @user)
+    args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
 
     assert_instance_of SynapsePayRest::WireIntNode, node
