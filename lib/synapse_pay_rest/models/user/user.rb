@@ -109,12 +109,33 @@ module SynapsePayRest
       base_document
     end
 
-    # TODO: low priority
-    # def add_login(email:, password: nil)
-    # end
+    def add_login(email:, password: nil, read_only: nil)
+      login = {'email' => email}
+      login['password']  = password if password
+      login['read_only'] = read_only if read_only
+      update(login: login)
+      @logins << login
+      self
+    end
 
-    # def remove_login(email:, password: nil)
-    # end
+    def remove_login(email:)
+      login = {email: email}
+      update(remove_login: login)
+      @logins.delete_if { |login| login['email'] == email }
+      self
+    end
+
+    def add_phone_number(phone_number)
+      update(phone_number: phone_number)
+      @phone_numbers << phone_number
+      self
+    end
+
+    def remove_phone_number(phone_number)
+      update(remove_phone_number: phone_number)
+      @phone_numbers.delete(phone_number)
+      self
+    end
 
     def authenticate
       client.users.refresh(payload: payload_for_refresh)
@@ -188,10 +209,10 @@ module SynapsePayRest
         'update' => {}
       }
       # must have one of these
-      payload['update']['login'] = options[:login] if options[:login]
-      payload['update']['remove_login'] = options[:remove_login] if options[:remove_login]
-      payload['update']['legal_name'] = options[:legal_name] if options[:legal_name]
-      payload['update']['phone_number'] = options[:phone_number] if options[:phone_number]
+      payload['update']['login']               = options[:login] if options[:login]
+      payload['update']['remove_login']        = options[:remove_login] if options[:remove_login]
+      payload['update']['legal_name']          = options[:legal_name] if options[:legal_name]
+      payload['update']['phone_number']        = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload
     end

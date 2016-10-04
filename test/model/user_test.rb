@@ -148,10 +148,62 @@ class UserTest < Minitest::Test
     skip 'pending'
   end
 
-  def test_fetch_nodes
-    skip 'pending'
+  def test_add_login
     user = test_user
-    user.fetch_nodes
+    login = {email: 'test@test.com', password: "letmein"}
+    user.add_login(login)
+    assert user.logins.any? { |l| l['email'] == login[:email] }
+
+    # verify added in api
+    response = test_client.users.get(user_id: user.id)
+    assert response['logins'].any? { |l| l['email'] == login[:email] }
+  end
+
+  def test_remove_login
+    user = test_user
+    login = {email: 'test@test.com', password: 'letmein'}
+    user.add_login(login)
+    assert user.logins.any? { |l| l['email'] == login[:email] }
+
+    user.remove_login(email: login[:email])
+    refute user.logins.any? { |l| l['email'] == login[:email] }
+
+    # verify removed in api
+    response = test_client.users.get(user_id: user.id)
+    refute response['logins'].any? { |l| l['email'] == login[:email] }
+  end
+
+  def test_add_phone_number
+    user = test_user
+    phone_number = '555-555-5555'
+    user.add_phone_number(phone_number)
+    assert_includes user.phone_numbers, phone_number
+
+    # verify added in api
+    response = test_client.users.get(user_id: user.id)
+    assert_includes response['phone_numbers'], phone_number
+  end
+
+  def test_remove_phone_number
+    user = test_user
+    phone_number = '555-555-5555'
+    user.add_phone_number(phone_number)
+    assert_includes user.phone_numbers, phone_number
+
+    user.remove_phone_number(phone_number)
+    refute_includes user.phone_numbers, phone_number
+
+    # verify removed in api
+    response = test_client.users.get(user_id: user.id)
+    refute_includes response['phone_numbers'], phone_number
+  end
+
+  def test_verify_fingerprint
+    skip 'pending'
+  end
+
+  def test_create_node
+    skip 'pending'
   end
 
   def test_nodes
@@ -162,10 +214,6 @@ class UserTest < Minitest::Test
     nodes = user_with_nodes.nodes
     assert_equal 2, nodes.length
     assert_kind_of SynapsePayRest::BaseNode, nodes.first
-  end
-
-  def test_create_node
-    skip 'pending'
   end
 
   def test_find_node
