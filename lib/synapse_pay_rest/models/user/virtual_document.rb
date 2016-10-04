@@ -32,12 +32,12 @@ module SynapsePayRest
       base_document_info = response['documents'].find { |d| d['id'] == base_document.id }
       ssn_docs = base_document_info['virtual_docs'].select { |doc_info| doc_info['document_type'] == 'SSN' }
       ssn_doc_info = ssn_docs.max_by { |doc_info| doc_info['last_updated'] }
-      update_from_response_fields(ssn_doc_info)
+      update_from_response(ssn_doc_info)
 
       self
     end
 
-    def update_from_response_fields(data)
+    def update_from_response(data)
       super(data)
       # handle mfa questions
       add_question_set(data['meta']['question_set']) if data['meta']

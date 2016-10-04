@@ -10,6 +10,7 @@ module SynapsePayRest
     end
 
     # TODO: raise error if already verified
+    # TODO: raise error if not a valid choice
     def answer_mfa(answer:)
       payload = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)

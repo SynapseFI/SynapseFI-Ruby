@@ -47,6 +47,10 @@ class TransactionTest < Minitest::Test
     other_instance_vars.each { |var| refute_nil transaction.send(var) }
   end
 
+  def test_create_with_multiple_fees
+    skip 'pending'
+  end
+
   def test_create_without_fee
     transaction = test_transaction(
       node:    @from_node,
@@ -109,7 +113,10 @@ class TransactionTest < Minitest::Test
     transaction.add_comment('testing 1 2 3')
 
     # verify comment added in api
-    response = @user.client.transactions.get(node_id: @from_node.id, trans_id: transaction.id)
+    response = @user.client.transactions.get(
+      node_id: @from_node.id,
+      trans_id: transaction.id
+    )
     assert_includes response['recent_status']['note'], 'testing 1 2 3'
   end
 

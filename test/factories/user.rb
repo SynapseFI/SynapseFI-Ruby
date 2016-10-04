@@ -66,7 +66,7 @@ def test_user_create_args(client: test_client,
 end
 
 def test_user_with_base_document_with_three_documents
-  args = test_base_document_fields_with_three_documents
+  args = test_base_document_args_with_three_documents
   # remove user key since create_base_document does not accept a user argument
   args.delete(:user)
   user = test_user
@@ -82,7 +82,7 @@ def test_user_with_two_nodes
 end
 
 def test_user_with_one_base_document
-  args = test_base_document_fields
+  args = test_base_document_args
   args.delete(:user)
   test_user.create_base_document(args)
 end

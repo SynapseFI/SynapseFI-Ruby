@@ -29,13 +29,13 @@ module SynapsePayRest
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
-            PhysicalDocument.create_from_response_fields(data)
+            PhysicalDocument.create_from_response(data)
           end
           social_docs = base_document_data['social_docs'].map do |data|
-            SocialDocument.create_from_response_fields(data)
+            SocialDocument.create_from_response(data)
           end
           virtual_docs = base_document_data['virtual_docs'].map do |data|
-            VirtualDocument.create_from_response_fields(data)
+            VirtualDocument.create_from_response(data)
           end
 
           BaseDocument.new(user: user, id: base_document_data['id'], name: base_document_data['name'],
@@ -75,6 +75,7 @@ module SynapsePayRest
     # TODO: handle when user tries to update a new doc instead of existing
     # TODO: important to determine which documents overwrite and which duplicate
     def update(**changes)
+      user.authenticate
       payload = payload_for_update(changes)
       response = user.client.users.update(payload: payload)
 
@@ -83,6 +84,18 @@ module SynapsePayRest
       update_document_values_with_response_data(response)
 
       self
+    end
+
+    def add_physical_documents(documents)
+      update(physical_documents: documents)
+    end
+
+    def add_social_documents(documents)
+      update(social_documents: documents)
+    end
+
+    def add_virtual_documents(documents)
+      update(virtual_documents: documents)
     end
 
     private
@@ -137,19 +150,16 @@ module SynapsePayRest
       }
 
       changes.each do |field, new_value|
+        # TODO: refactor/DRY
+        # convert docs to their hash form for json prep and insert into payload
         if field == :physical_documents
-          payload['documents'].first['physical_docs'] = physical_documents.map do |doc|
-            doc.to_hash
-          end
+          payload['documents'].first['physical_docs'] = new_value.map { |doc| doc.to_hash }
         elsif field == :social_documents
-          payload['documents'].first['social_docs'] = social_documents.map do |doc|
-            doc.to_hash
-          end
+          payload['documents'].first['social_docs'] = new_value.map { |doc| doc.to_hash }
         elsif field == :virtual_documents
-          payload['documents'].first['virtual_docs'] = virtual_documents.map do |doc|
-            doc.to_hash
-          end
+          payload['documents'].first['virtual_docs'] = new_value.map { |doc| doc.to_hash }
         else
+          # insert non-document fields into payload
           payload['documents'].first[field.to_s] = new_value
         end
       end
@@ -169,24 +179,10 @@ module SynapsePayRest
       end
     end
 
-    # TODO: move some of this logic to Document
     def update_document_values_with_response_data(response)
-      if id
-        # updated values, find base_document doc by id. id 
-        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
-        # sometimes id from API changes :(
-        if base_document_fields.nil? 
-          base_document_fields = response['documents'].last
-          self.id = base_document_fields['id']
-        end
-      else
-        # first time values, use latest base_document doc if multiple
-        base_document_fields = response['documents'].last
-        self.id = base_document_fields['id']
-      end
+      base_document_fields = base_document_fields_from_response(response)
 
       [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
-
         if doc.is_a? PhysicalDocument
           same_types = base_document_fields['physical_docs'].select do |resp_doc|
             resp_doc['document_type'] == doc.type
@@ -201,27 +197,45 @@ module SynapsePayRest
           end
         end
 
-        # this probably won't work if there are multiple of same type
+        # assumes the most recently updated is the correct data to use
         doc_data = same_types.max_by { |x| x['last_updated'] }
-        doc.update_from_response_fields(doc_data)
+        doc.update_from_response(doc_data)
       end
 
       self
     end
 
+    def base_document_fields_from_response(response)
+      if id
+        # updated values, find base_document doc by id.
+        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
+        # sometimes doc id changes so assume last one is the correct one
+        if base_document_fields.nil? 
+          base_document_fields = response['documents'].last
+          self.id = base_document_fields['id']
+        end
+      else
+        # first time submission, use last base_document for id if multiple
+        base_document_fields = response['documents'].last
+        self.id = base_document_fields['id']
+      end
+      base_document_fields
+    end
+
     # updates changed values that don't come back in response data
     def update_values_not_verified_in_response(changes)
       changes.each do |field, new_value|
+        # handle instantiation of docs
         if [:physical_documents, :social_documents, :virtual_documents].include? field
           new_value.each do |doc|
             doc.id = id
             doc.base_document = self
             physical_documents << doc if doc.is_a? PhysicalDocument
-            social_documents << doc if doc.is_a? SocialDocument
-            virtual_documents << doc if doc.is_a? VirtualDocument
+            social_documents   << doc if doc.is_a? SocialDocument
+            virtual_documents  << doc if doc.is_a? VirtualDocument
           end
+        # handle other response values by updating instance vars
         else
-          # use attr_accessor to update instance variables
           self.send("#{field}=", new_value)
         end
       end

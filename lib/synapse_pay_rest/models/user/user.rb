@@ -1,8 +1,8 @@
 module SynapsePayRest
   class User
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
-                :supp_id, :is_business, :base_document_tag
-    attr_accessor :refresh_token, :base_documents
+                :supp_id, :is_business, :base_document_tag, :base_documents
+    attr_accessor :refresh_token
 
     class << self
       # TODO: simplify the logins argument
@@ -17,7 +17,6 @@ module SynapsePayRest
         create_from_response(client, response)
       end
 
-      # TODO: handle error if id not found
       # used to fetch an existing user
       def find(client:, id:)
         response = client.users.get(user_id: id)
@@ -56,17 +55,17 @@ module SynapsePayRest
 
       # builds a user object from a user response
       def create_from_response(client, response)
-        user = User.new(
-          client:        client,
-          id:            response['_id'],
-          refresh_token: response['refresh_token'],
-          logins:        response['logins'],
-          phone_numbers: response['phone_numbers'],
-          legal_names:   response['legal_names'],
-          note:          response['extra']['note'],
-          supp_id:       response['extra']['supp_id'],
-          is_business:   response['extra']['is_business'],
-          base_document_tag:       response['extra']['base_document_tag']
+        user = self.new(
+          client:            client,
+          id:                response['_id'],
+          refresh_token:     response['refresh_token'],
+          logins:            response['logins'],
+          phone_numbers:     response['phone_numbers'],
+          legal_names:       response['legal_names'],
+          note:              response['extra']['note'],
+          supp_id:           response['extra']['supp_id'],
+          is_business:       response['extra']['is_business'],
+          base_document_tag: response['extra']['base_document_tag']
         )
 
         unless response['documents'].empty?

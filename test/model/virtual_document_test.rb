@@ -3,7 +3,7 @@ require 'test_helper'
 class VirtualDocumentTest < Minitest::Test
   def test_ssn_failed
     ssn = '1111'
-    base_document_info = test_base_document_fields
+    base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
     base_document_info[:virtual_documents] = [ssn_doc]
     base_document = SynapsePayRest::BaseDocument.create(base_document_info)
@@ -14,7 +14,7 @@ class VirtualDocumentTest < Minitest::Test
 
   def test_ssn_successful
     ssn = '2222'
-    base_document_info = test_base_document_fields
+    base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
     base_document_info[:virtual_documents] = [ssn_doc]
     base_document = SynapsePayRest::BaseDocument.create(base_document_info)
@@ -25,7 +25,7 @@ class VirtualDocumentTest < Minitest::Test
 
   def test_ssn_partially_successful_with_kba_and_correct_answers
     ssn = '3333'
-    base_document_info = test_base_document_fields
+    base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
     base_document_info[:virtual_documents] = [ssn_doc]
     base_document = SynapsePayRest::BaseDocument.create(base_document_info)
@@ -43,7 +43,7 @@ class VirtualDocumentTest < Minitest::Test
 
   def test_ssn_partially_successful_with_kba_and_incorrect_answers
     ssn = '3333'
-    base_document_info = test_base_document_fields
+    base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
     base_document_info[:virtual_documents] = [ssn_doc]
     base_document = SynapsePayRest::BaseDocument.create(base_document_info)

@@ -59,7 +59,7 @@ module SynapsePayRest
 
     def destroy
       user.authenticate
-      response = user.client.nodes.delete(node_id: id)
+      user.client.nodes.delete(node_id: id)
       nil
     end
 

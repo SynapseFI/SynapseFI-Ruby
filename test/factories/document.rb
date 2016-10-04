@@ -7,8 +7,8 @@ end
 
 def test_social_document
   SynapsePayRest::SocialDocument.create(
-    type: 'PHONE_NUMBER',
-    value: '415-555-5555'
+    type: 'FACEBOOK',
+    value: 'facebook.com/mctesterson'
   )
 end
 

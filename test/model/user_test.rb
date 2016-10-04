@@ -57,7 +57,9 @@ class UserTest < Minitest::Test
   end
 
   def test_find_user_with_non_existent_id_raises_error
-    skip 'pending'
+    assert_raises SynapsePayRest::Error::NotFound do
+      SynapsePayRest::User.find(client: test_client, id: '1234567890')
+    end
   end
 
   def test_all
@@ -133,7 +135,7 @@ class UserTest < Minitest::Test
 
   def test_create_base_document
     user = test_user
-    args = test_base_document_fields_with_three_documents
+    args = test_base_document_args_with_three_documents
     args.delete(:user)
     user.create_base_document(args)
 

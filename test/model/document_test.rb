@@ -22,7 +22,7 @@ class DocumentTest < Minitest::Test
   end
 
   def test_status_updated_on_submission
-    base_document = SynapsePayRest::BaseDocument.create(test_base_document_fields_with_three_documents)
+    base_document = SynapsePayRest::BaseDocument.create(test_base_document_args_with_three_documents)
     doc = base_document.virtual_documents.first
 
     refute_nil doc.status

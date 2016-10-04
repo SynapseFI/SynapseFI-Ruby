@@ -9,7 +9,7 @@ module SynapsePayRest
         self.new(type: type, value: value)
       end
 
-      def create_from_response_fields(data)
+      def create_from_response(data)
         self.new(type: data['document_type'], id: data['id'],
           last_updated: data['last_updated'], status: data['status'])
       end
@@ -21,7 +21,7 @@ module SynapsePayRest
       # only exist for created (not for fetched)
       @id           = options[:id]
       @value        = options[:value]
-      # must be fetched
+      # only exist for fetched data
       @status       = options[:status]
       @last_updated = options[:last_updated]
     end
@@ -30,7 +30,7 @@ module SynapsePayRest
       {'document_value' => value, 'document_type' => type}
     end
 
-    def update_from_response_fields(data)
+    def update_from_response(data)
       self.id           = data['id']
       self.status       = data['status']
       self.last_updated = data['last_updated']
