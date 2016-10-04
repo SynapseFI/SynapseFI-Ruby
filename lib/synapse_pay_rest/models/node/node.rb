@@ -33,14 +33,14 @@ module SynapsePayRest
 
       # TODO: allow user or user_id
       # TODO: validate arguments in valid range / type options
-      def all(user:, page: 1, per_page: 20, type: nil)
+      def all(user:, page: nil, per_page: nil, type: nil)
         user.authenticate
         response = user.client.nodes.get(page: page, per_page: per_page, type: type)
         create_multiple_from_response(user, response['nodes'])
       end
 
       # TODO: allow user or user_id
-      def by_type(user:, type:, page: 1, per_page: 20)
+      def by_type(user:, type:, page: nil, per_page: nil)
         all(user: user, page: page, per_page: per_page, type: type)
       end
 

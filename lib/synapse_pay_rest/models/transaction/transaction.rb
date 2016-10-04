@@ -26,9 +26,9 @@ module SynapsePayRest
       end
 
       # TODO: allow node or node_id
-      def all(node:, page: 1, per_page: 20)
+      def all(node:, page: nil, per_page: nil)
         node.user.authenticate
-        response = node.user.client.trans.get(node_id: node.id)
+        response = node.user.client.trans.get(node_id: node.id, page: page, per_page: per_page)
         create_multiple_from_response(node, response['trans'])
       end
 

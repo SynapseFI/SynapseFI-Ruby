@@ -24,13 +24,13 @@ module SynapsePayRest
       end
 
       # fetches data for multiple users
-      def all(client:, page: 1, per_page: 20, query: nil)
+      def all(client:, page: nil, per_page: nil, query: nil)
         response = client.users.get(page: page, per_page: per_page, query: query)
         response['users'].map { |data| create_from_response(client, data) }
       end
 
       # fetches data for users matching query in name/email
-      def search(client:, query:, page: 1, per_page: 20)
+      def search(client:, query:, page: nil, per_page: nil)
         all(client: client, query: query, page: page, per_page: per_page)
       end
 

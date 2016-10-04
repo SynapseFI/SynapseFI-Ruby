@@ -6,7 +6,7 @@ module SynapsePayRest
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
                 :correspondent_routing_number, :correspondent_bank_name,
                 :correspondent_address, :correspondent_swift, :account_id, :balance,
-                :ifsc, :swift, :bank_long_name, :balance, :type
+                :ifsc, :swift, :bank_long_name, :balance, :type, :gateway_restricted
 
     class << self
       def create(user:, nickname:, **options)
@@ -23,20 +23,49 @@ module SynapsePayRest
       end
 
       # TODO: validate arguments in valid range / type options
-      def all(user:, page: 1, per_page: 20, type: nil)
+      def all(user:, page: nil, per_page: nil, type: nil)
         user.authenticate
         response = user.client.nodes.get(page: page, per_page: per_page, type: type)
         create_multiple_from_response(user, response['nodes'])
       end
 
-      def by_type(user:, type:, page: 1, per_page: 20)
-        all(user: user, page: page, per_page: per_page, type: type)
+      def by_type(user:, type:, page: nil, per_page: nil)
+        all(user: user, type: type, page: page, per_page: per_page,)
       end
 
-      # TODO: this is implemented differently in each subclass. can prob 
-      # benefit from inheritance
       def create_from_response(user, response)
-        # TODO: create UnknownNodeType or something if somehow called on BaseNode
+        args = {
+          user:            user,
+          type:            response['type'],
+          id:              response['_id'],
+          is_active:       response['is_active'],
+          permissions:     response['allowed'],
+          nickname:        response['info']['nickname'],
+          name_on_account: response['info']['name_on_account'],
+          bank_long_name:  response['info']['bank_long_name'],
+          bank_name:       response['info']['bank_name'],
+          account_number:  response['info']['account_num'],
+          routing_number:  response['info']['routing_num'],
+          address:         response['info']['address'],
+          account_number:  response['info']['account_num'],
+          address:         response['info']['address'],
+          swift:           response['info']['swift'],
+        }
+
+        if response['info']['correspondent_info']
+          args[:correspondent_swift]           = response['info']['correspondent_info']['swift']
+          args[:correspondent_bank_name]       = response['info']['correspondent_info']['bank_name']
+          args[:correspondent_routing_number]  = response['info']['correspondent_info']['routing_num']
+          args[:correspondent_address]         = response['info']['correspondent_info']['address']
+          args[:correspondent_swift]           = response['info']['correspondent_info']['swift']
+        end
+
+        if response['extra']
+          args[:supp_id]            = response['extra']['supp_id']
+          args[:gateway_restricted] = response['extra']['gateway_restricted']
+        end
+        
+        self.new(**args)
       end
 
       def create_multiple_from_response(user, response)
