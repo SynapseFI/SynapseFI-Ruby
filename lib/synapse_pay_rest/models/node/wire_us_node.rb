@@ -10,10 +10,10 @@ module SynapsePayRest
           account_number: account_number,
           routing_number: routing_number,
           name_on_account: name_on_account,
-          address: address,
-          options: options
-        }
-        super(args.merge(options))
+          address: address
+        }.merge(options)
+        
+        super(args)
       end
     end
   end

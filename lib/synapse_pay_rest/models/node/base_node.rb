@@ -47,24 +47,23 @@ module SynapsePayRest
           account_number:  response['info']['account_num'],
           routing_number:  response['info']['routing_num'],
           address:         response['info']['address'],
-          account_number:  response['info']['account_num'],
-          address:         response['info']['address'],
           swift:           response['info']['swift'],
+          ifsc:            response['info']['ifsc']
         }
 
         if response['info']['correspondent_info']
-          args[:correspondent_swift]           = response['info']['correspondent_info']['swift']
-          args[:correspondent_bank_name]       = response['info']['correspondent_info']['bank_name']
-          args[:correspondent_routing_number]  = response['info']['correspondent_info']['routing_num']
-          args[:correspondent_address]         = response['info']['correspondent_info']['address']
-          args[:correspondent_swift]           = response['info']['correspondent_info']['swift']
+          args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
+          args[:correspondent_bank_name]      = response['info']['correspondent_info']['bank_name']
+          args[:correspondent_routing_number] = response['info']['correspondent_info']['routing_num']
+          args[:correspondent_address]        = response['info']['correspondent_info']['address']
+          args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
         end
 
         if response['extra']
           args[:supp_id]            = response['extra']['supp_id']
           args[:gateway_restricted] = response['extra']['gateway_restricted']
         end
-        
+
         self.new(**args)
       end
 

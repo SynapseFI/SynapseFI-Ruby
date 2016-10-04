@@ -4,7 +4,7 @@ def test_client(client_id: ENV.fetch('CLIENT_ID'),
                 ip_address: '127.0.0.1',
                 development_mode: true,
                 user_id: nil,
-                logging: false)
+                logging: true)
   options = {
     'client_id'        => client_id,
     'client_secret'    => client_secret,

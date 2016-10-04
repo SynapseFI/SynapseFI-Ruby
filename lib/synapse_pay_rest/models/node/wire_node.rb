@@ -25,7 +25,7 @@ module SynapsePayRest
         extra = {}
         extra['supp_id']            = options[:supp_id] if options[:supp_id]
         extra['gateway_restricted'] = options[:gateway_restricted] if options[:gateway_restricted]
-        payload[:extra] = extra if extra.any?
+        payload['extra'] = extra if extra.any?
         payload
       end
     end

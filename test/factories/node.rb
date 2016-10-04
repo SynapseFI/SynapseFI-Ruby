@@ -14,6 +14,7 @@ def test_ach_us_create_args(user: test_user,
     account_type: account_type,
     account_class: account_class,
     supp_id: supp_id,
+    gateway_restricted: gateway_restricted
   }
 end
 
@@ -29,6 +30,44 @@ def test_ach_us_create_via_bank_login_args(user: test_user,
   }
 end
 
+def test_eft_ind_create_args(user: test_user,
+                             nickname: 'Test EFT-IND Account',
+                             ifsc: 'BKID0005046',
+                             account_number: Faker::Number.number(10).to_s,
+                             supp_id: Faker::Number.number(10).to_s,
+                             gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    ifsc: ifsc,
+    account_number: account_number,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
+end
+
+def test_eft_np_create_args(user: test_user,
+                            nickname: 'Test EFT-NP Account',
+                            bank_name: 'Siddhartha Bank',
+                            account_number: Faker::Number.number(10).to_s,
+                            supp_id: Faker::Number.number(10).to_s,
+                            gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    bank_name: bank_name,
+    account_number: account_number,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
+end
+
+def test_iou_create_args()
+end
+
+def test_reserve_us_create_args()
+end
+
 def test_synapse_us_create_args(user: test_user,
                                 nickname: 'Test Synapse-US Account',
                                 supp_id: Faker::Number.number(10).to_s,
@@ -36,7 +75,8 @@ def test_synapse_us_create_args(user: test_user,
   {
     user: user,
     nickname: nickname,
-    supp_id: supp_id
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
   }
 end
 
@@ -100,7 +140,7 @@ def test_wire_us_create_args(user: test_user,
   }
 end
 
-def test_one_ach_us_node(user: test_user)
+def test_ach_us_node(user: test_user)
   user.create_ach_us_node(test_ach_us_create_args(user: user))
 end
 

@@ -180,7 +180,21 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::EftIndNode.create(args)
 
     assert_instance_of SynapsePayRest::EftIndNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number, :ifsc].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_eft_np_node
@@ -188,7 +202,21 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::EftNpNode.create(args)
 
     assert_instance_of SynapsePayRest::EftNpNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_iou_node
@@ -196,7 +224,21 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::IouNode.create(args)
 
     assert_instance_of SynapsePayRest::IouNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_reserve_us_node
@@ -204,7 +246,21 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::ReserveUsNode.create(args)
 
     assert_instance_of SynapsePayRest::ReserveUsNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_synapse_ind_node
@@ -212,7 +268,21 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::SynapseIndNode.create(args)
 
     assert_instance_of SynapsePayRest::SynapseIndNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_synapse_np_node
@@ -220,11 +290,24 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::SynapseNpNode.create(args)
 
     assert_instance_of SynapsePayRest::SynapseNpNode, node
-    assert_includes user.nodes, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permissions, :type]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        # these are sliced to last 4 digits in response
+        assert_equal value[-4..-1], node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   # TODO: test with both maximum and minimum fields
-  # TODO: run through all node types when finished
   def test_create_synapse_us_node
     args = test_synapse_us_create_args(user: @user)
     node = SynapsePayRest::SynapseUsNode.create(args)
@@ -250,7 +333,7 @@ class NodeTest < Minitest::Test
   def test_create_wire_int_node
     args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
-
+  binding.pry
     other_instance_vars = [:is_active, :permissions, :type]
 
     assert_instance_of SynapsePayRest::WireIntNode, node

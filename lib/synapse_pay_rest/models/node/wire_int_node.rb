@@ -8,11 +8,10 @@ module SynapsePayRest
           nickname: nickname,
           bank_name: bank_name,
           account_number: account_number,
-          swift: swift,
           name_on_account: name_on_account,
           address: address
-        }
-        payload = super(args.merge(options))
+        }.merge(options)
+        payload = super(args)
         payload['info']['swift'] = swift
         payload
       end
