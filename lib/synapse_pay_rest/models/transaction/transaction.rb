@@ -1,12 +1,13 @@
 module SynapsePayRest
   class Transaction
-    attr_reader :node, :amount, :currency, :client_id, :client_name, :created_on,
+    attr_reader :node, :id, :amount, :currency, :client_id, :client_name, :created_on,
                 :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
                 :recent_status, :timeline, :from, :to, :to_type, :to_id,
                 :fee_amount, :fee_note, :fee_to_id
 
     class << self
       # TODO: validate args types
+      # TODO: allow node or node_id
       # TODO: allow either to_node or to_type/to_id
       # TODO: allow node to be entered to fee_to node s alternative
       def create(node:, to_type:, to_id:, amount:, currency:, ip:, **options)
@@ -17,12 +18,18 @@ module SynapsePayRest
         create_from_response(node, response)
       end
 
+      # TODO: allow node or node_id
       def find(node:, id:)
         node.user.authenticate
+        response = node.user.client.trans.get(node_id: node.id, trans_id: id)
+        create_from_response(node, response)
       end
 
+      # TODO: allow node or node_id
       def all(node:, page: 1, per_page: 20)
         node.user.authenticate
+        response = node.user.client.trans.get(node_id: node.id)
+        create_multiple_from_response(node, response['trans'])
       end
 
       private
@@ -68,6 +75,7 @@ module SynapsePayRest
       def create_from_response(node, response)
         args = {
           node:          node,
+          id:            response['_id'],
           amount:        response['amount']['amount'],
           currency:      response['amount']['currency'],
           client_id:     response['client']['id'],
@@ -104,6 +112,17 @@ module SynapsePayRest
 
     def ==(other)
       other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+    end
+
+    def add_comment(comment)
+      payload = {'comment': comment}
+      node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
+      self
+    end
+
+    def cancel
+      node.user.client.trans.delete(node_id: node.id, trans_id: id)
+      nil
     end
   end
 end

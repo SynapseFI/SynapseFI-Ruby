@@ -24,12 +24,14 @@ module SynapsePayRest
         create_from_response(user, response['nodes'].first)
       end
 
+      # TODO: allow user or user_id
       def find(user:, id:)
         user.authenticate
         response = user.client.nodes.get(user_id: user.id, node_id: id)
         create_from_response(user, response)
       end
 
+      # TODO: allow user or user_id
       # TODO: validate arguments in valid range / type options
       def all(user:, page: 1, per_page: 20, type: nil)
         user.authenticate
@@ -37,6 +39,7 @@ module SynapsePayRest
         create_multiple_from_response(user, response['nodes'])
       end
 
+      # TODO: allow user or user_id
       def by_type(user:, type:, page: 1, per_page: 20)
         all(user: user, page: page, per_page: per_page, type: type)
       end

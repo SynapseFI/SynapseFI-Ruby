@@ -36,29 +36,28 @@ module SynapsePayRest
       client.get(path)
     end
 
-    def create(payload: raise('payload is required'))
+    def create(payload:)
       path = create_user_path
       response = client.post(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
       response
     end
 
-    # TODO: refactor to automate oauth
-    def refresh(payload: raise('payload is required'))
+    def refresh(payload:)
       path = "/oauth/#{@client.user_id}"
       response = @client.post(path, payload)
       client.update_headers(oauth_key: response['oauth_key']) if response['oauth_key']
       response
     end
 
-    def update(payload: raise('payload is required'))
+    def update(payload:)
       path = create_user_path(user_id: client.user_id)
       response = client.patch(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
       response
     end
 
-    def encode_attachment(file_path: raise('file_path is required'), file_type: nil)
+    def encode_attachment(file_path:, file_type: nil)
       # try to find file_type
       if file_type.nil?
         content_types = MIME::Types.type_for(file_path)
@@ -77,17 +76,17 @@ module SynapsePayRest
     end
 
     # this is just an alias for update. leaving here for legacy users.
-    def answer_kba(payload: raise("payload is required"))
+    def answer_kba(payload:)
       update(payload: payload)
     end
 
     # this is just an alias for update. leaving here for legacy users.
-    def add_doc(payload: raise("payload is required"))
+    def add_doc(payload:)
       update(payload: payload)
     end
 
     # deprecated
-    def attach_file(file_path: raise("file_path is required"))
+    def attach_file(file_path:)
       warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
 
       file_contents = open(file_path) { |f| f.read }
@@ -101,7 +100,7 @@ module SynapsePayRest
     end
 
     # deprecated
-    def attach_file_with_file_type(file_path: raise('file_path is required'), file_type: raise('file_type is required'))
+    def attach_file_with_file_type(file_path:, file_type:)
       warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
 
       path = create_user_path(user_id: @client.user_id)

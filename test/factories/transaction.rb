@@ -7,9 +7,9 @@ def test_transaction_create_args(node:,
                                  note: Faker::Hipster.sentence(3),
                                  process_in: 1,
                                  ip: '127.0.0.1',
-                                 fee_amount: rand(1.00..2.00).round(2),
-                                 fee_note: 'Facilitator Fee',
-                                 fee_to_id: to_id)
+                                 fee_amount: nil,
+                                 fee_note: nil,
+                                 fee_to_id: nil)
   {
     node: node,
     to_type: to_type,
@@ -24,4 +24,9 @@ def test_transaction_create_args(node:,
     fee_note: fee_note,
     fee_to_id: fee_to_id
   }
+end
+
+def test_transaction(node:, to_type:, to_id:)
+    args = test_transaction_create_args(node: node, to_type: to_type, to_id: to_id)
+    SynapsePayRest::Transaction.create(args)
 end

@@ -181,6 +181,14 @@ class NodeTest < Minitest::Test
     assert_empty nodes
   end
 
+  def test_transactions
+    skip 'pending'
+  end
+
+  def test_find_transaction
+    skip 'pending'
+  end
+
   def test_destroy
     user = test_user_with_two_nodes
 

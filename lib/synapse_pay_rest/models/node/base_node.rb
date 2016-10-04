@@ -33,7 +33,8 @@ module SynapsePayRest
         all(user: user, page: page, per_page: per_page, type: type)
       end
 
-      # this is implemented differently in each subclass
+      # TODO: this is implemented differently in each subclass. can prob 
+      # benefit from inheritance
       def create_from_response(user, response)
         # TODO: create UnknownNodeType or something if somehow called on BaseNode
       end
@@ -46,6 +47,14 @@ module SynapsePayRest
     # TODO: prevent initializing directly?
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
+    end
+
+    def transactions(**options)
+      Transaction.all(node: self, **options)
+    end
+
+    def find_transaction(id:)
+      Transaction.find(node: self, id: id)
     end
 
     def destroy

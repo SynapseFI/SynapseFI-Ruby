@@ -24,28 +24,28 @@ module SynapsePayRest
       client.get(path)
     end
 
-    def post(payload: raise('payload is required'))
+    def post(payload:)
       path = create_node_path
       client.post(path, payload)
     end
 
-    def patch(node_id: raise('node_id is required'), payload: raise('payload is required'))
+    def patch(node_id:, payload:)
       path = create_node_path(node_id: node_id)
       @client.patch(path, payload)
     end
 
-    def delete(node_id: raise('node_id is required'))
+    def delete(node_id:)
       path = create_node_path(node_id: node_id)
       client.delete(path)
     end
 
     # alias for post
-    def add(payload: raise('payload is required'))
+    def add(payload:)
       post(payload: payload)
     end
 
     # just forwards args to other methods now
-    def verify(node_id: nil, payload: raise('payload is required'))
+    def verify(node_id: nil, payload:)
       if node_id
         # verify microdeposits
         patch(node_id: node_id, payload: payload)
