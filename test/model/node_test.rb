@@ -8,12 +8,22 @@ class NodeTest < Minitest::Test
   def test_find
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    # with user object
     node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
     assert_equal nodes.first.id, node.id
     assert_kind_of SynapsePayRest::BaseNode, node
     assert_instance_of SynapsePayRest::AchUsNode, node
     assert_includes @user.nodes, node
+
+    # try with user id
+    node2 = SynapsePayRest::Node.find(user: @user.id, id: nodes.first.id)
+
+    assert_equal nodes.first.id, node2.id
+    assert_kind_of SynapsePayRest::BaseNode, node2
+    assert_instance_of SynapsePayRest::AchUsNode, node2
+    assert_includes @user.nodes, node2
   end
 
   def test_all
@@ -48,7 +58,11 @@ class NodeTest < Minitest::Test
     assert_equal 2, long_page.length
   end
 
-  # TODO: test with more types
+  def test_all_with_no_nodes
+    nodes = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
+    assert_empty nodes
+  end
+
   def test_by_type
     user = test_user_with_two_nodes
 
@@ -57,11 +71,12 @@ class NodeTest < Minitest::Test
 
     synapse_us_results = SynapsePayRest::Node.by_type(user: user, type: 'SYNAPSE-US')
     assert_empty synapse_us_results
-  end
 
-  def test_all_with_no_nodes
-    nodes = SynapsePayRest::Node.all(user: @user, page: 1, per_page: 1)
-    assert_empty nodes
+    # create 2 synapse-us nodes
+    test_synapse_us_node(user: user)
+    test_synapse_us_node(user: user)
+    synapse_us_results2 = SynapsePayRest::Node.by_type(user: user, type: 'SYNAPSE-US')
+    assert_equal 2, synapse_us_results2.length
   end
 
   def test_transactions
@@ -131,14 +146,34 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_ach_us_with_wrong_acct_routing
-    skip 'pending'
+    args = test_ach_us_create_args(user: @user, routing_number: '11111')
+    assert_raises(SynapsePayRest::Error) { SynapsePayRest::AchUsNode.create(args) }
   end
 
   def test_create_ach_us_with_wrong_microdeposit
-    skip 'pending'
+    args = test_ach_us_create_args(user: @user)
+    node = SynapsePayRest::AchUsNode.create(args)
+
+    assert_equal 'CREDIT', node.permissions
+    # verify microdeposits
+    assert_raises(SynapsePayRest::Error) { node.verify_microdeposits(amount1: 0.2, amount2: 0.2) }
+    assert_equal 'CREDIT', node.permissions
   end
 
-  # TOOD: handle incorrect login info
+  def test_create_ach_us_with_microdeposit_and_already_verified
+    args = test_ach_us_create_args(user: @user)
+    node = SynapsePayRest::AchUsNode.create(args)
+
+    assert_equal 'CREDIT', node.permissions
+    # verify microdeposits
+    node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+    assert_equal 'CREDIT-AND-DEBIT', node.permissions
+
+    # verify again
+    assert_raises(SynapsePayRest::Error) {node.verify_microdeposits(amount1: 0.2, amount2: 0.2)}
+    assert_equal 'CREDIT-AND-DEBIT', node.permissions
+  end
+
   def test_create_ach_us_via_bank_login
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
@@ -159,17 +194,22 @@ class NodeTest < Minitest::Test
     end
   end
 
+  def test_create_ach_us_via_bank_login_with_wrong_login
+    args = test_ach_us_create_via_bank_login_args(user: @user, password: 'foo')
+    assert_raises(SynapsePayRest::Error) { SynapsePayRest::AchUsNode.create_via_bank_login(args) }
+  end
+
   def test_create_ach_us_via_bank_login_with_mfa_questions
     args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
     unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
-    assert unverified_node.mfa_verified == false
+    refute unverified_node.mfa_verified
     refute_nil unverified_node.mfa_access_token
     refute_nil unverified_node.mfa_message
 
     unverified_node.answer_mfa(answer: 'test_answer')
-    assert unverified_node.mfa_verified == true
+    assert unverified_node.mfa_verified
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :permissions, :bank_name, :balance, :currency, :routing_number,
@@ -188,12 +228,15 @@ class NodeTest < Minitest::Test
     end
   end
 
-  def test_create_ach_us_via_bank_login_with_wrong_login
-    skip 'pending'
-  end
-
   def test_create_ach_us_via_bank_login_with_wrong_mfa_answers
-    skip 'pending'
+    args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
+    unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
+    refute unverified_node.mfa_verified
+
+    unverified_node.answer_mfa(answer: 'wrong')
+    refute unverified_node.mfa_verified
   end
 
   def test_create_eft_ind_node

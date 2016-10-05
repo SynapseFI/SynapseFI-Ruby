@@ -7,6 +7,8 @@ module SynapsePayRest
     private
 
     def to_base64(file_path)
+      raise ArgumentError, 'file_path must be a String' unless file_path.is_a?(String)
+
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
       file_contents = open(file_path) { |f| f.read }

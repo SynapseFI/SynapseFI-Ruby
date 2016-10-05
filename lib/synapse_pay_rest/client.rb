@@ -4,7 +4,7 @@ module SynapsePayRest
 
     def initialize(client_id:, client_secret:, ip_address:, fingerprint: nil, user_id: nil,
                    development_mode: false, **options)
-      # keeping the options['development_mode'] alterative for backwards compatibility
+      # keeping the options['development_mode'] alternative for backwards compatibility
       base_url = if development_mode || options['development_mode']
                    'https://sandbox.synapsepay.com/api/3'
                  else

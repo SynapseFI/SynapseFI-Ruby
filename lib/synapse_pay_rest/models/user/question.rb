@@ -10,7 +10,7 @@ module SynapsePayRest
     end
 
     def choice=(answer_number)
-      raise ArgumentError, 'must be an Integer' unless answer_number.is_a?(Integer)
+      raise ArgumentError, 'answer_number must be an Integer' unless answer_number.is_a?(Integer)
       unless answers.keys.include? answer_number
         raise ArgumentError, "answer given must be in #{answers.keys}"
       end

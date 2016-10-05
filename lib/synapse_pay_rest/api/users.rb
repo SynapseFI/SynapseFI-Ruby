@@ -3,7 +3,6 @@ require 'base64'
 require 'open-uri'
 
 module SynapsePayRest
-  # TODO: validate payloads are in proper format
   class Users
     # TODO: Should refactor this to HTTPClient
     VALID_QUERY_PARAMS = [:query, :page, :per_page].freeze
@@ -24,7 +23,7 @@ module SynapsePayRest
         return response
       end
 
-      # TODO: Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
+      # TODO: Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact

@@ -5,7 +5,6 @@ module SynapsePayRest
   class HTTPClient
     attr_accessor :base_url, :config, :user_id
 
-    # TODO: log responses as well as requests
     def initialize(base_url:, client_id:, fingerprint:, ip_address:, client_secret:,
                    user_id:, **options)
 

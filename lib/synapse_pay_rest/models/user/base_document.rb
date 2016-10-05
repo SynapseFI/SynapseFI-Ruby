@@ -16,6 +16,7 @@ module SynapsePayRest
       def create_from_response(user, response)
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
+          binding.pry
           physical_docs = base_document_data['physical_docs'].map do |data|
             PhysicalDocument.create_from_response(data)
           end
@@ -45,6 +46,25 @@ module SynapsePayRest
       entity_scope:, birth_day:, birth_month:, birth_year:, address_street:,
       address_city:, address_subdivision:, address_postal_code:, address_country_code:,
       physical_documents: [], social_documents: [], virtual_documents: [])
+      raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+      [email, phone_number, ip, name, aka, entity_type, entity_scope, 
+       address_street, address_city, address_subdivision, address_postal_code,
+       address_country_code].each do |arg|
+         raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
+      end
+      [physical_documents, social_documents, virtual_documents].each do |arg|
+        raise ArgumentError, "#{arg} must be an Array" unless arg.is_a?(Array)
+      end
+      unless physical_documents.empty? || physical_documents.first.is_a?(PhysicalDocument)
+        raise ArgumentError, 'physical_documents be empty or contain PhysicalDocument(s)'
+      end
+      unless social_documents.empty? || social_documents.first.is_a?(SocialDocument)
+        raise ArgumentError, 'social_documents be empty or contain SocialDocument(s)'
+      end
+      unless virtual_documents.empty? || virtual_documents.first.is_a?(VirtualDocument)
+        raise ArgumentError, 'virtual_documents be empty or contain VirtualDocument(s)'
+      end
+
       @user                 = user
       @email                = email
       @phone_number         = phone_number
@@ -79,10 +99,11 @@ module SynapsePayRest
       self
     end
 
-    # TODO: validates changes are valid fields in base_document
-    # TODO: handle when user tries to update a new doc instead of existing
-    # TODO: important to determine which documents overwrite and which duplicate
+    # TODO: validate changes are valid fields in base_document
     def update(**changes)
+      if changes.empty?
+        raise ArgumentError, 'must provide some key-value pairs to update'
+      end
       user.authenticate
       payload = payload_for_update(changes)
       response = user.client.users.update(payload: payload)
@@ -173,8 +194,7 @@ module SynapsePayRest
       }
 
       changes.each do |field, new_value|
-        # TODO: refactor/DRY
-        # convert docs to their hash form for json prep and insert into payload
+        # convert docs to their hash format for payload
         if field == :physical_documents
           payload['documents'].first['physical_docs'] = new_value.map { |doc| doc.to_hash }
         elsif field == :social_documents

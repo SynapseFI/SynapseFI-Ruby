@@ -6,11 +6,14 @@ module SynapsePayRest
                 :fee_amount, :fee_note, :fee_to_id
 
     class << self
-      # TODO: validate args types
-      # TODO: allow node or node_id
       # TODO: allow either to_node or to_type/to_id
-      # TODO: allow node to be entered to fee_to node s alternative
+      # TODO: allow node to be entered as alternative to fee_to node 
       def create(node:, to_type:, to_id:, amount:, currency:, ip:, **options)
+        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(Node)
+        [nickname, amount, currency, ip].each do |arg|
+          raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
+        end
+
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
           amount: amount, currency: currency, ip: ip, **options)
         node.user.authenticate
@@ -18,15 +21,23 @@ module SynapsePayRest
         create_from_response(node, response)
       end
 
-      # TODO: allow node or node_id
       def find(node:, id:)
+        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(Node)
+        raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
         node.user.authenticate
         response = node.user.client.trans.get(node_id: node.id, trans_id: id)
         create_from_response(node, response)
       end
 
-      # TODO: allow node or node_id
       def all(node:, page: nil, per_page: nil)
+        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
+        [page, per_page].each do |arg|
+          if arg && (!arg.is_a?(Integer) || arg < 1)
+            raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
+          end
+        end
+
         node.user.authenticate
         response = node.user.client.trans.get(node_id: node.id, page: page, per_page: per_page)
         create_multiple_from_response(node, response['trans'])
@@ -102,6 +113,7 @@ module SynapsePayRest
       end
 
       def create_multiple_from_response(node, response)
+        return [] if response.empty?
         response.map { |trans_data| create_from_response(node, trans_data) }
       end
     end

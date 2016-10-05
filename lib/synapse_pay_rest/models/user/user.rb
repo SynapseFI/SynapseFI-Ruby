@@ -31,12 +31,17 @@ module SynapsePayRest
 
       # fetches data for multiple users
       def all(client:, page: nil, per_page: nil, query: nil)
-        if per_page && !per_page.is_a?(Integer)
-          raise ArgumentError, 'per_page must be nil or an Integer'
+        [page, per_page].each do |arg|
+          if arg && (!arg.is_a?(Integer) || arg < 1)
+            raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
+          end
+        end
+        if query && !query.is_a?(String)
+          raise ArgumentError, 'query must be a String'
         end
 
         response = client.users.get(page: page, per_page: per_page, query: query)
-        response['users'].map { |data| create_from_response(client, data) }
+        create_multiple_from_response(client, response['users'])
       end
 
       # fetches data for users matching query in name/email
@@ -84,6 +89,11 @@ module SynapsePayRest
         end
 
         user
+      end
+
+      def create_multiple_from_response(client, response)
+        return [] if response.empty?
+        response.map { |user_data| create_from_response(client, user_data)}
       end
     end
 

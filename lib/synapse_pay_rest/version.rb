@@ -1,3 +1,3 @@
 module SynapsePayRest
-  VERSION = '0.0.15'
+  VERSION = '2.0'.freeze
 end

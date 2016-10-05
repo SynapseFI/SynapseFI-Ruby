@@ -1,11 +1,13 @@
 module SynapsePayRest
   class AchUsNode < BaseNode
-    attr_reader 
-    # TODO: add error message when trying to perform methods on unverified node
     class << self
-      # TODO: validate bank_name in supported banks
-      # https://synapsepay.com/api/v3/institutions/show
+      # valid banks: https://synapsepay.com/api/v3/institutions/show
       def create_via_bank_login(user:, bank_name:, username:, password:)
+        raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        raise ArgumentError, 'bank_name must be a String' unless bank_name.is_a?(String)
+        raise ArgumentError, 'username must be a String' unless username.is_a?(String)
+        raise ArgumentError, 'password must be a String' unless password.is_a?(String)
+
         payload = payload_for_create_via_bank_login(bank_name: bank_name, username: username, password: password)
         user.authenticate
         response = user.client.nodes.add(payload: payload)
@@ -59,10 +61,11 @@ module SynapsePayRest
       end
     end
 
-    # TODO: raise error if already verified
-    # TODO: raise error if too many attempts
-    # TODO: validate inputs as floats
     def verify_microdeposits(amount1:, amount2:)
+      unless [amount1, amount2].all? { |amt| amt.is_a? Float}
+        raise ArgumentError, 'amounts must be floats' 
+      end
+
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
       @permissions = response['allowed']
@@ -72,9 +75,7 @@ module SynapsePayRest
     private
 
     def verify_microdeposits_payload(amount1:, amount2:)
-      {
-        'micro' => [amount1, amount2]
-      }
+      {'micro' => [amount1, amount2]}
     end
   end
 end

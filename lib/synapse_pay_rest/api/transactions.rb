@@ -14,7 +14,7 @@ module SynapsePayRest
     def get(node_id:, trans_id: nil, **options)
       path = create_transaction_path(node_id: node_id, trans_id: trans_id)
 
-      # TODO: Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
+      # TODO: Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact

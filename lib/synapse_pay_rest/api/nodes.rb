@@ -11,7 +11,7 @@ module SynapsePayRest
 
     # if node_id is nil then returns all nodes
     def get(node_id: nil, **options)
-      # TODO: Should factor this out into HTTPClient and separate args for paginate/search(name/email)/per_page
+      # TODO: Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact

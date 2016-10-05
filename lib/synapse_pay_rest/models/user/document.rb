@@ -5,7 +5,7 @@ module SynapsePayRest
 
     class << self
       def create(type:, value:)
-        self.new(type: type.upcase, value: value.upcase)
+        self.new(type: type, value: value)
       end
 
       def create_from_response(data)
@@ -14,9 +14,10 @@ module SynapsePayRest
       end
     end
 
-    # TODO: upcase type and validate inputs
-    def initialize(**options)
-      @type         = options[:type]
+    def initialize(type:, **options)
+      raise ArgumentError, 'type must be a String' unless type.is_a?(String)
+
+      @type         = type.upcase
       # only exist for created (not for fetched)
       @id           = options[:id]
       @value        = options[:value]

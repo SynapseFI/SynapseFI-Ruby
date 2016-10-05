@@ -74,10 +74,6 @@ class UserTest < Minitest::Test
     assert_instance_of Array, user_instance.legal_names
   end
 
-  def test_all_with_no_users
-    skip 'pending'
-  end
-
   def test_all_with_page
     page1 = SynapsePayRest::User.all(client: test_client, page: 1)
     page2 = SynapsePayRest::User.all(client: test_client, page: 2)
@@ -89,6 +85,13 @@ class UserTest < Minitest::Test
   def test_all_with_per_page
     page = SynapsePayRest::User.all(client: test_client, per_page: 10)
     assert_equal 10, page.length
+  end
+
+  # TODO: need to mock so we can test empty users array in response
+  def test_all_with_no_users
+    skip 'pending'
+    users = SynapsePayRest::User.all(client: test_client)
+    assert_empty users
   end
 
   def test_search
@@ -105,7 +108,14 @@ class UserTest < Minitest::Test
   end
 
   def test_search_with_page_and_per_page
-    skip 'pending'
+    query = 'test'
+    page1 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 5)
+    assert_equal 5, page1.length
+
+    page2 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 5)
+    assert_equal 5, page2.length
+
+    refute_equal page1.first.id, page2.first.id
   end
 
   def test_update

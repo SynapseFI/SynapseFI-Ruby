@@ -10,6 +10,9 @@ module SynapsePayRest
 
     class << self
       def create(user:, nickname:, **options)
+        raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        raise ArgumentError, 'nickname must be a String' unless nickname.is_a?(String)
+
         payload = payload_for_create(nickname: nickname, **options)
         user.authenticate
         response = user.client.nodes.add(payload: payload)
@@ -17,19 +20,38 @@ module SynapsePayRest
       end
 
       def find(user:, id:)
+        raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
         user.authenticate
         response = user.client.nodes.get(user_id: user.id, node_id: id)
         subclass_from_response(user, response)
       end
 
-      # TODO: validate arguments in valid range / type options
       def all(user:, page: nil, per_page: nil, type: nil)
+        raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        [page, per_page].each do |arg|
+          if arg && (!arg.is_a?(Integer) || arg < 1)
+            raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
+          end
+        end
+        unless type.nil? || NODE_TYPES_TO_CLASSES.keys.include(type)
+          raise ArgumentError, "type must be nil or in #{NODE_TYPES_TO_CLASSES.keys}"
+        end
+        
         user.authenticate
         response = user.client.nodes.get(page: page, per_page: per_page, type: type)
         create_multiple_from_response(user, response['nodes'])
       end
 
-      def by_type(user:, type:, page: nil, per_page: nil)
+      def by_type(user:, type:, page: nil, per_page: nil)raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        unless [page, per_page].all? { |arg| arg.is_a?(Integer) && arg >= 1 }
+          raise ArgumentError, 'page/per_page must be nil or Integer >= 1'
+        end
+        unless type.nil? || Node::NODE_TYPES_TO_CLASSES.keys.include(type)
+          raise ArgumentError, "type must be nil or in #{NODE_TYPES_TO_CLASSES.keys}"
+        end
+
         all(user: user, type: type, page: page, per_page: per_page,)
       end
 
@@ -80,7 +102,6 @@ module SynapsePayRest
       end
     end
 
-    # TODO: prevent initializing directly?
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
     end
@@ -90,6 +111,8 @@ module SynapsePayRest
     end
 
     def find_transaction(id:)
+      raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
       Transaction.find(node: self, id: id)
     end
 

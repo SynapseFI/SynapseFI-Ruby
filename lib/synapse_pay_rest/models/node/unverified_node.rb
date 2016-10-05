@@ -9,17 +9,22 @@ module SynapsePayRest
       @mfa_verified     = mfa_verified
     end
 
-    # TODO: raise error if already verified
-    # TODO: raise error if not a valid choice
     def answer_mfa(answer:)
       payload = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)
 
-      if response['success']
+      if response['error_code'] == 0
+        # correct answer
         @mfa_verified = true
         AchUsNode.create_multiple_from_response(user, response['nodes'])
       else
-        # TODO: raise error for wrong mfa answer / too many tries
+        # wrong answer
+        args = {
+          message: 'incorrect bank login mfa answer',
+          code: response['http_code'], 
+          response: response
+        }
+        raise SynapsePayRest::Error, args
       end
     end
 

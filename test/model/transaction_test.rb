@@ -24,7 +24,6 @@ class TransactionTest < Minitest::Test
     )
     transaction = SynapsePayRest::Transaction.create(args)
 
-    # TODO: whatever instance variables should populate from response
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,
       :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
@@ -67,7 +66,10 @@ class TransactionTest < Minitest::Test
     skip 'pending'
   end
 
-  # TODO: notify if node not verified
+  def test_create_transaction_from_unverified_node
+    skip 'pending'
+  end
+
   def test_create_with_insufficient_permissions
     skip 'pending'
   end
@@ -102,6 +104,29 @@ class TransactionTest < Minitest::Test
 
     assert_equal 2, @from_node.transactions.length
     assert_instance_of SynapsePayRest::Transaction, @from_node.transactions.first
+  end
+
+  def test_all_with_page_and_per_page
+    skip 'pending'
+    transaction1 = test_transaction(
+      node:    @from_node,
+      to_type: @to_node.type,
+      to_id:   @to_node.id
+    )
+
+    transaction2 = test_transaction(
+      node:    @from_node,
+      to_type: @to_node.type,
+      to_id:   @to_node.id
+    )
+
+    assert_equal 2, @from_node.transactions.length
+    assert_instance_of SynapsePayRest::Transaction, @from_node.transactions.first
+  end
+
+  def test_all_with_no_transactions
+    transactions = SynapsePayRest::Transaction.all(node: @from_node)
+    assert_empty transactions
   end
 
   def test_add_comment
