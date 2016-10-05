@@ -1,6 +1,5 @@
 module SynapsePayRest
   class PhysicalDocument < Document
-    # TODO: handle errors for invalid file types / paths
     def to_hash
       {'document_value' => to_base64(value), 'document_type' => type}
     end

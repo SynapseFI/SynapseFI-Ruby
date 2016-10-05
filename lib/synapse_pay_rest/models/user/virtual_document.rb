@@ -3,30 +3,12 @@ module SynapsePayRest
     attr_reader :question_set
 
     def initialize(**options)
-      super(options)
+      super(**options)
       @question_set ||= []
     end
 
-    def add_question_set(question_set_data)
-      questions = question_set_data['questions'].map do |question_info|
-        # re-map question/answer hash structure
-        answers = {}
-        question_info['answers'].each do |answer_hash|
-          answers[answer_hash['id']] = answer_hash['answer']
-        end
-
-        Question.new(
-          id:       question_info['id'],
-          question: question_info['question'],
-          answers:  answers
-        )
-      end
-
-      @question_set = questions
-    end
-
     def submit_kba
-      user = base_document.user
+      user     = base_document.user
       response = user.client.users.update(payload: payload_for_kba)
 
       base_document_info = response['documents'].find { |d| d['id'] == base_document.id }
@@ -45,6 +27,24 @@ module SynapsePayRest
     end
 
     private
+
+    def add_question_set(question_set_data)
+      questions = question_set_data['questions'].map do |question_info|
+        # re-map question/answer hash structure
+        answers = {}
+        question_info['answers'].each do |answer_hash|
+          answers[answer_hash['id']] = answer_hash['answer']
+        end
+
+        Question.new(
+          id:       question_info['id'],
+          question: question_info['question'],
+          answers:  answers
+        )
+      end
+
+      @question_set = questions
+    end
 
     def payload_for_kba
       {

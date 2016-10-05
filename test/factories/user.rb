@@ -12,8 +12,8 @@ def test_user(client: test_client,
   SynapsePayRest::User.create(
     client: test_client,
     logins: [{
-      email: Faker::Internet.email, 
-      password: Faker::Internet.password, 
+      email: Faker::Internet.email,
+      password: Faker::Internet.password,
       read_only: false
     }],
     phone_numbers: [Faker::PhoneNumber.phone_number],
@@ -22,6 +22,28 @@ def test_user(client: test_client,
     supp_id: Faker::Number.number(10).to_s,
     is_business: false
   )
+end
+
+def test_user_create_args(client: test_client,
+                          logins: [{
+                            email: Faker::Internet.email,
+                            password: Faker::Internet.password,
+                            read_only: false
+                          }],
+                          phone_numbers: [Faker::PhoneNumber.phone_number],
+                          legal_names: [Faker::Name.name],
+                          note: Faker::Hipster.sentence(3),
+                          supp_id: Faker::Number.number(10).to_s,
+                          is_business: false)
+  {
+    client: client,
+    logins: logins,
+    phone_numbers: phone_numbers,
+    legal_names: legal_names,
+    note: note,
+    supp_id: supp_id,
+    is_business: is_business
+  }
 end
 
 def test_user_update_args(login: {
@@ -40,28 +62,6 @@ def test_user_update_args(login: {
     legal_name: legal_name,
     remove_phone_number: remove_phone_number,
     remove_login: remove_login
-  }
-end
-
-def test_user_create_args(client: test_client,
-                          logins: [{
-                            email: Faker::Internet.email, 
-                            password: Faker::Internet.password, 
-                            read_only: false
-                          }],
-                          phone_numbers: [Faker::PhoneNumber.phone_number],
-                          legal_names: [Faker::Name.name],
-                          note: Faker::Hipster.sentence(3),
-                          supp_id: Faker::Number.number(10).to_s,
-                          is_business: false)
-  {
-    client: client,
-    logins: logins,
-    phone_numbers: phone_numbers,
-    legal_names: legal_names,
-    note: note,
-    supp_id: supp_id,
-    is_business: is_business
   }
 end
 

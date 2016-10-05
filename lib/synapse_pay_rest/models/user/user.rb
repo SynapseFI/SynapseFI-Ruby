@@ -5,19 +5,25 @@ module SynapsePayRest
     attr_accessor :refresh_token, :base_documents
 
     class << self
-      # TODO: simplify the logins argument
+      # TODO: simplify the logins argument somehow. separate class?
       # used to make a new user
       def create(client:, logins:, phone_numbers:, legal_names:, **options)
-        raise ArgumentError if [logins, phone_numbers, legal_names].any? { |arg| !arg.is_a? Array}
-        raise ArgumentError, 'array argument cannot be empty' if [logins, phone_numbers, legal_names].any?(&:empty?)
-        raise ArgumentError, 'logins must contain at least one hash with :email key' if logins && logins.first[:email].empty?
+        if [logins, phone_numbers, legal_names].any? { |arg| !arg.is_a? Array}
+          raise ArgumentError, 'logins/phone_numbers/legal_names must be Array'
+        end
+        if [logins, phone_numbers, legal_names].any?(&:empty?)
+          raise ArgumentError, 'logins/phone_numbers/legal_names cannot be empty'
+        end
+        if !logins.first.is_a? Hash
+          raise ArgumentError, 'logins must contain at least one hash with :email key'
+        end
 
         payload = payload_for_create(logins: logins, phone_numbers: phone_numbers, legal_names: legal_names, **options)
         response = client.users.create(payload: payload)
         create_from_response(client, response)
       end
 
-      # used to fetch an existing user
+      # fetches an existing user
       def find(client:, id:)
         response = client.users.get(user_id: id)
         create_from_response(client, response)
@@ -25,6 +31,10 @@ module SynapsePayRest
 
       # fetches data for multiple users
       def all(client:, page: nil, per_page: nil, query: nil)
+        if per_page && !per_page.is_a?(Integer)
+          raise ArgumentError, 'per_page must be nil or an Integer'
+        end
+
         response = client.users.get(page: page, per_page: per_page, query: query)
         response['users'].map { |data| create_from_response(client, data) }
       end
@@ -83,33 +93,29 @@ module SynapsePayRest
       @base_documents  ||= []
     end
 
-    # TODO: validate some kind of proper input was entered
-    # TODO: add convenience methods for add login, add email, etc.
     def update(**options)
+      if options.empty?
+        raise ArgumentError, 'must provide a key-value pair to update. keys: login,
+          read_only, phone_number, legal_name, remove_phone_number, remove_login'
+      end
+
       client.users.update(payload: payload_for_update(options))
       self
     end
 
-    # TODO: refactor
-    # TODO: validate arg format
-    def create_base_document(email:, phone_number:, ip:, name:,
-      alias:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
-      address_street:, address_city:, address_subdivision:, address_postal_code:,
-      address_country_code:, physical_documents: [], social_documents: [],
-      virtual_documents: [])
-      base_document = BaseDocument.create(user: self, email: email, phone_number: phone_number,
-        ip: ip, name: name, alias: binding.local_variable_get(:alias), entity_type: entity_type,
-        entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
-        birth_year: birth_year, address_street: address_street, address_city: address_city,
-        address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
-        address_country_code: address_country_code, physical_documents: physical_documents,
-        social_documents: social_documents, virtual_documents: virtual_documents)
+    def create_base_document(**args)
+      base_document = BaseDocument.create(user: self, **args)
       @base_documents << base_document
-
       base_document
     end
 
     def add_login(email:, password: nil, read_only: nil)
+      raise ArgumentError, 'email must be a String' unless email.is_a?(String)
+      raise ArgumentError, 'password must be nil or String' if password && !password.is_a?(String)
+      if read_only && ![true, false].include?(read_only)
+        raise ArgumentError, 'read_only must be nil or Boolean' 
+      end
+
       login = {'email' => email}
       login['password']  = password if password
       login['read_only'] = read_only if read_only
@@ -119,19 +125,25 @@ module SynapsePayRest
     end
 
     def remove_login(email:)
+      raise ArgumentError, 'email must be a String' unless email.is_a? String
+
       login = {email: email}
       update(remove_login: login)
-      @logins.delete_if { |login| login['email'] == email }
+      @logins.delete_if { |l| l['email'] == email }
       self
     end
 
     def add_phone_number(phone_number)
+      raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
+
       update(phone_number: phone_number)
       @phone_numbers << phone_number
       self
     end
 
     def remove_phone_number(phone_number)
+      raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
+
       update(remove_phone_number: phone_number)
       @phone_numbers.delete(phone_number)
       self

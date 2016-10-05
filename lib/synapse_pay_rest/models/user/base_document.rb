@@ -1,26 +1,14 @@
 module SynapsePayRest
-  # TODO: write to_hash methods
   class BaseDocument
-    attr_accessor :user, :email, :phone_number, :ip, :name, :alias, :entity_type,
-                :entity_scope, :birth_day, :birth_month, :birth_year,
-                :address_street, :address_city, :address_subdivision,
-                :address_postal_code, :address_country_code, :permission_scope, 
-                :id, :physical_documents, :social_documents, :virtual_documents
+    attr_accessor :user, :email, :phone_number, :ip, :name, :aka, :entity_type,
+                  :entity_scope, :birth_day, :birth_month, :birth_year,
+                  :address_street, :address_city, :address_subdivision,
+                  :address_postal_code, :address_country_code, :permission_scope, 
+                  :id, :physical_documents, :social_documents, :virtual_documents
 
     class << self
-      # TODO: clean this up
-      def create(user:, email:, phone_number:, ip:, name:,
-      alias:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
-      address_street:, address_city:, address_subdivision:, address_postal_code:,
-      address_country_code:, physical_documents: [], social_documents: [],
-      virtual_documents: [])
-        base_document = BaseDocument.new(user: user, email: email, phone_number: phone_number,
-        ip: ip, name: name, alias: binding.local_variable_get(:alias), entity_type: entity_type,
-        entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
-        birth_year: birth_year, address_street: address_street, address_city: address_city,
-        address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
-        address_country_code: address_country_code, physical_documents: physical_documents,
-        social_documents: social_documents, virtual_documents: virtual_documents)
+      def create(**args)
+        base_document = self.new(**args)
         base_document.submit
       end
 
@@ -38,36 +26,56 @@ module SynapsePayRest
             VirtualDocument.create_from_response(data)
           end
 
-          BaseDocument.new(user: user, id: base_document_data['id'], name: base_document_data['name'],
-            permission_scope: base_document_data['permission_scope'], physical_documents: physical_docs,
-            social_documents: social_docs, virtual_documents: virtual_docs)
+          args = {
+            user:               user,
+            id:                 base_document_data['id'],
+            name:               base_document_data['name'],
+            permission_scope:   base_document_data['permission_scope'],
+            physical_documents: physical_docs,
+            social_documents:   social_docs,
+            virtual_documents:  virtual_docs
+          }
+
+          self.new(args)
         end
       end
     end
 
-    # TODO: validate input types
-    def initialize(**options)
-      options.each { |key, value| instance_variable_set("@#{key}", value) }
-
-      @physical_documents ||= []
-      @social_documents   ||= []
-      @virtual_documents  ||= []
+    def initialize(user:, email:, phone_number:, ip:, name:, aka:, entity_type:,
+      entity_scope:, birth_day:, birth_month:, birth_year:, address_street:,
+      address_city:, address_subdivision:, address_postal_code:, address_country_code:,
+      physical_documents: [], social_documents: [], virtual_documents: [])
+      @user                 = user
+      @email                = email
+      @phone_number         = phone_number
+      @ip                   = ip
+      @name                 = name
+      @aka                  = aka
+      @entity_type          = entity_type
+      @entity_scope         = entity_scope
+      @birth_day            = birth_day
+      @birth_month          = birth_month
+      @birth_year           = birth_year
+      @address_street       = address_street
+      @address_city         = address_city
+      @address_subdivision  = address_subdivision
+      @address_postal_code  = address_postal_code
+      @address_country_code = address_country_code
+      @physical_documents   = physical_documents
+      @social_documents     = social_documents
+      @virtual_documents    = virtual_documents
 
       # associate this base_document doc with each doc
       [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
         doc.base_document = self
       end
     end
-    
-    # TODO: refactor
-    # TODO: validate input type
+
     def submit
       user.authenticate
       response = @user.client.users.update(payload: payload_for_submit)
-
       update_values_with_response_data(response)
       update_document_values_with_response_data(response)
-
       self
     end
 
@@ -87,14 +95,29 @@ module SynapsePayRest
     end
 
     def add_physical_documents(documents)
+      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+      unless documents.first.is_a?(PhysicalDocument)
+        raise ArgumentError, 'must contain a PhysicalDocument'
+      end
+
       update(physical_documents: documents)
     end
 
     def add_social_documents(documents)
+      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+      unless documents.first.is_a?(SocialDocument)
+        raise ArgumentError, 'must contain a SocialDocument'
+      end
+
       update(social_documents: documents)
     end
 
     def add_virtual_documents(documents)
+      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+      unless documents.first.is_a?(VirtualDocument)
+        raise ArgumentError, 'must contain a VirtualDocument'
+      end
+
       update(virtual_documents: documents)
     end
 
@@ -107,7 +130,7 @@ module SynapsePayRest
           'phone_number'         => phone_number,
           'ip'                   => ip,
           'name'                 => name,
-          'alias'                => self.alias,
+          'alias'                => aka,
           'entity_type'          => entity_type,
           'entity_scope'         => entity_scope,
           'day'                  => birth_day,
