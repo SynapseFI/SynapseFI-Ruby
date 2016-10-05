@@ -327,7 +327,7 @@ class UserTest < Minitest::Test
 
   def test_create_wire_int_node
     user = test_user
-    args = test_wire_int_args
+    args = test_wire_int_create_args
     args.delete(:user)
     node = user.create_wire_int_node(args)
 

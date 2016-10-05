@@ -44,8 +44,11 @@ module SynapsePayRest
           name_on_account: response['info']['name_on_account'],
           bank_long_name:  response['info']['bank_long_name'],
           bank_name:       response['info']['bank_name'],
+          account_type:    response['info']['type'],
+          account_class:   response['info']['class'],
           account_number:  response['info']['account_num'],
           routing_number:  response['info']['routing_num'],
+          account_id:      response['info']['account_id'],
           address:         response['info']['address'],
           swift:           response['info']['swift'],
           ifsc:            response['info']['ifsc']

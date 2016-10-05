@@ -2,12 +2,11 @@ module SynapsePayRest
   class SynapseUsNode < SynapseNode
     class << self
       def payload_for_create(nickname:, **options)
-        payload = {
-          'type' => 'SYNAPSE-US',
-          'info' => {
-            'nickname' => nickname
-          }
-        }
+        args = {
+          type: 'SYNAPSE-US',
+          nickname: nickname
+        }.merge(options)
+        payload = super(args)
         # optional payload fields
         extra = {}
         extra['supp_id']            = options[:supp_id] if options[:supp_id]

@@ -62,7 +62,18 @@ def test_eft_np_create_args(user: test_user,
   }
 end
 
-def test_iou_create_args()
+def test_iou_create_args(user: test_user,
+                         nickname: 'Test IOU Node',
+                         currency: 'USD',
+                         supp_id: Faker::Number.number(10).to_s,
+                         gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    currency: currency,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
 end
 
 def test_reserve_us_create_args(user: test_user,
@@ -77,8 +88,32 @@ def test_reserve_us_create_args(user: test_user,
   }
 end
 
+def test_synapse_ind_create_args(user: test_user,
+                                nickname: 'Test SYNAPSE-IND Account',
+                                supp_id: Faker::Number.number(10).to_s,
+                                gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
+end
+
+def test_synapse_np_create_args(user: test_user,
+                                nickname: 'Test SYNAPSE-NP Account',
+                                supp_id: Faker::Number.number(10).to_s,
+                                gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
+end
+
 def test_synapse_us_create_args(user: test_user,
-                                nickname: 'Test Synapse-US Account',
+                                nickname: 'Test SYNAPSE-US Account',
                                 supp_id: Faker::Number.number(10).to_s,
                                 gateway_restricted: nil)
   {

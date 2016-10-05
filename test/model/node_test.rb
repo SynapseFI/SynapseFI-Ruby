@@ -65,11 +65,32 @@ class NodeTest < Minitest::Test
   end
 
   def test_transactions
-    skip 'pending'
+    user      = test_user_with_two_nodes
+    nodes     = user.nodes
+    from_node = nodes.first
+    to_node   = nodes.last
+    assert_empty from_node.transactions
+
+    transaction1 = test_transaction(node: from_node, to_type: 'ACH-US', to_id: to_node.id)
+    transactions = from_node.transactions
+    assert_equal 1, transactions.length
+    assert_instance_of SynapsePayRest::Transaction, transactions.first
+
+    transaction2 = test_transaction(node: from_node, to_type: 'ACH-US', to_id: to_node.id)
+    assert_equal 2, from_node.transactions.length
   end
 
   def test_find_transaction
-    skip 'pending'
+    user      = test_user_with_two_nodes
+    nodes     = user.nodes
+    from_node = nodes.first
+    to_node   = nodes.last
+    transaction1 = test_transaction(node: from_node, to_type: 'ACH-US', to_id: to_node.id)
+    transaction2 = test_transaction(node: from_node, to_type: 'ACH-US', to_id: to_node.id)
+
+    found_transaction = from_node.find_transaction(id: transaction2.id)
+    refute_equal transaction1, found_transaction
+    assert_equal transaction2, found_transaction
   end
 
   def test_destroy
@@ -271,7 +292,8 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
+                           :permissions, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -293,7 +315,8 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
+                           :permissions, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -333,7 +356,7 @@ class NodeTest < Minitest::Test
   def test_create_wire_int_node
     args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
-  binding.pry
+
     other_instance_vars = [:is_active, :permissions, :type]
 
     assert_instance_of SynapsePayRest::WireIntNode, node
