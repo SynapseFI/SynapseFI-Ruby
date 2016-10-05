@@ -65,7 +65,16 @@ end
 def test_iou_create_args()
 end
 
-def test_reserve_us_create_args()
+def test_reserve_us_create_args(user: test_user,
+                                nickname: 'Test RESERVE-US Account',
+                                supp_id: Faker::Number.number(10).to_s,
+                                gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
 end
 
 def test_synapse_us_create_args(user: test_user,

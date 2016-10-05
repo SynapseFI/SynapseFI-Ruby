@@ -48,28 +48,6 @@ module SynapsePayRest
           }
         }
       end
-
-      def create_from_response(user, response)
-        args = {
-          user:            user,
-          type:            response['type'],
-          id:              response['_id'],
-          is_active:       response['is_active'],
-          account_number:  response['info']['account_num'],
-          routing_number:  response['info']['routing_num'],
-          bank_name:       response['info']['bank_name'],
-          bank_long_name:  response['info']['bank_long_name'],
-          account_class:   response['info']['class'],
-          account_type:    response['info']['type'],
-          name_on_account: response['info']['name_on_account'],
-          nickname:        response['info']['nickname'],
-          permissions:     response['allowed'],
-          supp_id:         response['extra']['supp_id']
-        }
-        args[:balance] = response['info']['balance']['amount'] if response['info']['balance']
-        args[:currency] = response['info']['balance']['currency'] if response['info']['balance']
-        self.new(args)
-      end
       
       def create_unverified_node(user, response)
         UnverifiedNode.new(

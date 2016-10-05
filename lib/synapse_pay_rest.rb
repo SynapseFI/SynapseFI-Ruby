@@ -23,7 +23,6 @@ require 'synapse_pay_rest/models/user/virtual_document'
 require 'synapse_pay_rest/models/user/question'
 
 # node-related models
-# ancestor of all nodes
 require 'synapse_pay_rest/models/node/base_node'
 # synapse
 require 'synapse_pay_rest/models/node/synapse_node'

@@ -59,6 +59,11 @@ module SynapsePayRest
           args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
         end
 
+        if response['info']['balance']
+          args[:balance]  = response['info']['balance']['amount']
+          args[:currency] = response['info']['balance']['currency']
+        end
+
         if response['extra']
           args[:supp_id]            = response['extra']['supp_id']
           args[:gateway_restricted] = response['extra']['gateway_restricted']

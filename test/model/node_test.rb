@@ -249,7 +249,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permissions, :type, :balance, :currency]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
