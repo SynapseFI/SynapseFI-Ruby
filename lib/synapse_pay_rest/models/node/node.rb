@@ -42,7 +42,7 @@ module SynapsePayRest
             raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
           end
         end
-        unless type.nil? || NODE_TYPES_TO_CLASSES.keys.include(type)
+        unless type.nil? || NODE_TYPES_TO_CLASSES.keys.include?(type)
           raise ArgumentError, "type must be nil or in #{NODE_TYPES_TO_CLASSES.keys}"
         end
 

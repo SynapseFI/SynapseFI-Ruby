@@ -12,8 +12,8 @@ module SynapsePayRest
     def answer_mfa(answer:)
       payload = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)
-
-      if response['error_code'] == 0
+      
+      if response['error_code'] == '0'
         # correct answer
         @mfa_verified = true
         AchUsNode.create_multiple_from_response(user, response['nodes'])

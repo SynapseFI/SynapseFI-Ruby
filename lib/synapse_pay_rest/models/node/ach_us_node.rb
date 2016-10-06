@@ -63,7 +63,7 @@ module SynapsePayRest
 
     def verify_microdeposits(amount1:, amount2:)
       [amount1, amount2].each do |arg|
-        raise ArgumentError, 'amounts must be floats' unless amt.is_a?(Float)
+        raise ArgumentError, "#{arg} must be float" unless arg.is_a?(Float)
       end
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)

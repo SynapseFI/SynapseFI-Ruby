@@ -8,22 +8,12 @@ class NodeTest < Minitest::Test
   def test_find
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
-
-    # with user object
     node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
     assert_equal nodes.first.id, node.id
     assert_kind_of SynapsePayRest::BaseNode, node
     assert_instance_of SynapsePayRest::AchUsNode, node
     assert_includes @user.nodes, node
-
-    # try with user id
-    node2 = SynapsePayRest::Node.find(user: @user.id, id: nodes.first.id)
-
-    assert_equal nodes.first.id, node2.id
-    assert_kind_of SynapsePayRest::BaseNode, node2
-    assert_instance_of SynapsePayRest::AchUsNode, node2
-    assert_includes @user.nodes, node2
   end
 
   def test_all
@@ -248,7 +238,7 @@ class NodeTest < Minitest::Test
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
     refute unverified_node.mfa_verified
 
-    unverified_node.answer_mfa(answer: 'wrong')
+    assert_raises(SynapsePayRest::Error) { unverified_node.answer_mfa(answer: 'wrong') }
     refute unverified_node.mfa_verified
   end
 

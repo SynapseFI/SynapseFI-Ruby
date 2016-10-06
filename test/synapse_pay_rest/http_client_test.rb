@@ -19,10 +19,10 @@ class HTTPClientTest < Minitest::Test
     headers = @http_client.get_headers
     config  = @http_client.config
     # client_id|client_secret
-    assert_equal headers['X-SP-GATEWAY'], "#{config['client_id']}|#{config['client_secret']}"
+    assert_equal headers['X-SP-GATEWAY'], "#{config[:client_id]}|#{config[:client_secret]}"
     # oauth_key|fingerprint
-    assert_equal headers['X-SP-USER'], "#{config['oauth_key']}|#{config['fingerprint']}"
-    assert_equal headers['X-SP-USER-IP'], config['ip_address']
+    assert_equal headers['X-SP-USER'], "#{config[:oauth_key]}|#{config[:fingerprint]}"
+    assert_equal headers['X-SP-USER-IP'], config[:ip_address]
   end
 
   def test_update_headers
@@ -38,10 +38,10 @@ class HTTPClientTest < Minitest::Test
     config = @http_client.config
 
     assert_equal @http_client.user_id, new_options[:user_id]
-    assert_equal config['fingerprint'], new_options[:fingerprint]
-    assert_equal config['client_id'], new_options[:client_id]
-    assert_equal config['client_secret'], new_options[:client_secret]
-    assert_equal config['ip_address'], new_options[:ip_address]
-    assert_equal config['oauth_key'], new_options[:oauth_key]
+    assert_equal config[:fingerprint], new_options[:fingerprint]
+    assert_equal config[:client_id], new_options[:client_id]
+    assert_equal config[:client_secret], new_options[:client_secret]
+    assert_equal config[:ip_address], new_options[:ip_address]
+    assert_equal config[:oauth_key], new_options[:oauth_key]
   end
 end

@@ -71,6 +71,7 @@ module SynapsePayRest
     end
 
     def initialize(**args)
+      @id                   = args[:id]
       @user                 = args[:user]
       @email                = args[:email]
       @phone_number         = args[:phone_number]

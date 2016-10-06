@@ -13,14 +13,17 @@ class ClientTest < Minitest::Test
 
   def test_configured_through_options
     client = SynapsePayRest::Client.new(@options)
+    # these keys don't exist in config
+    @options.delete(:development_mode)
+    @options.delete(:ip_address)
+    assert_equal client.client.config, @options
     assert_equal client.client.config, @options
     assert_equal client.client.base_url, 'https://sandbox.synapsepay.com/api/3'
   end
 
   def test_endpoint_changes_when_development_mode_false
-    @options['development_mode'] = false
+    @options[:development_mode] = false
     client = SynapsePayRest::Client.new(@options)
-    assert_equal client.client.config, @options
     assert_equal client.client.base_url, 'https://synapsepay.com/api/3'
   end
 

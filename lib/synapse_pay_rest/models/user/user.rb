@@ -14,7 +14,10 @@ module SynapsePayRest
         if [logins, phone_numbers, legal_names].any?(&:empty?)
           raise ArgumentError, 'logins/phone_numbers/legal_names cannot be empty'
         end
-        if !logins.first.is_a? Hash
+        unless logins.first.is_a? Hash
+          raise ArgumentError, 'logins must contain at least one hash {email: (required), password:, read_only:}'
+        end
+        unless logins.first[:email].is_a?(String) && logins.first[:email].length > 0
           raise ArgumentError, 'logins must contain at least one hash with :email key'
         end
 
