@@ -1,5 +1,3 @@
-require 'pry'
-
 # clients
 require 'synapse_pay_rest/client'
 require 'synapse_pay_rest/http_client'

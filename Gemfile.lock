@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    synapse_pay_rest (0.0.15)
-      rest-client
+    synapse_pay_rest (2.0)
+      rest-client (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -42,10 +42,10 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.10)
-  dotenv
-  faker
-  minitest
-  minitest-reporters
+  dotenv (~> 2.1.1)
+  faker (~> 1.6.6)
+  minitest (~> 5.8.2)
+  minitest-reporters (~> 1.1.5)
   rake (~> 10.0)
   synapse_pay_rest!
 

@@ -37,5 +37,8 @@ build/
 
 
 .DS_Store
+
+## ENV variables and other secrets
 .env
 test.txt
+*.yml
