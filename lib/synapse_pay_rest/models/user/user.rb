@@ -77,6 +77,7 @@ module SynapsePayRest
           logins:            response['logins'],
           phone_numbers:     response['phone_numbers'],
           legal_names:       response['legal_names'],
+          permission:        response['permission'],
           note:              response['extra']['note'],
           supp_id:           response['extra']['supp_id'],
           is_business:       response['extra']['is_business'],
@@ -163,8 +164,31 @@ module SynapsePayRest
       client.users.refresh(payload: payload_for_refresh)
     end
 
-    # TODO: need to test with and w/o fingerprint
-    def verify_fingerprint
+    def register_fingerprint(fingerprint)
+      raise ArgumentError, 'fingerprint must be a String' unless fingerprint.is_a?(String)
+
+      client.http_client.update_headers(fingerprint: fingerprint)
+      response = client.users.refresh(payload: payload_for_refresh)
+      response['phone_numbers']
+    end
+
+    def select_2fa_device(device)
+      raise ArgumentError, 'device must be a String' unless device.is_a?(String)
+
+      payload = payload_for_refresh
+      payload['phone_number'] = device
+      client.users.refresh(payload: payload)
+    end
+
+    def confirm_2fa_pin(pin:, device:)
+      raise ArgumentError, 'pin must be a String' unless pin.is_a?(String)
+      raise ArgumentError, 'device must be a String' unless device.is_a?(String)
+      
+      payload = payload_for_refresh
+      payload['phone_number']   = device
+      payload['validation_pin'] = pin
+      client.users.refresh(payload: payload)
+      :success
     end
 
     def nodes(**options)

@@ -2,9 +2,9 @@ def test_client(client_id: ENV.fetch('CLIENT_ID'),
                 client_secret: ENV.fetch('CLIENT_SECRET'),
                 fingerprint: 'test_fp',
                 ip_address: '127.0.0.1',
-                development_mode: true,
                 user_id: nil,
-                logging: true,
+                development_mode: true,
+                logging: false,
                 log_to: nil)
 
   SynapsePayRest::Client.new(

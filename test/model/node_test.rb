@@ -79,6 +79,19 @@ class NodeTest < Minitest::Test
     assert_equal 2, synapse_us_results2.length
   end
 
+  def test_create_transaction
+    user = test_user_with_two_nodes
+    nodes = user.nodes
+    from_node, to_node = nodes.first, nodes.last
+    args = test_transaction_create_args(node: from_node, to_type: to_node.type, to_id: to_node.id)
+    args.delete(:node)
+    transaction = from_node.create_transaction(args)
+
+    assert_kind_of SynapsePayRest::Transaction, transaction
+    assert_equal from_node, transaction.node
+    assert_equal to_node.id, transaction.to['id']
+  end
+
   def test_transactions
     user      = test_user_with_two_nodes
     nodes     = user.nodes
@@ -123,7 +136,7 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::AchUsNode.create(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permissions, :type]
+                           :permission, :type]
 
     assert_instance_of SynapsePayRest::AchUsNode, node
     assert_equal @user, node.user
@@ -139,10 +152,10 @@ class NodeTest < Minitest::Test
     end
     other_instance_vars.each { |var| refute_nil node.send(var) }
 
-    assert_equal 'CREDIT', node.permissions
+    assert_equal 'CREDIT', node.permission
     # verify microdeposits
     node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
-    assert_equal 'CREDIT-AND-DEBIT', node.permissions
+    assert_equal 'CREDIT-AND-DEBIT', node.permission
   end
 
   def test_create_ach_us_with_wrong_acct_routing
@@ -154,24 +167,24 @@ class NodeTest < Minitest::Test
     args = test_ach_us_create_args(user: @user)
     node = SynapsePayRest::AchUsNode.create(args)
 
-    assert_equal 'CREDIT', node.permissions
+    assert_equal 'CREDIT', node.permission
     # verify microdeposits
     assert_raises(SynapsePayRest::Error) { node.verify_microdeposits(amount1: 0.2, amount2: 0.2) }
-    assert_equal 'CREDIT', node.permissions
+    assert_equal 'CREDIT', node.permission
   end
 
   def test_create_ach_us_with_microdeposit_and_already_verified
     args = test_ach_us_create_args(user: @user)
     node = SynapsePayRest::AchUsNode.create(args)
 
-    assert_equal 'CREDIT', node.permissions
+    assert_equal 'CREDIT', node.permission
     # verify microdeposits
     node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
-    assert_equal 'CREDIT-AND-DEBIT', node.permissions
+    assert_equal 'CREDIT-AND-DEBIT', node.permission
 
     # verify again
     assert_raises(SynapsePayRest::Error) {node.verify_microdeposits(amount1: 0.2, amount2: 0.2)}
-    assert_equal 'CREDIT-AND-DEBIT', node.permissions
+    assert_equal 'CREDIT-AND-DEBIT', node.permission
   end
 
   def test_create_ach_us_via_bank_login
@@ -179,7 +192,7 @@ class NodeTest < Minitest::Test
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permissions, :bank_name, :balance, :currency, :routing_number,
+                           :permission, :bank_name, :balance, :currency, :routing_number,
                            :account_number, :account_class, :account_type, :type]
 
     assert_instance_of Array, nodes
@@ -212,7 +225,7 @@ class NodeTest < Minitest::Test
     assert unverified_node.mfa_verified
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permissions, :bank_name, :balance, :currency, :routing_number,
+                           :permission, :bank_name, :balance, :currency, :routing_number,
                            :account_number, :account_class, :account_type, :type]
 
     nodes = @user.nodes
@@ -247,7 +260,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permission, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -269,7 +282,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permission, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -291,7 +304,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permission, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -313,7 +326,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permissions, :type, :balance, :currency]
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -336,7 +349,7 @@ class NodeTest < Minitest::Test
     assert_includes @user.nodes, node
 
     other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
-                           :permissions, :type]
+                           :permission, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -359,7 +372,7 @@ class NodeTest < Minitest::Test
     assert_includes @user.nodes, node
 
     other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
-                           :permissions, :type]
+                           :permission, :type]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -379,7 +392,7 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::SynapseUsNode.create(args)
 
     other_instance_vars = [:is_active, :account_id, :balance, :currency,
-                           :name_on_account, :permissions, :type]
+                           :name_on_account, :permission, :type]
 
     assert_instance_of SynapsePayRest::SynapseUsNode, node
     assert_equal @user, node.user
@@ -400,7 +413,7 @@ class NodeTest < Minitest::Test
     args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permission, :type]
 
     assert_instance_of SynapsePayRest::WireIntNode, node
     assert_includes @user.nodes, node
@@ -420,7 +433,7 @@ class NodeTest < Minitest::Test
     args = test_wire_us_create_args(user: @user)
     node = SynapsePayRest::WireUsNode.create(args)
 
-    other_instance_vars = [:is_active, :permissions, :type]
+    other_instance_vars = [:is_active, :permission, :type]
 
     assert_instance_of SynapsePayRest::WireUsNode, node
     assert_includes @user.nodes, node

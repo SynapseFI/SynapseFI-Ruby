@@ -9,8 +9,10 @@ module SynapsePayRest
       # TODO: allow either to_node or to_type/to_id
       # TODO: allow node to be entered as alternative to fee_to node 
       def create(node:, to_type:, to_id:, amount:, currency:, ip:, **options)
-        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(Node)
-        [nickname, amount, currency, ip].each do |arg|
+        raise ArgumentError, 'cannot create a transaction with an UnverifiedNode' if node.is_a?(UnverifiedNode)
+        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
+        raise ArgumentError, 'amount must be a Numeric (Integer or Float)' unless amount.is_a?(Numeric)
+        [to_type, to_id, currency, ip].each do |arg|
           raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
         end
 
@@ -22,7 +24,7 @@ module SynapsePayRest
       end
 
       def find(node:, id:)
-        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(Node)
+        raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         node.user.authenticate

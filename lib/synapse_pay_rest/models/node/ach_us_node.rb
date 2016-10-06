@@ -62,13 +62,13 @@ module SynapsePayRest
     end
 
     def verify_microdeposits(amount1:, amount2:)
-      unless [amount1, amount2].all? { |amt| amt.is_a? Float}
-        raise ArgumentError, 'amounts must be floats' 
+      [amount1, amount2].each do |arg|
+        raise ArgumentError, 'amounts must be floats' unless amt.is_a?(Float)
       end
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
-      @permissions = response['allowed']
+      @permission = response['allowed']
       self
     end
 

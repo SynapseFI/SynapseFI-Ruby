@@ -87,9 +87,8 @@ class UserTest < Minitest::Test
     assert_equal 10, page.length
   end
 
-  # TODO: need to mock so we can test empty users array in response
   def test_all_with_no_users
-    skip 'pending'
+    skip 'mock needed. tested manually for now.'
     users = SynapsePayRest::User.all(client: test_client)
     assert_empty users
   end
@@ -112,9 +111,8 @@ class UserTest < Minitest::Test
     page1 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 5)
     assert_equal 5, page1.length
 
-    page2 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 5)
+    page2 = SynapsePayRest::User.search(client: test_client, query: query, page: 3, per_page: 5)
     assert_equal 5, page2.length
-
     refute_equal page1.first.id, page2.first.id
   end
 
@@ -217,8 +215,17 @@ class UserTest < Minitest::Test
     refute_includes response['phone_numbers'], phone_number
   end
 
-  def test_verify_fingerprint
-    skip 'pending'
+  # TODO: need to mock this to test (tested manually for now)
+  def test_register_new_fingerprint
+    skip 'mock needed. tested manually for now.'
+    user = SynapsePayRest::User.find(client: test_client, id: ENV.fetch('USER_ID'))
+    devices = user.register_fingerprint('new_fingerprint')
+    assert_instance_of Array, devices
+
+    confirmation = user.select_2fa_device(devices.first)
+    assert confirmation['success']
+
+    user.confirm_2fa_pin(device: devices.first, pin: 'asdf')
   end
 
   def test_nodes
@@ -232,7 +239,15 @@ class UserTest < Minitest::Test
   end
 
   def test_find_node
-    skip 'pending'
+    user  = test_user_with_two_nodes
+    nodes = user.nodes
+    assert_equal 2, nodes.length
+
+    node1 = user.find_node(id: nodes.first.id)
+    node2 = user.find_node(id: nodes.last.id)
+
+    assert_equal nodes.first, node1
+    assert_equal nodes.last, node2
   end
 
   def test_create_ach_us_node
@@ -343,17 +358,5 @@ class UserTest < Minitest::Test
 
     assert_instance_of SynapsePayRest::WireIntNode, node
     assert_includes user.nodes, node
-  end
-
-  def test_mfa_on_signin
-    skip 'pending'
-  end
-
-  def test_mfa_on_create_document
-    skip 'pending'
-  end
-
-  def test_mfa_on_update_document
-    skip 'pending'
   end
 end

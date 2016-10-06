@@ -60,6 +60,26 @@ class VirtualDocumentTest < Minitest::Test
   end
 
   def test_updating_existing_ssn_doc
-    skip 'pending'
+    bad_ssn = '1111'
+    base_document_info = test_base_document_args
+    bad_ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: bad_ssn)
+    base_document_info[:virtual_documents] = [bad_ssn_doc]
+    base_document = SynapsePayRest::BaseDocument.create(base_document_info)
+
+    assert_equal 'SUBMITTED|INVALID', bad_ssn_doc.status
+
+    # good ssn info
+    good_ssn = '2222'
+    good_ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: good_ssn)
+    base_document.update(virtual_documents: [good_ssn_doc])
+
+    assert_equal 'SUBMITTED|VALID', good_ssn_doc.status
+    assert base_document.virtual_documents.any? { |vd| vd.status == 'SUBMITTED|VALID' }
+
+    # verify in api
+    response = test_client.users.get(user_id: base_document.user.id)
+    assert response['documents'].last['virtual_docs'].any? do |vd|
+      vd['status'] == 'SUBMITTED|VALID'
+    end
   end
 end

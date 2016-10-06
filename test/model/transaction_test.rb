@@ -47,15 +47,11 @@ class TransactionTest < Minitest::Test
   end
 
   def test_create_with_multiple_fees
-    skip 'pending'
+    skip 'pending. not implemented.'
   end
 
   def test_create_without_fee
-    transaction = test_transaction(
-      node:    @from_node,
-      to_type: @to_node.type,
-      to_id:   @to_node.id
-    )
+    transaction = test_transaction(node: @from_node, to_type: @to_node.type, to_id: @to_node.id,)
 
     assert_kind_of SynapsePayRest::BaseNode, transaction.node
     assert_equal @from_node, transaction.node
@@ -63,19 +59,31 @@ class TransactionTest < Minitest::Test
   end
 
   def test_create_with_insufficient_funds
-    skip 'pending'
+    skip 'pending. does nothing different immediately.'
+
+    args = test_transaction_create_args(
+      node: @from_node,
+      to_type: @to_node.type,
+      to_id: @to_node.id,
+      amount: 1_000_000
+    )
+
+    transaction = SynapsePayRest::Transaction.create(args)
   end
 
   def test_create_transaction_from_unverified_node
-    skip 'pending'
+    args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
+    unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    assert_raises(ArgumentError) { test_transaction(node: unverified_node, to_type: @to_node.type, to_id: @to_node.id) }
   end
 
-  def test_create_with_insufficient_permissions
-    skip 'pending'
+  def test_create_with_insufficient_permission
+    skip 'pending. does nothing differently currently(?)'
   end
 
   def test_ach_returns
-    skip 'pending'
+    skip 'pending. mock needed (10-15 min delay).'
   end
 
   def test_find
@@ -107,7 +115,6 @@ class TransactionTest < Minitest::Test
   end
 
   def test_all_with_page_and_per_page
-    skip 'pending'
     transaction1 = test_transaction(
       node:    @from_node,
       to_type: @to_node.type,
@@ -120,8 +127,22 @@ class TransactionTest < Minitest::Test
       to_id:   @to_node.id
     )
 
-    assert_equal 2, @from_node.transactions.length
+    transaction3 = test_transaction(
+      node:    @from_node,
+      to_type: @to_node.type,
+      to_id:   @to_node.id
+    )
+
+    assert_equal 3, @from_node.transactions.length
     assert_instance_of SynapsePayRest::Transaction, @from_node.transactions.first
+
+    page1 = SynapsePayRest::Transaction.all(node: @from_node, page: 1, per_page: 2)
+    assert_equal 2, page1.length
+
+    page2 = SynapsePayRest::Transaction.all(node: @from_node, page: 3, per_page: 1)
+    assert_equal 1, page2.length
+
+    refute_includes page1, page2.first
   end
 
   def test_all_with_no_transactions

@@ -1,7 +1,7 @@
 module SynapsePayRest
   # ancestor of all nodes
   class BaseNode
-    attr_reader :user, :id, :nickname, :supp_id, :currency, :is_active, :permissions,
+    attr_reader :user, :id, :nickname, :supp_id, :currency, :is_active, :permission,
                 :account_number, :routing_number, :name_on_account, :address,
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
                 :correspondent_routing_number, :correspondent_bank_name,
@@ -61,7 +61,7 @@ module SynapsePayRest
           type:            response['type'],
           id:              response['_id'],
           is_active:       response['is_active'],
-          permissions:     response['allowed'],
+          permission:     response['allowed'],
           nickname:        response['info']['nickname'],
           name_on_account: response['info']['name_on_account'],
           bank_long_name:  response['info']['bank_long_name'],
@@ -104,6 +104,10 @@ module SynapsePayRest
 
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
+    end
+
+    def create_transaction(**options)
+      Transaction.create(node: self, **options)
     end
 
     def transactions(**options)
