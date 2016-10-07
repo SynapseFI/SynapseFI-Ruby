@@ -2,7 +2,6 @@ require 'test_helper'
 
 class UsersTest < Minitest::Test
   def setup
-    require 'pry'; binding.pry
     @client = test_client_with_user
     @user   = refresh_user(@client, @client.client.user_id)
   end

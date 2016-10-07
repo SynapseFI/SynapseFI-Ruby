@@ -25,27 +25,14 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error] if incorrect answer
     # 
-    # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)s
+    # @return [Array<SynapsePayRest::AchUsNode>,SynapsePayRest::UnverifiedNode] may contain multiple nodes if successful, else self if new MFA question to answer
     # 
-    # @todo IMPORTANT! Need to handle when multiple MFA's triggered.
     # @todo make a new Error subclass for incorrect MFA
     def answer_mfa(answer:)
       payload = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)
       
-      if response['error_code'] == '0'
-        # correct answer
-        @mfa_verified = true
-        AchUsNode.create_multiple_from_response(user, response['nodes'])
-      else
-        # wrong answer
-        args = {
-          message: 'incorrect bank login mfa answer',
-          code: response['http_code'], 
-          response: response
-        }
-        raise SynapsePayRest::Error, args
-      end
+      handle_answer_mfa_response(response)
     end
 
     private
@@ -55,6 +42,29 @@ module SynapsePayRest
         'access_token' => mfa_access_token,
         'mfa_answer'   => answer
       }
+    end
+
+    def handle_answer_mfa_response(response)
+      if response['error_code'] == '0'
+        # correct answer
+        @mfa_verified = true
+        AchUsNode.create_multiple_from_response(user, response['nodes'])
+      elsif response['error_code'] == '10' && response['mfa']['message'] == mfa_message
+        # wrong answer (mfa message the same), retry if allowed
+        args = {
+          message: 'incorrect bank login mfa answer',
+          code: response['http_code'], 
+          response: response
+        }
+        raise SynapsePayRest::Error, args
+      elsif response['error_code'] == '10'
+        # new additional MFA question. need to call #answer_mfa with new answer
+        @mfa_access_token = response['mfa']['access_token']
+        @mfa_message = response['mfa']['message']
+        self
+      end
+      # shouldn't get to this point but will need to see the response if it does
+      response
     end
   end
 end
