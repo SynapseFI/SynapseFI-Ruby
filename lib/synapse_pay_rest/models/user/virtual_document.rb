@@ -1,5 +1,11 @@
 module SynapsePayRest
+  # Represents virtual documents that can be added to a base document.
+  #
+  # @see https://docs.synapsepay.com/docs/user-resources#section-virtual-document-types
+  #   virtual document types
   class VirtualDocument < Document
+    # @!attribute [r] question_set
+    # @return [SynapsePayRest::Array<SynapsePayRest::Question>] questions/answer choices returned when document status is MFA|PENDING
     attr_reader :question_set
 
     def initialize(**options)
@@ -7,6 +13,12 @@ module SynapsePayRest
       @question_set ||= []
     end
 
+    # Submits the question/answer selections to the API to attempt to verify
+    # the virtual document.
+    #
+    # @return [SynapsePayRest::VirtualDocument] (self)
+    #
+    # @todo should raise error if any questions aren't answered yet.
     def submit_kba
       user     = base_document.user
       response = user.client.users.update(payload: payload_for_kba)
@@ -19,6 +31,8 @@ module SynapsePayRest
       self
     end
 
+    # Modifies parent behavior to handle question_sets.
+    # @note You shouldn't need to call this directly.
     def update_from_response(data)
       super(data)
       # handle mfa questions

@@ -1,6 +1,7 @@
 module SynapsePayRest
   # Wrapper class for /nodes endpoints
   class Nodes
+    # Valid optional args for #get
     # @todo Should refactor this to HTTPClient
     VALID_QUERY_PARAMS = [:page, :per_page, :type].freeze
 
@@ -19,22 +20,22 @@ module SynapsePayRest
     # @param node_id [String] id of the node
     # @param page [String,Integer] (optional) response will default to 1
     # @param per_page [String,Integer] (optional) response will default to 20
-    # @param type [String,Integer] (optional)
+    # @param type [String] (optional)
     # @see https://docs.synapsepay.com/docs/node-resources node types
     # 
     # @raise [SynapsePayRest::Error] may return subclasses of error based on 
     # HTTP response from API
     # 
     # @return [Hash] API response
+    # 
+    # @todo should use CGI or RestClient's param builder instead of
+    #   rolling our own, probably error-prone and untested
+    #   https://github.com/rest-client/rest-client#usage-raw-url
     def get(node_id: nil, **options)
-      # @todo Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact
 
-      # @todo Probably should use CGI or RestClient's param builder instead of
-      # rolling our own, probably error-prone and untested version
-      # https://github.com/rest-client/rest-client#usage-raw-url
       path = create_node_path(node_id: node_id)
       path += '?' + params.join('&') if params.any?
       client.get(path)

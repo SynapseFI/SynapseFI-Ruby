@@ -54,12 +54,12 @@ module SynapsePayRest
 
     # Updates headers and/or user_id.
     # 
-    # @param user_id [String,nil]
-    # @param oauth_key [String,nil]
-    # @param fingerprint [String,nil]
-    # @param client_id [String,nil]
-    # @param client_secret [String,nil]
-    # @param ip_address [String,nil]
+    # @param user_id [String,void]
+    # @param oauth_key [String,void]
+    # @param fingerprint [String,void]
+    # @param client_id [String,void]
+    # @param client_secret [String,void]
+    # @param ip_address [String,void]
     # 
     # @return [void]
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil,

@@ -21,7 +21,7 @@ module SynapsePayRest
     # Sends a GET request to /users endpoint and returns the response. Queries a
     # specific user_id if user_id supplied, else queries all users. 
     # 
-    # @param user_id [String,nil] id of the user
+    # @param user_id [String,void] id of the user
     # @param query [String] (optional) response will be filtered to 
     #   users with matching name/email
     # @param page [String,Integer] (optional) response will default to 1
@@ -31,6 +31,10 @@ module SynapsePayRest
     # HTTP response from API
     # 
     # @return [Hash] API response
+    # 
+    # @todo Probably should use CGI or RestClient's param builder instead of
+    # rolling our own, probably error-prone and untested version
+    # https://github.com/rest-client/rest-client#usage-raw-url
     def get(user_id: nil, **options)
       path = create_user_path(user_id: user_id)
 
@@ -40,14 +44,10 @@ module SynapsePayRest
         return response
       end
 
-      # @todo Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact
 
-      # @todo Probably should use CGI or RestClient's param builder instead of
-      # rolling our own, probably error-prone and untested version
-      # https://github.com/rest-client/rest-client#usage-raw-url
       path += '?' + params.join('&') if params.any?
       client.get(path)
     end
@@ -115,7 +115,7 @@ module SynapsePayRest
     # Converts a file to base64 for use in payloads for adding physical documents.
     # 
     # @param file_path [String]
-    # @param file_type [String,nil] (optional) MIME type of file (will attempt
+    # @param file_type [String,void] (optional) MIME type of file (will attempt
     #   to autodetect if nil)
     # 
     # @return [String] base64 encoded file

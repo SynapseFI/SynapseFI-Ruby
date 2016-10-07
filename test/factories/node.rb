@@ -89,9 +89,9 @@ def test_reserve_us_create_args(user: test_user,
 end
 
 def test_synapse_ind_create_args(user: test_user,
-                                nickname: 'Test SYNAPSE-IND Account',
-                                supp_id: Faker::Number.number(10).to_s,
-                                gateway_restricted: nil)
+                                 nickname: 'Test SYNAPSE-IND Account',
+                                 supp_id: Faker::Number.number(10).to_s,
+                                 gateway_restricted: nil)
   {
     user: user,
     nickname: nickname,

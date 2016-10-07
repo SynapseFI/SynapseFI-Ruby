@@ -1,12 +1,48 @@
 module SynapsePayRest
+  # Stores info on the base document portion (personal/business info) of the CIP
+  # document and also manages physical/social/virtual documents.
   class BaseDocument
+    # @!attribute [rw] user
+    #   @return [SynapsePayRest::User] the user to whom the transaction belongs
+    # @!attribute [r] permission_scope
+    #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-document-permission-scope
+    
     attr_accessor :user, :email, :phone_number, :ip, :name, :aka, :entity_type,
                   :entity_scope, :birth_day, :birth_month, :birth_year,
                   :address_street, :address_city, :address_subdivision,
-                  :address_postal_code, :address_country_code, :permission_scope, 
-                  :id, :physical_documents, :social_documents, :virtual_documents
+                  :address_postal_code, :address_country_code, 
+                  :physical_documents, :social_documents, :virtual_documents
+    attr_reader :id, :permission_scope
 
     class << self
+      # Creates a new base document in the API belonging to the provided user and
+      # returns a base document instance from the response data.
+      # 
+      # @param user [SynapsePayRest::User] the user to whom the base document belongs
+      # @param email [String]
+      # @param phone_number [String]
+      # @param ip [String]
+      # @param name [String]
+      # @param aka [String] corresponds to 'alias' in docs, use name if no alias
+      # @param entity_type [String] consult your organization's CIP for valid options
+      # @see https://docs.synapsepay.com/docs/user-resources#section-supported-entity-types all supported entity_type values
+      # @param entity_scope [String] consult your organization's CIP for valid options
+      # @see https://docs.synapsepay.com/docs/user-resources#section-supported-entity-scope all entity_scope options
+      # @param birth_day [Integer]
+      # @param birth_month [Integer]
+      # @param birth_year [Integer]
+      # @param address_street [String]
+      # @param address_city [String]
+      # @param address_subdivision [String]
+      # @param address_postal_code [String]
+      # @param address_country_code [String]
+      # @param physical_documents [Array<SynapsePayRest::PhysicalDocument>] (optional)
+      # @param social_documents [Array<SynapsePayRest::SocialDocument>] (optional)
+      # @param virtual_documents [Array<SynapsePayRest::VirtualDocument>] (optional)
+      # 
+      # @raise [SynapsePayRest::Error]
+      # 
+      # @return [SynapsePayRest::BaseDocument]
       def create(user:, email:, phone_number:, ip:, name:,
         aka:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
         address_street:, address_city:, address_subdivision:, address_postal_code:,
@@ -31,17 +67,31 @@ module SynapsePayRest
           raise ArgumentError, 'virtual_documents be empty or contain VirtualDocument(s)'
         end
 
-        base_document = BaseDocument.new(user: user, email: email, phone_number: phone_number,
-          ip: ip, name: name, aka: aka, entity_type: entity_type,
-          entity_scope: entity_scope, birth_day: birth_day, birth_month: birth_month, 
-          birth_year: birth_year, address_street: address_street, address_city: address_city,
-          address_subdivision: address_subdivision, address_postal_code:  address_postal_code,
-          address_country_code: address_country_code, physical_documents: physical_documents,
-          social_documents: social_documents, virtual_documents: virtual_documents)
+        base_document = BaseDocument.new(
+          user: user, 
+          email: email, 
+          phone_number: phone_number,
+          ip: ip, 
+          name: name, 
+          aka: aka, 
+          entity_type: entity_type,
+          entity_scope: entity_scope, 
+          birth_day: birth_day, 
+          birth_month: birth_month, 
+          birth_year: birth_year, 
+          address_street: address_street, 
+          address_city: address_city,
+          address_subdivision: address_subdivision, 
+          address_postal_code:  address_postal_code,
+          address_country_code: address_country_code, 
+          physical_documents: physical_documents,
+          social_documents: social_documents, 
+          virtual_documents: virtual_documents
+        )
         base_document.submit
       end
 
-      # parses multiple base_documents from response
+      # Parses multiple base_documents from response
       def create_from_response(user, response)
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
@@ -70,6 +120,7 @@ module SynapsePayRest
       end
     end
 
+    # @note Do not call directly. Use BaseDocument.create instead.
     def initialize(**args)
       @id                   = args[:id]
       @user                 = args[:user]
@@ -100,6 +151,12 @@ module SynapsePayRest
       end
     end
 
+    # Submits the base document to the API.
+    # @note It should not be necessary to call this method directly.
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::BaseDocument] (self)
     def submit
       user.authenticate
       response = @user.client.users.update(payload: payload_for_submit)
@@ -108,6 +165,33 @@ module SynapsePayRest
       self
     end
 
+    # Updates the supplied fields in the base document. See #create for valid
+    # 
+    # @param email [String] (optional)
+    # @param phone_number [String] (optional)
+    # @param ip [String] (optional)
+    # @param name [String] (optional)
+    # @param aka [String] (optional) corresponds to 'alias' in docs, use name if no alias
+    # @param entity_type [String] (optional) consult your organization's CIP for valid options
+    # @see https://docs.synapsepay.com/docs/user-resources#section-supported-entity-types all supported entity_type values
+    # @param entity_scope [String] (optional) consult your organization's CIP for valid options
+    # @see https://docs.synapsepay.com/docs/user-resources#section-supported-entity-scope all entity_scope options
+    # @param birth_day [Integer] (optional)
+    # @param birth_month [Integer] (optional)
+    # @param birth_year [Integer] (optional)
+    # @param address_street [String] (optional)
+    # @param address_city [String] (optional)
+    # @param address_subdivision [String] (optional)
+    # @param address_postal_code [String] (optional)
+    # @param address_country_code [String] (optional)
+    # @param physical_documents [Array<SynapsePayRest::PhysicalDocument>] (optional)
+    # @param social_documents [Array<SynapsePayRest::SocialDocument>] (optional)
+    # @param virtual_documents [Array<SynapsePayRest::VirtualDocument>] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::BaseDocument] (self)
+    # 
     # @todo validate changes are valid fields in base_document
     def update(**changes)
       if changes.empty?
@@ -124,6 +208,14 @@ module SynapsePayRest
       self
     end
 
+    # Adds one or more physical documents to the base document and submits
+    # them to the API using KYC 2.0 endpoints.
+    # 
+    # @param documents [Array<SynapsePayRest::PhysicalDocument>]
+    # 
+    # @raise [SynapsePayRest::Error] (self)
+    # 
+    # @return [SynapsePayRest::BaseDocument]
     def add_physical_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(PhysicalDocument)
@@ -133,6 +225,14 @@ module SynapsePayRest
       update(physical_documents: documents)
     end
 
+    # Adds one or more social documents to the base document and submits
+    # them to the API using KYC 2.0 endpoints.
+    # 
+    # @param documents [Array<SynapsePayRest::SocialDocument>]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::BaseDocument] (self)
     def add_social_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(SocialDocument)
@@ -142,6 +242,14 @@ module SynapsePayRest
       update(social_documents: documents)
     end
 
+    # Adds one or more virtual documents to the base document and submits
+    # them to the API using KYC 2.0 endpoints.
+    # 
+    # @param documents [Array<SynapsePayRest::VirtualDocument>]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::BaseDocument] (self)
     def add_virtual_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(VirtualDocument)
@@ -226,7 +334,7 @@ module SynapsePayRest
       else
         # first time values, use latest base_document doc if multiple
         base_document_fields = response['documents'].last
-        self.id = base_document_fields['id']
+        @id = base_document_fields['id']
         self
       end
     end
@@ -264,12 +372,12 @@ module SynapsePayRest
         # sometimes doc id changes so assume last one is the correct one
         if base_document_fields.nil? 
           base_document_fields = response['documents'].last
-          self.id = base_document_fields['id']
+          @id = base_document_fields['id']
         end
       else
         # first time submission, use last base_document for id if multiple
         base_document_fields = response['documents'].last
-        self.id = base_document_fields['id']
+        @id = base_document_fields['id']
       end
       base_document_fields
     end

@@ -111,13 +111,13 @@ class NodeTest < Minitest::Test
     assert_equal transaction2, found_transaction
   end
 
-  def test_destroy
+  def test_deactivate
     user = test_user_with_two_nodes
 
     assert_equal 2, user.nodes.length
-    user.nodes.first.destroy
+    user.nodes.first.deactivate
     assert_equal 1, user.nodes.length
-    user.nodes.last.destroy
+    user.nodes.last.deactivate
     assert_empty user.nodes
   end
 

@@ -1,11 +1,20 @@
 module SynapsePayRest
+  # Represents physical documents that can be added to a base document.
+  # 
+  # @see https://docs.synapsepay.com/docs/user-resources#section-physical-document-types
+  #   physical document types
   class PhysicalDocument < Document
+    # Converts the document into hash format for use in request JSON.
+    # @note You shouldn't need to call this directly.
+    #
+    # @return [Hash]
     def to_hash
       {'document_value' => to_base64(value), 'document_type' => type}
     end
 
     private
 
+    # Converts the supplied file to base64 encoding so it can be uploaded to API.
     def to_base64(file_path)
       raise ArgumentError, 'file_path must be a String' unless file_path.is_a?(String)
 

@@ -16,7 +16,7 @@ class BaseDocumentTest < Minitest::Test
     social_doc   = base_document.social_documents.first
     virtual_doc  = base_document.virtual_documents.first
 
-    # verify docs associated with User object
+    # verify docs belonging to User object
     assert_equal base_document.physical_documents.length, 1
     assert_equal base_document.social_documents.length, 1
     assert_equal base_document.virtual_documents.length, 1

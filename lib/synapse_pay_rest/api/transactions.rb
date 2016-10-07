@@ -1,7 +1,8 @@
 module SynapsePayRest
   # Wrapper class for /trans endpoints
+  # 
+  # @todo Implement idempotency keys
   class Transactions
-    # @todo Implement idempotency keys
 
     # Valid optional args for #get
     # @todo Refactor to HTTPClient
@@ -20,7 +21,7 @@ module SynapsePayRest
     # if trans_id supplied, else queries all transactions. Returns the response.
     # 
     # @param node_id [String] id of the from node
-    # @param trans_id [String,nil] (optional) id of a transaction to look up
+    # @param trans_id [String,void] (optional) id of a transaction to look up
     # @param page [String,Integer] (optional) response will default to 1
     # @param per_page [String,Integer] (optional) response will default to 20
     # 
@@ -28,17 +29,17 @@ module SynapsePayRest
     # HTTP response from API
     # 
     # @return [Hash] API response
+    # 
+    # @todo Probably should use CGI or RestClient's param builder instead of
+    # rolling our own, probably error-prone and untested version
+    # https://github.com/rest-client/rest-client#usage-raw-url
     def get(node_id:, trans_id: nil, **options)
       path = create_transaction_path(node_id: node_id, trans_id: trans_id)
 
-      # @todo Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact
 
-      # @todo Probably should use CGI or RestClient's param builder instead of
-      # rolling our own, probably error-prone and untested version
-      # https://github.com/rest-client/rest-client#usage-raw-url
       path += '?' + params.join('&') if params.any?
       client.get(path)
     end
