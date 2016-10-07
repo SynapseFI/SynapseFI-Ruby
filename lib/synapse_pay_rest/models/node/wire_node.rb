@@ -1,6 +1,11 @@
 module SynapsePayRest
+  # Parent of all Wire nodes. Should not be instantiated directly.
+  # 
+  # @todo Make this a module instead.
   class WireNode < BaseNode
     class << self
+      private
+
       def payload_for_create(type:, nickname:, bank_name:, account_number:, address:,
         name_on_account:, **options)
         payload = {

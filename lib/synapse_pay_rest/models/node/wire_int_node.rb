@@ -1,6 +1,9 @@
 module SynapsePayRest
+  # Represents a non-US account for wire payments.
   class WireIntNode < WireNode
     class << self
+      private 
+
       def payload_for_create(nickname:, bank_name:, account_number:, swift:,
         name_on_account:, address:, **options)
         args = {

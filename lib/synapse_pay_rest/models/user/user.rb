@@ -8,7 +8,6 @@ module SynapsePayRest
   #   better to refactor this into a mixin altogether since this shouldn't be instantiated. 
   # @todo reduce duplicated logic between User/BaseNode/Transaction
   class User
-
     # @!attribute [rw] base_documents
     #   @return [Array<SynapsePayRest::BaseDocument>]
     # @!attribute [r] permission

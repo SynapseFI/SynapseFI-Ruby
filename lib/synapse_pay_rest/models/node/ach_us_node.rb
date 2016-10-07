@@ -1,7 +1,22 @@
 module SynapsePayRest
+  # Represents a US bank account for processing ACH payments. Can be added by
+  # account/routing number or via bank login for selected banks (recommended).
+  # 
+  # @see https://docs.synapsepay.com/docs/node-resources nodes documentation
+  # @see https://synapsepay.com/api/v3/institutions/show valid banks for login
   class AchUsNode < BaseNode
     class << self
-      # valid banks: https://synapsepay.com/api/v3/institutions/show
+      # Creates an ACH-US node via bank login, belonging to user supplied.
+      # 
+      # @param user [SynapsePayRest::User] the user to whom the node belongs 
+      # @param bank_name [String] 
+      # @see https://synapsepay.com/api/v3/institutions/show valid bank_name options
+      # @param username [String] user's bank login username
+      # @param password [String] user's bank login password
+      # 
+      # @raise [SynapsePayRest::Error]
+      # 
+      # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)s
       def create_via_bank_login(user:, bank_name:, username:, password:)
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'bank_name must be a String' unless bank_name.is_a?(String)
@@ -19,6 +34,9 @@ module SynapsePayRest
         end
       end
 
+      private
+
+      # Converts args into payload for request JSON.
       def payload_for_create(nickname:, account_number:, routing_number:, 
         account_type:, account_class:, **options)
         payload = {
@@ -51,6 +69,8 @@ module SynapsePayRest
         }
       end
       
+      # Creates a SynapsePayRest::UnverifiedNode when bank responds with MFA
+      # questions.
       def create_unverified_node(user, response)
         UnverifiedNode.new(
           user:             user,
@@ -61,6 +81,16 @@ module SynapsePayRest
       end
     end
 
+    # Verifies the microdeposit amounts sent to the user's account to verify
+    # a node added by account and routing number. Node will be locked if max
+    # tries exceeded.
+    # 
+    # @param amount1 [Float]
+    # @param amount2 [Float]
+    # 
+    # @raise [SynapsePayRest::Error] if wrong guess or HTTP error
+    # 
+    # @return [Symbol] if successful
     def verify_microdeposits(amount1:, amount2:)
       [amount1, amount2].each do |arg|
         raise ArgumentError, "#{arg} must be float" unless arg.is_a?(Float)
@@ -69,11 +99,12 @@ module SynapsePayRest
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
       @permission = response['allowed']
-      self
+      :success
     end
 
     private
 
+    # Converts the data to hash format for request JSON.
     def verify_microdeposits_payload(amount1:, amount2:)
       {'micro' => [amount1, amount2]}
     end

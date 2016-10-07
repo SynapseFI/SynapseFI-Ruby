@@ -13,6 +13,8 @@ TEST_ROOT = File.dirname(File.expand_path('.', __FILE__))
 # require test factories
 Dir["#{TEST_ROOT}/factories/*.rb"].each {|file| require file }
 
+# @todo organize tests better (e.g. by node type instead of all nodes together)
+
 def fixture_path(file_name)
   "#{TEST_ROOT}/fixtures/#{file_name}"
 end

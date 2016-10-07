@@ -1,6 +1,9 @@
 module SynapsePayRest
+  # Represents an Indian bank account for EFT credits.
   class EftIndNode < EftNode
     class << self
+      private
+
       def payload_for_create(nickname:, account_number:, ifsc:, **options)
         args = {
           type: 'EFT-IND',
