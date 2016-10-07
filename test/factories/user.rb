@@ -10,17 +10,13 @@ def test_user(client: test_client,
               supp_id: Faker::Number.number(10).to_s,
               is_business: false)
   SynapsePayRest::User.create(
-    client: test_client,
-    logins: [{
-      email: Faker::Internet.email,
-      password: Faker::Internet.password,
-      read_only: false
-    }],
-    phone_numbers: [Faker::PhoneNumber.phone_number],
-    legal_names: [Faker::Name.name],
-    note: Faker::Hipster.sentence(3),
-    supp_id: Faker::Number.number(10).to_s,
-    is_business: false
+    client: client,
+    logins: logins,
+    phone_numbers: phone_numbers,
+    legal_names: legal_names,
+    note: note,
+    supp_id: supp_id,
+    is_business: is_business
   )
 end
 

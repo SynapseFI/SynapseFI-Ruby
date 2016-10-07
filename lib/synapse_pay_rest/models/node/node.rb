@@ -1,6 +1,6 @@
 module SynapsePayRest
   # factory methods
-  # TODO: use mixins to remove duplication between Node and BaseNode
+  # @todo use mixins to remove duplication between Node and BaseNode
   module Node
     NODE_TYPES_TO_CLASSES = {
       'ACH-US'      => AchUsNode,

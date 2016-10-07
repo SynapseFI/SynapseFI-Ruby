@@ -37,7 +37,7 @@ class ClientTest < Minitest::Test
     assert_instance_of SynapsePayRest::Transactions, client.trans
   end
 
-  # TODO: turn on response logging as well as requests
+  # @todo turn on response logging as well as requests
   def test_logging_flags
     client = SynapsePayRest::Client.new(@options)
     assert_silent { client.users.create(payload: test_users_create_payload) }

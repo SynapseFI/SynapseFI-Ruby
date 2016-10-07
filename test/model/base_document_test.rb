@@ -84,7 +84,7 @@ class BaseDocumentTest < Minitest::Test
 
     assert_equal response_after_update_phone_number['status'], social_doc.status
 
-    # TODO: test last updated changes on virtual/physical docs
+    # @todo test last updated changes on virtual/physical docs
   end
 
   def test_add_physical_documents

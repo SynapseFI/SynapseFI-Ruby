@@ -121,6 +121,12 @@ class UserTest < Minitest::Test
     args = test_user_update_args
     user.update(args)
 
+    # verify instance variables reassigned
+    assert_includes user.logins, args[:login]
+    assert_includes user.phone_numbers, args[:phone_number]
+    refute_includes user.logins, args[:remove_login]
+    refute_includes user.phone_numbers, args[:remove_phone_number]
+
     # verify that it's updated
     api_response = test_client.users.get(user_id: user.id)
     assert api_response['logins'].any? do |login|
@@ -215,7 +221,7 @@ class UserTest < Minitest::Test
     refute_includes response['phone_numbers'], phone_number
   end
 
-  # TODO: need to mock this to test (tested manually for now)
+  # @todo need to mock this to test (tested manually for now)
   def test_register_new_fingerprint
     skip 'mock needed. tested manually for now.'
     user = SynapsePayRest::User.find(client: test_client, id: ENV.fetch('USER_ID'))

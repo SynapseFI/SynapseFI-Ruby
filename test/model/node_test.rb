@@ -376,7 +376,7 @@ class NodeTest < Minitest::Test
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
-  # TODO: test with both maximum and minimum fields
+  # @todo test with both maximum and minimum fields
   def test_create_synapse_us_node
     args = test_synapse_us_create_args(user: @user)
     node = SynapsePayRest::SynapseUsNode.create(args)

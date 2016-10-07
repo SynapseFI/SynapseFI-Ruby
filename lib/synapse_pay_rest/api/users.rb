@@ -3,38 +3,65 @@ require 'base64'
 require 'open-uri'
 
 module SynapsePayRest
+  # Wrapper class for /users endpoints
   class Users
-    # TODO: Should refactor this to HTTPClient
+    # Valid optional args for #get
+    # @todo Should refactor this to HTTPClient
     VALID_QUERY_PARAMS = [:query, :page, :per_page].freeze
 
+    # @!attribute [rw] client
+    #   @return [SynapsePayRest::HTTPClient]
     attr_accessor :client
 
+    # @param [SynapsePayRest::HTTPClient]
     def initialize(client)
       @client = client
     end
 
+    # Sends a GET request to /users endpoint and returns the response. Queries a
+    # specific user_id if user_id supplied, else queries all users. 
+    # 
+    # @param user_id [String,nil] id of the user
+    # @param query [String] (optional) response will be filtered to 
+    #   users with matching name/email
+    # @param page [String,Integer] (optional) response will default to 1
+    # @param per_page [String,Integer] (optional) response will default to 20
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
     def get(user_id: nil, **options)
       path = create_user_path(user_id: user_id)
 
-      # factor single user and all users into separate methods
       if user_id
         response = client.get(path)
         client.update_headers(user_id: response['_id']) if response['_id']
         return response
       end
 
-      # TODO: Should factor this out into HTTPClient
+      # @todo Should factor this out into HTTPClient
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
       end.compact
 
-      # TODO: Probably should use CGI or RestClient's param builder instead of
+      # @todo Probably should use CGI or RestClient's param builder instead of
       # rolling our own, probably error-prone and untested version
       # https://github.com/rest-client/rest-client#usage-raw-url
       path += '?' + params.join('&') if params.any?
       client.get(path)
     end
 
+    # Sends a POST request to /users endpoint to create a new user, and returns
+    # the response.
+    # 
+    # @param payload [Hash]
+    # @see https://docs.synapsepay.com/docs/create-a-user payload structure
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
     def create(payload:)
       path = create_user_path
       response = client.post(path, payload)
@@ -42,6 +69,16 @@ module SynapsePayRest
       response
     end
 
+    # Sends a POST request to /oauth/:user_id endpoint to obtain a new oauth key
+    # and update the client's headers, and returns the response
+    # 
+    # @param payload [Hash]
+    # @see https://docs.synapsepay.com/docs/get-oauth_key-refresh-token payload structure
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
     def refresh(payload:)
       path = "/oauth/#{@client.user_id}"
       response = @client.post(path, payload)
@@ -49,13 +86,39 @@ module SynapsePayRest
       response
     end
 
+    # Sends a PATCH request to /users endpoint, updating the current user,
+    # which can also include adding/updating user CIP documents, and returns the response.
+    # 
+    # @param payload [Hash]
+    # @see https://docs.synapsepay.com/docs/update-user payload structure for
+    #   updating user
+    # @see https://docs.synapsepay.com/docs/adding-documents payload structure
+    #   for adding documents to user
+    # @see https://docs.synapsepay.com/docs/updating-existing-document payload
+    #   structure for updating user's existing documents
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
     def update(payload:)
       path = create_user_path(user_id: client.user_id)
       response = client.patch(path, payload)
       client.update_headers(user_id: response['_id']) if response['_id']
       response
     end
+    # Alias for #update (legacy name)
+    alias_method :answer_kba, :update
+    # Alias for #update (legacy name)
+    alias_method :add_doc, :update
 
+    # Converts a file to base64 for use in payloads for adding physical documents.
+    # 
+    # @param file_path [String]
+    # @param file_type [String,nil] (optional) MIME type of file (will attempt
+    #   to autodetect if nil)
+    # 
+    # @return [String] base64 encoded file
     def encode_attachment(file_path:, file_type: nil)
       # try to find file_type
       if file_type.nil?
@@ -74,19 +137,13 @@ module SynapsePayRest
       mime_padding + encoded
     end
 
-    # this is just an alias for update. leaving here for legacy users.
-    def answer_kba(payload:)
-      update(payload: payload)
-    end
-
-    # this is just an alias for update. leaving here for legacy users.
-    def add_doc(payload:)
-      update(payload: payload)
-    end
-
-    # deprecated
+    # Detects the file type of the file and calls #attach_file_with_file_type
+    # on it.
+    # 
+    # @param file_path [String]
+    # @deprecated Use #update with KYC 2.0 payload instead.
     def attach_file(file_path:)
-      warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
+      warn caller.first + " DEPRECATION WARNING: #{self.class}##{__method__} is deprecated. Use #update with encode_attachment instead."
 
       file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
@@ -98,9 +155,14 @@ module SynapsePayRest
       end
     end
 
-    # deprecated
+    # Converts a file to base64 and sends it to the API using deprecated KYC 1.0 
+    # call.
+    # 
+    # @param file_path [String]
+    # @param file_type [String] MIME type
+    # @deprecated Use #update with KYC 2.0 payload instead.
     def attach_file_with_file_type(file_path:, file_type:)
-      warn caller.first + " DEPRECATION WARNING: the method #{self.class}##{__method__} is deprecated. Use SynapsePayRest::Users::update with encode_attachment instead."
+      warn caller.first + " DEPRECATION WARNING: #{self.class}##{__method__} is deprecated. Use #update with encode_attachment instead."
 
       path = create_user_path(user_id: @client.user_id)
       file_contents = open(file_path) { |f| f.read }

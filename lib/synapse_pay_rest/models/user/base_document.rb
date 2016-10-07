@@ -108,7 +108,7 @@ module SynapsePayRest
       self
     end
 
-    # TODO: validate changes are valid fields in base_document
+    # @todo validate changes are valid fields in base_document
     def update(**changes)
       if changes.empty?
         raise ArgumentError, 'must provide some key-value pairs to update'

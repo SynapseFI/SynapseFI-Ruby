@@ -1,4 +1,5 @@
 module SynapsePayRest
+  # Custom class for handling HTTP and API errors.
   class Error < StandardError
     # Raised on a 4xx HTTP status code
     ClientError = Class.new(self)
@@ -48,6 +49,7 @@ module SynapsePayRest
     # Raised on the HTTP status code 504
     GatewayTimeout = Class.new(ServerError)
 
+    # HTTP status code to Error subclass mapping
     ERRORS = {
       400 => SynapsePayRest::Error::BadRequest,
       401 => SynapsePayRest::Error::Unauthorized,

@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
   s.summary     = 'SynapsePay v3 Rest Native API Library'
   s.homepage    = 'https://rubygems.org/gems/synapse_pay_rest'
   s.license     = 'MIT'
-  s.has_rdoc    = true
 
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   s.bindir        = 'exe'

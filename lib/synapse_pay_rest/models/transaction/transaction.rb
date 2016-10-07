@@ -6,8 +6,8 @@ module SynapsePayRest
                 :fee_amount, :fee_note, :fee_to_id
 
     class << self
-      # TODO: allow either to_node or to_type/to_id
-      # TODO: allow node to be entered as alternative to fee_to node 
+      # @todo allow either to_node or to_type/to_id
+      # @todo allow node to be entered as alternative to fee_to node 
       def create(node:, to_type:, to_id:, amount:, currency:, ip:, **options)
         raise ArgumentError, 'cannot create a transaction with an UnverifiedNode' if node.is_a?(UnverifiedNode)
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
@@ -47,8 +47,8 @@ module SynapsePayRest
 
       private
 
-      # TODO: validate if fee_to node is synapse us
-      # TODO: allow multiple fees
+      # @todo validate if fee_to node is synapse us
+      # @todo allow multiple fees
       def payload_for_create(node:, to_type:, to_id:, amount:, currency:, ip:,
         **options)
         payload = {
@@ -83,8 +83,8 @@ module SynapsePayRest
         payload
       end
 
-      # TODO: convert the nodes and users in response into User/Node objects
-      # TODO: rework to handle multiple fees
+      # @todo convert the nodes and users in response into User/Node objects
+      # @todo rework to handle multiple fees
       def create_from_response(node, response)
         args = {
           node:          node,

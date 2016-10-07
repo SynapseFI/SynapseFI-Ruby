@@ -1,13 +1,38 @@
 module SynapsePayRest
+  # Represents a user record and holds methods for constructing user objects
+  # from API calls. This is built on top of the SynapsePayRest::Users class and
+  # is intended to make it easier to use the API without knowing payload formats
+  # or knowledge of REST.
   class User
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
                 :supp_id, :is_business, :base_document_tag
     attr_accessor :refresh_token, :base_documents
 
     class << self
-      # TODO: simplify the logins argument somehow. separate class?
-      # used to make a new user
+      # Creates a new user in the API and returns a User object from the
+      # response data.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param logins [Array<Hash>] 
+      # @param phone_numbers [Array<String>]
+      # @param legal_names [Array<String>]
+      # @param note [String] (optional)
+      # @param supp_id [String] (optional)
+      # @param is_business [Boolean] (optional) API defaults to false
+      # 
+      # @example logins argument (only :email is required)
+      #   [{
+      #     email: "test@test.com", 
+      #     password: "letmein", 
+      #     read_only: false
+      #   }]
+      # 
+      # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+      # 
+      # @return [SynapsePayRest::User]
       def create(client:, logins:, phone_numbers:, legal_names:, **options)
+        # @todo simplify the logins argument somehow. separate class?
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         if [logins, phone_numbers, legal_names].any? { |arg| !arg.is_a? Array}
           raise ArgumentError, 'logins/phone_numbers/legal_names must be Array'
         end
@@ -26,14 +51,36 @@ module SynapsePayRest
         create_from_response(client, response)
       end
 
-      # fetches an existing user
+      # Queries the API for a user by id and returns a User objects if found.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param id [String] id of the user to find
+      # 
+      # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
+      # 
+      # @return [SynapsePayRest::User]
       def find(client:, id:)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
         response = client.users.get(user_id: id)
         create_from_response(client, response)
       end
 
-      # fetches data for multiple users
+      # Queries the API for all users (with optional filters) and returns them
+      # as User objects.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param query [String] (optional) response will be filtered to 
+      #   users with matching name/email
+      # @param page [String,Integer] (optional) response will default to 1
+      # @param per_page [String,Integer] (optional) response will default to 20
+      # 
+      # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+      # 
+      # @return [Array<SynapsePayRest::User>]
       def all(client:, page: nil, per_page: nil, query: nil)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         [page, per_page].each do |arg|
           if arg && (!arg.is_a?(Integer) || arg < 1)
             raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
@@ -47,13 +94,25 @@ module SynapsePayRest
         create_multiple_from_response(client, response['users'])
       end
 
-      # fetches data for users matching query in name/email
+      # Queries the API for all users with name/email matching the given query
+      # and returns them as User objects.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param query [String] response will be filtered to 
+      #   users with matching name/email
+      # @param page [String,Integer] (optional) response will default to 1
+      # @param per_page [String,Integer] (optional) response will default to 20
+      # 
+      # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+      # 
+      # @return [Array<SynapsePayRest::User>]
       def search(client:, query:, page: nil, per_page: nil)
         all(client: client, query: query, page: page, per_page: per_page)
       end
 
       private
 
+      # Maps args to API payload format.
       def payload_for_create(logins:, phone_numbers:, legal_names:, **options)
         payload = {
           'logins'        => logins,
@@ -71,7 +130,7 @@ module SynapsePayRest
         payload
       end
 
-      # builds a user object from a user response
+      # Constructs a user object from a user response.
       def create_from_response(client, response)
         user = self.new(
           client:            client,
@@ -95,18 +154,21 @@ module SynapsePayRest
         user
       end
 
+      # Calls create_from_response on each member of a response collection.
       def create_multiple_from_response(client, response)
         return [] if response.empty?
         response.map { |user_data| create_from_response(client, user_data)}
       end
     end
 
+    # User constructor. Do not use directly (use class methods)
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @client.http_client.user_id = @id
       @base_documents  ||= []
     end
 
+    # Updates the given 
     def update(**options)
       if options.empty?
         raise ArgumentError, 'must provide a key-value pair to update. keys: login,
@@ -114,6 +176,7 @@ module SynapsePayRest
       end
 
       client.users.update(payload: payload_for_update(options))
+      update_instance_variables(options)
       self
     end
 
@@ -268,6 +331,16 @@ module SynapsePayRest
 
     def payload_for_refresh
       {'refresh_token' => refresh_token}
+    end
+
+    def update_instance_variables(**args)
+      @legal_names   << args[:legal_name] if args[:legal_name]
+      @logins        << args[:login] if args[:login]
+      @phone_numbers << args[:phone_number] if args[:phone_number]
+      @logins.delete(args[:remove_login]) if args[:remove_login]
+      @phone_numbers.delete(args[:remove_phone_number]) if args[:remove_phone_number]
+      @read_only = args[:read_only] if args[:read_only]
+      nil
     end
   end
 end
