@@ -1,6 +1,6 @@
 module SynapsePayRest
   # Represents physical documents that can be added to a base document.
-  # 
+  #
   # @see https://docs.synapsepay.com/docs/user-resources#section-physical-document-types
   #   physical document types
   class PhysicalDocument < Document

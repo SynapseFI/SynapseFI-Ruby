@@ -84,6 +84,7 @@ module SynapsePayRest
       # @param code [Integer]
       # @return [SynapsePayRest::Error]
       def error_from_response(body, code)
+        code = code.to_i
         klass = ERRORS[code] || SynapsePayRest::Error
         message, error_code = parse_error(body)
         klass.new(message: message, code: error_code, response: body)

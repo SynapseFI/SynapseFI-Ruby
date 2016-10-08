@@ -3,165 +3,206 @@
 ```ruby
 require 'synapse_pay_rest'
 
-options = {
-  'oauth_key' => OAUTH_KEY, # Optional
-  'fingerprint' => FINGERPRINT,
-  'client_id' => CLIENT_ID,
-  'client_secret' => CLIENT_SECRET,
-  'ip_address' => IP_ADDRESS,
-  'development_mode' => true # true will ping sandbox.synapsepay.com while false will ping synapsepay.com
+require 'dotenv'
+Dotenv.load
+
+args = {
+  # synapse client_id
+  client_id:        ENV.fetch('CLIENT_ID'),
+  # synapse client_secret
+  client_secret:    ENV.fetch('CLIENT_SECRET'),
+  # a hashed value, either unique to user or static for app
+  fingerprint:      ENV.fetch('FINGERPRINT'),
+  # the user's IP
+  ip_address:       '127.0.0.1',
+  # (optional) requests go to sandbox endpoints if true
+  development_mode: true, #
+  # (optional) if true logs requests to stdout
+  logging:          true,
+  # (optional) file path to write logs to
+  log_to:           nil
 }
 
-USER_ID = USER_ID # Optional (client will automatically update it after a GET or UPDATE call)
-
-client = SynapsePayRest::Client.new options: options, user_id: USER_ID
+client = SynapsePayRest::Client.new(args)
+# => #<SynapsePayRest::Client>
 
 ```
 
-## User API Calls
+## User
+
+#### All Users
+
+```ruby
+
+args = {
+  client:   client,
+  page:     nil, # (optional) uses API default unless specified
+  per_page: nil, # (optional) uses API default unless specified
+  query:    nil, # (optional) filters by name/email match
+}
+
+SynapsePayRest::User.all(args)
+  # => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, #<SynapsePayRest::User>]
+
+```
+
+#### Create User
+
+```ruby
+
+user_create_settings = {
+  client:        client,
+  logins:        [{email: 'steven@synapsepay.com'}],
+  phone_numbers: ['555-555-5555'],
+  legal_names:   ['Steven Broderick']
+}
+
+user = SynapsePayRest::User.create(user_create_settings)
+# => #<SynapsePayRest::User>
+
+```
+
+#### Find a User by id
+
+```ruby
+
+user = SynapsePayRest::User.find(
+  client: client,
+  id:     '57e97ab786c2737f4ccd4dc1'
+)
+# => #<SynapsePayRest::User>
+
+```
+
+#### Update a User's Personal Info
+
+Note: this returns a new, updated instance. It doesn't change the original.
+
+```ruby
+
+args = {
+  login:                {email: 'newemail@gmail.com'}, # add a login email
+  phone_number:         '415-555-5555',                # add a phone number
+  legal_name:           'Big Bird',                    # add a legal name
+  remove_phone_number:  '555-555-5555',                # remove a phone number
+  remove_login:          nil                           # remove a login email
+}
+
+user = user.update(args)
+# => #<SynapsePayRest::User> a new instance
+
+```
+
+#### Add CIP Base Document
+
+##### a) User#create_base_document
+
+```ruby
+
+args = {
+  email:                'steven@synapsepay.com',
+  phone_number:         '415-555-5555',
+  ip:                   '127.0.0.1',
+  name:                 'Steven Broderick',
+  aka:                  'Steven Broderick',
+  entity_type:          'NOT_KNOWN',
+  entity_scope:         'Doctor',
+  birth_day:            3,
+  birth_month:          19,
+  birth_year:           1912,
+  address_street:       '123 Synapse St',
+  address_city:         'San Francisco',
+  address_subdivision:  'CA',
+  address_postal_code:  '94114',
+  address_country_code: 'US'
+}
+
+user = user.create_base_document(args)
+# => #<SynapsePayRest::User> a new instance
+
+```
+
+##### b) BaseDocument#create
+
+```ruby
+
+args = {
+  user:                 user,
+  email:                'steven@synapsepay.com',
+  phone_number:         '415-555-5555',
+  ip:                   '127.0.0.1',
+  name:                 'Steven Broderick',
+  aka:                  'Steven Broderick',
+  entity_type:          'NOT_KNOWN',
+  entity_scope:         'Doctor',
+  birth_day:            3,
+  birth_month:          19,
+  birth_year:           1912,
+  address_street:       '123 Synapse St',
+  address_city:         'San Francisco',
+  address_subdivision:  'CA',
+  address_postal_code:  '94114',
+  address_country_code: 'US'
+}
+
+base_document = SynapsePayRest::BaseDocument.create(args)
+# => #<SynapsePayRest::BaseDocument>
+
+```
+
+#### Add a Physical Document
+
+```ruby
+
+physical_doc = SynapsePayRest::PhysicalDocument.create(
+  type: 'GOVT_ID',
+  value: '/path/to/file.png'
+)
+
+base_document.add_physical_documents([physical_doc])
+# => #<SynapsePayRest::BaseDocument> (self)
+
+```
+
+#### Add a Social Document
+
+```ruby
+
+social_doc = SynapsePayRest::SocialDocument.create(
+  type: 'FACEBOOK',
+  value: 'facebook.com/sankaet'
+)
+
+base_document.add_social_documents([social_doc])
+# => #<SynapsePayRest::BaseDocument> (self)
+
+```
+
+#### Add a Virtual Document
+
+```ruby
+
+virtual_doc = SynapsePayRest::VirtualDocument.create(
+  type: 'SSN',
+  value: '3333'
+)
+
+base_document.add_virtual_documents([virtual_doc])
+# => #<SynapsePayRest::BaseDocument> (self)
+
+```
+
+##### Answer KBA Questions for Virtual Document
 
 ```ruby
 
 
-# Get All Users
 
-users_response = client.users.get
+```
 
+##### Update Existing Base Document
 
-# Create User
-
-create_payload = {
-  'logins' =>  [
-    {
-      'email' =>  'rubyTest@synapsepay.com',
-      'password' =>  'test1234',
-      'read_only' => false
-    }
-  ],
-  'phone_numbers' =>  [
-    '901.111.1111'
-  ],
-  'legal_names' =>  [
-    'RUBY TEST USER'
-  ],
-  'extra' =>  {
-    'note' =>  'Interesting user',
-    'supp_id' =>  '122eddfgbeafrfvbbb',
-    'is_business' =>  false
-  }
-}
-
-create_user_response = client.users.create(payload: create_payload)
-
-
-# Get User
-
-user_response = client.users.get(user_id: create_user_response['_id'])
-
-
-
-# Refresh User
-
-oauth_payload = {
-  'refresh_token' => user_response['refresh_token']
-}
-
-oauth_response = client.users.refresh(payload: oauth_payload)
-
-
-# Update a User
-
-update_payload = {
-  'refresh_token' => user_response['refresh_token'],
-  'update' => {
-    'login' => {
-      'email' => 'test2ruby@email.com',
-      'password' => 'test1234',
-      'read_only' => true
-    },
-    'phone_number' => '9019411111',
-    'legal_name' => 'Some new name'
-  }
-}
-
-client.users.update(payload: update_payload)
-
-
-# Add Base Document and Virtual/Physical/Social Documents
-
-# use Users#encode_attachment to base64 encode a file for inclusion in the payload
-govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
-selfie_attachment  = client.users.encode_attachment(file_path: FILE_PATH)
-
-add_documents_payload = {
-  'documents' => [{
-    'email' => 'test2@test.com',
-    'phone_number' => '555-942-8167',
-    'ip' => '12134323',
-    'name' => 'Snoopie',
-    'alias' => 'Meow',
-    'entity_type' => 'M',
-    'entity_scope' => 'Arts & Entertainment',
-    'day' => 2,
-    'month' => 5,
-    'year' => 2009,
-    'address_street' => 'Some Farm',
-    'address_city' => 'SF',
-    'address_subdivision' => 'CA',
-    'address_postal_code' => '94114',
-    'address_country_code' => 'US',
-    'virtual_docs' => [{
-      'document_value' => '111-111-3333',
-      'document_type' => 'SSN'
-    }],
-    'physical_docs' => [{
-      'document_value' => govt_id_attachment,
-      'document_type' => 'GOVT_ID'
-    },
-    {
-      'document_value' => selfie_attachment,
-      'document_type' => 'SELFIE'
-    }],
-    'social_docs' => [{
-      'document_value' => 'https://www.facebook.com/sankaet',
-      'document_type' => 'FACEBOOK'
-    }]
-  }]
-}
-
-add_docs_response = client.users.update(payload: add_documents_payload)
-
-
-# Answer KBA Questions for Virtual Document
-
-base_document = add_docs_response['documents'].last   # to get most recent (or only) submitted set of KYC docs
-
-ssn = base_document['virtual_docs'].find { |doc| doc['status'] == 'SUBMITTED|MFA_PENDING'}
-
-kba_payload = {
-  'documents' => [{
-    'id' => base_document['id'],
-    'virtual_docs' => [{
-      'id' => ssn['id'],
-      'meta' => {
-        'question_set' => {
-          'answers' => [
-            { 'question_id' => 1, 'answer_id' => 1 },
-            { 'question_id' => 2, 'answer_id' => 1 },
-            { 'question_id' => 3, 'answer_id' => 1 },
-            { 'question_id' => 4, 'answer_id' => 1 },
-            { 'question_id' => 5, 'answer_id' => 1 }
-          ]
-        }
-      }
-    }]
-  }]
-}
-
-kba_response = client.users.update(payload: kba_payload)
-
-
-# Update Existing Base Document
+```ruby
 
 new_govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
 
@@ -183,15 +224,18 @@ update_existing_docs_response = client.users.update(payload: update_existing_doc
 
 ## Node API Calls
 
+##### Get All Nodes
+
 ```ruby
-
-
-# Get All Nodes
 
 nodes_response = client.nodes.get
 
 
-# Add SYNAPSE-US Node
+```
+
+##### Add SYNAPSE-US Node
+
+```ruby
 
 synapse_node_payload = {
   'type' => 'SYNAPSE-US',
@@ -206,7 +250,11 @@ synapse_node_payload = {
 synapse_node_response = client.nodes.add(payload: synapse_node_payload)
 
 
-# Add ACH-US node through account login
+```
+
+##### Add ACH-US node through account login
+
+```ruby
 
 login_payload = {
   'type' => 'ACH-US',
@@ -220,7 +268,11 @@ login_payload = {
 login_response = client.nodes.add(payload: login_payload)
 
 
-# Verify ACH-US Node via MFA
+```
+
+##### Verify ACH-US Node via MFA
+
+```ruby
 
 mfa_payload = {
   'access_token' => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
@@ -230,7 +282,11 @@ mfa_payload = {
 mfa_response = client.nodes.verify(payload: mfa_payload)
 
 
-# Add ACH-US Node through Account and Routing Number Details
+```
+
+##### Add ACH-US Node through Account and Routing Number Details
+
+```ruby
 
 acct_rout_payload = {
   'type' => 'ACH-US',
@@ -250,7 +306,11 @@ acct_rout_payload = {
 acct_rout_response = client.nodes.add(payload: acct_rout_payload)
 
 
-# Verify ACH-US Node via Micro-Deposits
+```
+
+##### Verify ACH-US Node via Micro-Deposits
+
+```ruby
 
 micro_payload = {
   'micro' => [0.1,0.1]
@@ -258,7 +318,11 @@ micro_payload = {
 
 micro_response = client.nodes.verify(node_id: NODE_ID, payload: micro_payload)
 
-# Delete a Node
+```
+
+##### Delete a Node
+
+```ruby
 
 delete_response = client.nodes.delete(node_id: NODE_ID)
 
@@ -266,15 +330,17 @@ delete_response = client.nodes.delete(node_id: NODE_ID)
 
 ## Transaction API Calls
 
+##### Get All Transactions
+
 ```ruby
-
-
-# Get All Transactions
 
 transactions_response = client.trans.get(node_id: NODE_ID)
 
+```
 
-#Create a Transaction
+##### Create a Transaction
+
+```ruby
 
 trans_payload = {
   'to' => {
@@ -302,13 +368,19 @@ trans_payload = {
 
 create_response = client.trans.create(node_id: NODE_ID, payload: trans_payload)
 
+```
 
-# Get a Transaction
+##### Get a Transaction
+
+```ruby
 
 transaction_response = client.trans.get(node_id: NODE_ID, trans_id: TRANS_ID)
 
+```
 
-# Update Transaction
+##### Update Transaction
+
+```ruby
 
 update_payload = {
   'comment' =>  'hi'
@@ -316,8 +388,11 @@ update_payload = {
 
 update_response = client.trans.update(node_id: NODE_ID, trans_id: TRANS_ID, payload: update_payload)
 
+```
 
-# Delete Transaction
+##### Delete Transaction
+
+```ruby
 
 delete_trans_response = client.trans.delete(node_id: NODE_ID, trans_id: TRANS_ID)
 

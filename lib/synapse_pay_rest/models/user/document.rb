@@ -35,14 +35,17 @@ module SynapsePayRest
 
       # @note Do not call this method. It is used by child classes only.
       def create_from_response(data)
-        self.new(type: data['document_type'], id: data['id'],
-          last_updated: data['last_updated'], status: data['status'])
+        self.new(
+          type:         data['document_type'],
+          id:           data['id'],
+          status:       data['status'],
+          last_updated: data['last_updated']
+        )
       end
     end
 
-    # @note Do not instantiate directly. Use Document.create instead.
+    # @note Do not instantiate directly. User #create on subclasses.
     def initialize(type:, **options)
-
       @type         = type.upcase
       # only exist for created (not for fetched)
       @id           = options[:id]
@@ -52,20 +55,17 @@ module SynapsePayRest
       @last_updated = options[:last_updated]
     end
 
+    # Checks if two Document instances have same id (different instances of same record).
+    def ==(other)
+      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+    end
+
     # Converts the document into hash format for use in request JSON.
     # @note You shouldn't need to call this directly.
     # 
     # @return [Hash]
     def to_hash
       {'document_value' => value, 'document_type' => type}
-    end
-
-    # Updates instance variables based on data from response.
-    # @note You shouldn't need to call this directly.
-    def update_from_response(data)
-      self.id           = data['id']
-      self.status       = data['status']
-      self.last_updated = data['last_updated']
     end
   end
 end

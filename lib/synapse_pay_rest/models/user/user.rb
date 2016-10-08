@@ -13,7 +13,7 @@ module SynapsePayRest
     # @!attribute [r] permission
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-user-permissions
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
-                :supp_id, :is_business, :base_document_tag, :permission
+                :supp_id, :is_business, :cip_tag, :permission
     attr_accessor :refresh_token, :base_documents
 
     class << self
@@ -27,6 +27,7 @@ module SynapsePayRest
       # @param note [String] (optional)
       # @param supp_id [String] (optional)
       # @param is_business [Boolean] (optional) API defaults to false
+      # @param cip_tag [Integer] (optional) the CIP tag to use in this users CIP doc
       # 
       # @example logins argument (only :email is required)
       #   [{
@@ -119,9 +120,8 @@ module SynapsePayRest
         all(client: client, query: query, page: page, per_page: per_page)
       end
 
-      private
-
       # Maps args to API payload format.
+      # @note Do not call directly.
       def payload_for_create(logins:, phone_numbers:, legal_names:, **options)
         payload = {
           'logins'        => logins,
@@ -133,13 +133,14 @@ module SynapsePayRest
         extra['note']        = options[:note] if options[:note]
         extra['supp_id']     = options[:supp_id] if options[:supp_id]
         extra['is_business'] = options[:is_business] if options[:is_business]
-        extra['base_document_tag']     = options[:base_document_tag] if options[:base_document_tag]
-        payload['extra'] = extra if extra.any?
+        extra['cip_tag']     = options[:cip_tag] if options[:cip_tag]
+        payload['extra']     = extra if extra.any?
 
         payload
       end
 
       # Constructs a user instance from a user response.
+      # @note Do not call directly.
       def create_from_response(client, response)
         user = self.new(
           client:            client,
@@ -152,14 +153,13 @@ module SynapsePayRest
           note:              response['extra']['note'],
           supp_id:           response['extra']['supp_id'],
           is_business:       response['extra']['is_business'],
-          base_document_tag: response['extra']['base_document_tag']
+          cip_tag:           response['extra']['cip_tag']
         )
 
         unless response['documents'].empty?
           base_documents = BaseDocument.create_from_response(user, response)
           user.base_documents = base_documents
         end
-
         user
       end
 
@@ -174,7 +174,7 @@ module SynapsePayRest
     #   to instantiate via API action.
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
-      @client.http_client.user_id = @id
+      @client.http_client.user_id = id
       @base_documents  ||= []
     end
 
@@ -196,16 +196,16 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
     # 
-    # @return [SynapsePayRest::User] self
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
     def update(**options)
       if options.empty?
         raise ArgumentError, 'must provide a key-value pair to update. keys: login,
           read_only, phone_number, legal_name, remove_phone_number, remove_login'
       end
 
-      client.users.update(payload: payload_for_update(options))
-      update_instance_variables(options)
-      self
+      response = client.users.update(payload: payload_for_update(options))
+      # return an updated user instance
+      self.class.create_from_response(client, response)
     end
 
     # Creates a new base document for the user. To update an existing base
@@ -234,14 +234,13 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument]
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
     def create_base_document(**args)
       base_document = BaseDocument.create(user: self, **args)
-      @base_documents << base_document
-      base_document
+      base_document.user
     end
 
-    # Adds a login email to the user.
+    # Adds a login for the user.
     # 
     # @param email [String]
     # @param password [String] (optional)
@@ -258,27 +257,24 @@ module SynapsePayRest
       end
 
       login = {'email' => email}
+      # optional
       login['password']  = password if password
       login['read_only'] = read_only if read_only
       update(login: login)
-      @logins << login
-      self
     end
 
-    # Removes a login email from the user.
+    # Removes a login from the user.
     # 
     # @param email [String]
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::User] (self)
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
     def remove_login(email:)
       raise ArgumentError, 'email must be a String' unless email.is_a? String
 
       login = {email: email}
       update(remove_login: login)
-      @logins.delete_if { |l| l['email'] == email }
-      self
     end
 
     # Add a phone_number to the user.
@@ -287,12 +283,11 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::User] (self)
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
     def add_phone_number(phone_number)
       raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
 
       update(phone_number: phone_number)
-      self
     end
 
     # Removes a phone_number from the user.
@@ -301,12 +296,11 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::User] (self)
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
     def remove_phone_number(phone_number)
       raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
 
       update(remove_phone_number: phone_number)
-      self
     end
 
     # Updates the user's oauth token.
@@ -343,7 +337,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [Symbol] :success if successful
+    # @return [:success] if successful
     def select_2fa_device(device)
       raise ArgumentError, 'device must be a String' unless device.is_a?(String)
 
@@ -361,7 +355,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [Symbol] :success if successful
+    # @return [:success] if successful
     def confirm_2fa_pin(pin:, device:)
       raise ArgumentError, 'pin must be a String' unless pin.is_a?(String)
       raise ArgumentError, 'device must be a String' unless device.is_a?(String)
@@ -595,17 +589,6 @@ module SynapsePayRest
 
     def payload_for_refresh
       {'refresh_token' => refresh_token}
-    end
-
-    # Updates instance variables after succcessful #update.
-    def update_instance_variables(**args)
-      @legal_names   << args[:legal_name] if args[:legal_name]
-      @logins        << args[:login] if args[:login]
-      @phone_numbers << args[:phone_number] if args[:phone_number]
-      @logins.delete(args[:remove_login]) if args[:remove_login]
-      @phone_numbers.delete(args[:remove_phone_number]) if args[:remove_phone_number]
-      @read_only = args[:read_only] if args[:read_only]
-      nil
     end
   end
 end

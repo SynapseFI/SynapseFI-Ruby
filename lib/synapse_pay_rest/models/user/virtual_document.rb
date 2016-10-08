@@ -8,9 +8,19 @@ module SynapsePayRest
     # @return [SynapsePayRest::Array<SynapsePayRest::Question>] questions/answer choices returned when document status is MFA|PENDING
     attr_reader :question_set
 
+    class << self
+      # @note Do not call this method directly.
+      def create_from_response(data)
+        virtual_doc = super(data)
+        require 'pry'; 
+        virtual_doc.add_question_set(data['meta']['question_set']) if data['meta']
+        virtual_doc
+      end
+    end
+
+    # @note It should not be necessary to call this method directly.
     def initialize(**options)
       super(**options)
-      @question_set ||= []
     end
 
     # Submits the question/answer selections to the API to attempt to verify
@@ -20,28 +30,14 @@ module SynapsePayRest
     #
     # @todo should raise error if any questions aren't answered yet.
     def submit_kba
-      user     = base_document.user
-      response = user.client.users.update(payload: payload_for_kba)
-
-      base_document_info = response['documents'].find { |d| d['id'] == base_document.id }
-      ssn_docs = base_document_info['virtual_docs'].select { |doc_info| doc_info['document_type'] == 'SSN' }
-      ssn_doc_info = ssn_docs.max_by { |doc_info| doc_info['last_updated'] }
-      update_from_response(ssn_doc_info)
-
-      self
+      user          = base_document.user
+      response      = user.client.users.update(payload: payload_for_kba)
+      user          = User.create_from_response(user.client, response)
+      base_doc      = user.base_documents.find { |doc| doc.id == base_document.id }
+      ssn_doc       = base_doc.virtual_documents.find { |doc| doc.id == id }
     end
 
-    # Modifies parent behavior to handle question_sets.
-    # @note You shouldn't need to call this directly.
-    def update_from_response(data)
-      super(data)
-      # handle mfa questions
-      add_question_set(data['meta']['question_set']) if data['meta']
-      self
-    end
-
-    private
-
+    # Maps question set from response to Question objects.
     def add_question_set(question_set_data)
       questions = question_set_data['questions'].map do |question_info|
         # re-map question/answer hash structure
@@ -59,6 +55,8 @@ module SynapsePayRest
 
       @question_set = questions
     end
+
+    private
 
     def payload_for_kba
       {

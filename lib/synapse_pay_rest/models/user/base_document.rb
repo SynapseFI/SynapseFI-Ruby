@@ -6,7 +6,6 @@ module SynapsePayRest
     #   @return [SynapsePayRest::User] the user to whom the transaction belongs
     # @!attribute [r] permission_scope
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-document-permission-scope
-    
     attr_accessor :user, :email, :phone_number, :ip, :name, :aka, :entity_type,
                   :entity_scope, :birth_day, :birth_month, :birth_year,
                   :address_street, :address_city, :address_subdivision,
@@ -42,7 +41,7 @@ module SynapsePayRest
       # 
       # @raise [SynapsePayRest::Error]
       # 
-      # @return [SynapsePayRest::BaseDocument]
+      # @return [SynapsePayRest::BaseDocument] new instance with updated info
       def create(user:, email:, phone_number:, ip:, name:,
         aka:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
         address_street:, address_city:, address_subdivision:, address_postal_code:,
@@ -88,21 +87,29 @@ module SynapsePayRest
           social_documents: social_documents, 
           virtual_documents: virtual_documents
         )
+
         base_document.submit
       end
 
       # Parses multiple base_documents from response
+      # @note Do not call directly (it's automatic).
       def create_from_response(user, response)
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
-            PhysicalDocument.create_from_response(data)
+            doc = PhysicalDocument.create_from_response(data)
+            doc.base_document = self
+            doc
           end
           social_docs = base_document_data['social_docs'].map do |data|
-            SocialDocument.create_from_response(data)
+            doc = SocialDocument.create_from_response(data)
+            doc.base_document = self
+            doc
           end
           virtual_docs = base_document_data['virtual_docs'].map do |data|
-            VirtualDocument.create_from_response(data)
+            doc = VirtualDocument.create_from_response(data)
+            doc.base_document = self
+            doc
           end
 
           args = {
@@ -115,14 +122,20 @@ module SynapsePayRest
             virtual_documents:  virtual_docs
           }
 
-          self.new(args)
+          base_doc = self.new(args)
+          [physical_docs, social_docs, virtual_docs].flatten.each do |doc|
+            doc.base_document = base_doc
+          end
+
+          base_doc
         end
       end
     end
 
-    # @note Do not call directly. Use BaseDocument.create instead.
+    # @note It should not be necessary to call this method directly.
     def initialize(**args)
       @id                   = args[:id]
+      @permission_scope     = args[:permission_scope]
       @user                 = args[:user]
       @email                = args[:email]
       @phone_number         = args[:phone_number]
@@ -142,13 +155,6 @@ module SynapsePayRest
       @physical_documents   = args[:physical_documents]
       @social_documents     = args[:social_documents]
       @virtual_documents    = args[:virtual_documents]
-
-      # associate this base_document doc with each doc
-      unless [physical_documents, social_documents, virtual_documents].all?(&:empty?)
-        [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
-          doc.base_document = self
-        end
-      end
     end
 
     # Submits the base document to the API.
@@ -156,13 +162,20 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument] (self)
+    # @return [SynapsePayRest::BaseDocument] new instance with updated info (id will be different if email or phone changed)
     def submit
       user.authenticate
-      response = @user.client.users.update(payload: payload_for_submit)
-      update_values_with_response_data(response)
-      update_document_values_with_response_data(response)
-      self
+      response = user.client.users.update(payload: payload_for_submit)
+      @user    = User.create_from_response(user.client, response)
+
+      if id
+        # return updated version of self
+        user.base_documents.find { |doc| doc.id == id }
+      else
+        # first time submission, assume last doc is updated version of self
+        require 'pry'; 
+        user.base_documents.last
+      end
     end
 
     # Updates the supplied fields in the base document. See #create for valid
@@ -190,22 +203,26 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument] (self)
+    # @return [SynapsePayRest::BaseDocument] new instance with updated info 
     # 
     # @todo validate changes are valid fields in base_document
+    #   (or make other methods more like this)
     def update(**changes)
       if changes.empty?
         raise ArgumentError, 'must provide some key-value pairs to update'
       end
       user.authenticate
-      payload = payload_for_update(changes)
+      payload  = payload_for_update(changes)
       response = user.client.users.update(payload: payload)
+      @user    = User.create_from_response(user.client, response)
 
-      update_values_not_verified_in_response(changes)
-      update_values_with_response_data(response)
-      update_document_values_with_response_data(response)
-
-      self
+      if id
+        # return updated version of self
+        return user.base_documents.find { |doc| doc.id == id }
+      else
+        # first time submission, assume last doc is updated version of self
+        return user.base_documents.last
+      end
     end
 
     # Adds one or more physical documents to the base document and submits
@@ -213,9 +230,9 @@ module SynapsePayRest
     # 
     # @param documents [Array<SynapsePayRest::PhysicalDocument>]
     # 
-    # @raise [SynapsePayRest::Error] (self)
+    # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument]
+    # @return [SynapsePayRest::BaseDocument] new instance with updated info
     def add_physical_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(PhysicalDocument)
@@ -232,7 +249,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument] (self)
+    # @return [SynapsePayRest::BaseDocument] new instance with updated info
     def add_social_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(SocialDocument)
@@ -249,7 +266,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BaseDocument] (self)
+    # @return [SynapsePayRest::BaseDocument] new instance with updated info
     def add_virtual_documents(documents)
       raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
       unless documents.first.is_a?(VirtualDocument)
@@ -257,6 +274,11 @@ module SynapsePayRest
       end
 
       update(virtual_documents: documents)
+    end
+
+    # Checks if two BaseDocument instances have same id (different instances of same record).
+    def ==(other)
+      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
     end
 
     private
@@ -283,21 +305,15 @@ module SynapsePayRest
       }
 
       unless physical_documents.empty?
-        payload['documents'].first['physical_docs'] = physical_documents.map do |doc|
-          doc.to_hash
-        end
+        payload['documents'].first['physical_docs'] = physical_documents.map(&:to_hash)
       end
 
       unless social_documents.empty?
-        payload['documents'].first['social_docs'] = social_documents.map do |doc|
-          doc.to_hash
-        end
+        payload['documents'].first['social_docs'] = social_documents.map(&:to_hash)
       end
 
       unless virtual_documents.empty?
-        payload['documents'].first['virtual_docs'] = virtual_documents.map do |doc|
-          doc.to_hash
-        end
+        payload['documents'].first['virtual_docs'] = virtual_documents.map(&:to_hash)
       end
 
       payload
@@ -313,11 +329,11 @@ module SynapsePayRest
       changes.each do |field, new_value|
         # convert docs to their hash format for payload
         if field == :physical_documents
-          payload['documents'].first['physical_docs'] = new_value.map { |doc| doc.to_hash }
+          payload['documents'].first['physical_docs'] = new_value.map(&:to_hash)
         elsif field == :social_documents
-          payload['documents'].first['social_docs'] = new_value.map { |doc| doc.to_hash }
+          payload['documents'].first['social_docs'] = new_value.map(&:to_hash)
         elsif field == :virtual_documents
-          payload['documents'].first['virtual_docs'] = new_value.map { |doc| doc.to_hash }
+          payload['documents'].first['virtual_docs'] = new_value.map(&:to_hash)
         else
           # insert non-document fields into payload
           payload['documents'].first[field.to_s] = new_value
@@ -325,82 +341,6 @@ module SynapsePayRest
       end
 
       payload
-    end
-
-    def update_values_with_response_data(response)
-      if id
-        # updated values, find base_document doc by id
-        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
-      else
-        # first time values, use latest base_document doc if multiple
-        base_document_fields = response['documents'].last
-        @id = base_document_fields['id']
-        self
-      end
-    end
-
-    def update_document_values_with_response_data(response)
-      base_document_fields = base_document_fields_from_response(response)
-
-      [physical_documents, social_documents, virtual_documents].flatten.each do |doc|
-        if doc.is_a? PhysicalDocument
-          same_types = base_document_fields['physical_docs'].select do |resp_doc|
-            resp_doc['document_type'] == doc.type
-          end
-        elsif doc.is_a? SocialDocument
-          same_types = base_document_fields['social_docs'].select do |resp_doc|
-            resp_doc['document_type'] == doc.type
-          end
-        elsif doc.is_a? VirtualDocument
-          same_types = base_document_fields['virtual_docs'].select do |resp_doc|
-            resp_doc['document_type'] == doc.type
-          end
-        end
-
-        # assumes the most recently updated is the correct data to use
-        doc_data = same_types.max_by { |x| x['last_updated'] }
-        doc.update_from_response(doc_data)
-      end
-
-      self
-    end
-
-    def base_document_fields_from_response(response)
-      if id
-        # updated values, find base_document doc by id.
-        base_document_fields = response['documents'].find { |doc| doc['id'] == id}
-        # sometimes doc id changes so assume last one is the correct one
-        if base_document_fields.nil? 
-          base_document_fields = response['documents'].last
-          @id = base_document_fields['id']
-        end
-      else
-        # first time submission, use last base_document for id if multiple
-        base_document_fields = response['documents'].last
-        @id = base_document_fields['id']
-      end
-      base_document_fields
-    end
-
-    # updates changed values that don't come back in response data
-    def update_values_not_verified_in_response(changes)
-      changes.each do |field, new_value|
-        # handle instantiation of docs
-        if [:physical_documents, :social_documents, :virtual_documents].include? field
-          new_value.each do |doc|
-            doc.id = id
-            doc.base_document = self
-            physical_documents << doc if doc.is_a? PhysicalDocument
-            social_documents   << doc if doc.is_a? SocialDocument
-            virtual_documents  << doc if doc.is_a? VirtualDocument
-          end
-        # handle other response values by updating instance vars
-        else
-          self.send("#{field}=", new_value)
-        end
-      end
-
-      self
     end
   end
 end

@@ -44,6 +44,10 @@ module SynapsePayRest
       }
     end
 
+    # Determines whether the response is successful in verifying the node, has
+    # follow-up MFA questions, or failed with an incorrect answer.
+    # 
+    # @todo Use Error#code instead of parsing the response for the code.
     def handle_answer_mfa_response(response)
       if response['error_code'] == '0'
         # correct answer

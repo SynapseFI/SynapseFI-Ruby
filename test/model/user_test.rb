@@ -119,10 +119,10 @@ class UserTest < Minitest::Test
   def test_update
     user = test_user
     args = test_user_update_args
-    user.update(args)
+    user = user.update(args)
 
     # verify instance variables reassigned
-    assert_includes user.logins, args[:login]
+    assert user.logins.any? { |l| l['email'] == args[:login][:email] }
     assert_includes user.phone_numbers, args[:phone_number]
     refute_includes user.logins, args[:remove_login]
     refute_includes user.phone_numbers, args[:remove_phone_number]
@@ -151,10 +151,10 @@ class UserTest < Minitest::Test
     user = test_user
     args = test_base_document_args_with_three_documents
     args.delete(:user)
-    user.create_base_document(args)
+    user = user.create_base_document(args)
 
     refute_empty user.base_documents
-    assert_equal args[:social_documents].first, user.base_documents.first.social_documents.first
+    assert user.base_documents.first.social_documents.any? { |d| d.type == args[:social_documents].first.type }
     assert_equal user, user.base_documents.first.user
   end
 
@@ -164,8 +164,8 @@ class UserTest < Minitest::Test
     args1.delete(:user)
     args2 = test_base_document_args_with_three_documents
     args2.delete(:user)
-    user.create_base_document(args1)
-    user.create_base_document(args2)
+    user = user.create_base_document(args1)
+    user = user.create_base_document(args2)
 
     assert_equal 2, user.base_documents.length
     refute_equal user.base_documents.first, user.base_documents.last
@@ -174,7 +174,7 @@ class UserTest < Minitest::Test
   def test_add_login
     user = test_user
     login = {email: 'test@test.com', password: "letmein"}
-    user.add_login(login)
+    user = user.add_login(login)
     assert user.logins.any? { |l| l['email'] == login[:email] }
 
     # verify added in api
@@ -185,10 +185,10 @@ class UserTest < Minitest::Test
   def test_remove_login
     user = test_user
     login = {email: 'test@test.com', password: 'letmein'}
-    user.add_login(login)
+    user = user.add_login(login)
     assert user.logins.any? { |l| l['email'] == login[:email] }
 
-    user.remove_login(email: login[:email])
+    user = user.remove_login(email: login[:email])
     refute user.logins.any? { |l| l['email'] == login[:email] }
 
     # verify removed in api
@@ -199,7 +199,7 @@ class UserTest < Minitest::Test
   def test_add_phone_number
     user = test_user
     phone_number = '555-555-5555'
-    user.add_phone_number(phone_number)
+    user = user.add_phone_number(phone_number)
     assert_includes user.phone_numbers, phone_number
 
     # verify added in api
@@ -210,10 +210,10 @@ class UserTest < Minitest::Test
   def test_remove_phone_number
     user = test_user
     phone_number = '555-555-5555'
-    user.add_phone_number(phone_number)
+    user = user.add_phone_number(phone_number)
     assert_includes user.phone_numbers, phone_number
 
-    user.remove_phone_number(phone_number)
+    user = user.remove_phone_number(phone_number)
     refute_includes user.phone_numbers, phone_number
 
     # verify removed in api

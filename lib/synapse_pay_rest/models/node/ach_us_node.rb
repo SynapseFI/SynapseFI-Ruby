@@ -90,7 +90,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error] if wrong guess or HTTP error
     # 
-    # @return [Symbol] if successful
+    # @return [:successs] if successful
     def verify_microdeposits(amount1:, amount2:)
       [amount1, amount2].each do |arg|
         raise ArgumentError, "#{arg} must be float" unless arg.is_a?(Float)

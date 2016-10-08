@@ -18,10 +18,10 @@ module SynapsePayRest
     # Alias for #http_client (legacy name)
     alias_method :client, :http_client
 
-    # @param client_id [String]
-    # @param client_secret [String]
-    # @param ip_address [String]
-    # @param fingerprint [String]
+    # @param client_id [String] should be stored in environment variable
+    # @param client_secret [String] should be stored in environment variable
+    # @param ip_address [String] user's IP address
+    # @param fingerprint [String] a hashed value, either unique to user or static
     # @param user_id [String] (optional)
     # @param development_mode [String] default true
     # @param logging [Boolean] (optional) logs to stdout when true

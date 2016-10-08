@@ -1,34 +1,63 @@
-## SynapsePayRest-Ruby
+# SynapsePayRest-Ruby
 
-Simple API wrapper for SynapsePay REST V3 API.  This wrapper aims to handle the headers for each API request and appropriate error handling. Not all API endpoints are supported.
+Native API library for SynapsePay REST v3.x
 
-## Code Example
+Originally developed as a simple wrapper to handle the headers and endpoint URLs for each API request, as of v2.0.0 it now handles creation of User, Node, Transaction and related objects to remove the necessity of dealing with raw payload and response JSON.
 
-Check out [samples.md](https://github.com/synapsepay/SynapsePayRest-Ruby/blob/master/samples.md) and our [API documentation](http://docs.synapsepay.com/v3.1) for examples.
+Not all API endpoints are supported.
+
+**Pre-2.0.0 users**
+
+There are significant changes but backwards compatibility has been mostly maintained by building on top of the base API wrapper. You can still use the previous classes but note the following changes:
+
+- `ArgumentError` will be raised for missing payloads or other required arguments, where `RuntimeError` was raised previously. 
+- `development_mode` now defaults to true (gem previously defaulted to production).
+- KYC 1.0 methods for uploading documents have been deprecated. Please contact SynapsePay if you need to update to KYC 2.0.
+- API errors will now raise `SynapsePayRest::Error`s instead returning a JSON hash (and sometimes obfuscating the API error message).
 
 ## Installation
 
-gem install synapse_pay_rest
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'synapse_pay_rest'
+```
+
+And then execute:
+
+```bash
+$ bundle
+```
+
+Or install it yourself by executing:
+
+```bash
+$ gem install synapse_pay_rest
+```
+
+## Examples
+
+Check out [samples.md](samples.md) and our [API documentation](http://docs.synapsepay.com/v3.1) for examples.
+
+## Todos
+
+- Smartly update instance attributes with response data so they don't need to be reinstantiated with every response. This would be a high priority and probably won't even break anyone's implementation. I started with this approach but it is somewhat difficult and requires more testing (especially when you get to the various document types associated with users). I can't get to it just yet.
+- Various factory helper methods should be private but are public. Would be good to refactor in a way that they can be private.
+- `User`/`Node`/`Transaction` have similar REST methods that could probably be factored into a superclass or module.
+- Use mixins instead of inheritance for the shared behavior of `Node`s and `Document`s. The parent classes are never instantiated anyways.
+- Refactor the redundant code in each `Node` type's version of `#payload_for_create`.
+- Better way to handle bank MFA nodes? Virtual doc KBA?
+- Add an option for logging responses in addition to requests.
+- Organize tests better.
+- Use mocked responses whenever possible in tests.
+- More examples.
+
+Specific todos are marked throughout in this format:
+
+```ruby
+# @todo Description
+```
 
 ## License
 
-The MIT License (MIT)
-
-Copyright (c) 2014 SynapsePay LLC
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+[MIT License](LICENSE)
