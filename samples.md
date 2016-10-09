@@ -16,7 +16,7 @@ args = {
   # the user's IP
   ip_address:       '127.0.0.1',
   # (optional) requests go to sandbox endpoints if true
-  development_mode: true, #
+  development_mode: true,
   # (optional) if true logs requests to stdout
   logging:          true,
   # (optional) file path to write logs to
@@ -28,7 +28,7 @@ client = SynapsePayRest::Client.new(args)
 
 ```
 
-## User
+## User Methods
 
 #### All Users
 
@@ -36,13 +36,31 @@ client = SynapsePayRest::Client.new(args)
 
 args = {
   client:   client,
-  page:     nil, # (optional) uses API default unless specified
-  per_page: nil, # (optional) uses API default unless specified
+  page:     1, # (optional) uses API default unless specified
+  per_page: 50, # (optional) uses API default unless specified, larger values take longer
   query:    nil, # (optional) filters by name/email match
 }
 
-SynapsePayRest::User.all(args)
-  # => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, #<SynapsePayRest::User>]
+users = SynapsePayRest::User.all(args)
+  # => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, ...]
+
+```
+
+#### Find a User by User ID
+
+```ruby
+
+user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
+# => #<SynapsePayRest::User>
+
+```
+
+#### Search for a User by Name/Email
+
+```ruby
+
+users = SynapsePayRest::User.search(client: client, query: 'Steven')
+# => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, ...]
 
 ```
 
@@ -62,25 +80,13 @@ user = SynapsePayRest::User.create(user_create_settings)
 
 ```
 
-#### Find a User by id
-
-```ruby
-
-user = SynapsePayRest::User.find(
-  client: client,
-  id:     '57e97ab786c2737f4ccd4dc1'
-)
-# => #<SynapsePayRest::User>
-
-```
-
 #### Update a User's Personal Info
 
-Note: this returns a new, updated instance. It doesn't change the original.
+Note: this returns a new instance, so remember to reassign the user variable to the method output.
 
 ```ruby
 
-args = {
+user_update_settings = {
   login:                {email: 'newemail@gmail.com'}, # add a login email
   phone_number:         '415-555-5555',                # add a phone number
   legal_name:           'Big Bird',                    # add a legal name
@@ -88,14 +94,15 @@ args = {
   remove_login:          nil                           # remove a login email
 }
 
+# reassign user to the output because it returns a new instance
 user = user.update(args)
-# => #<SynapsePayRest::User> a new instance
+# => #<SynapsePayRest::User>
 
 ```
 
-#### Add CIP Base Document
+#### Add CIP Base Document to a User
 
-##### a) User#create_base_document
+##### a) User#create_base_doc
 
 ```ruby
 
@@ -117,8 +124,12 @@ args = {
   address_country_code: 'US'
 }
 
-user = user.create_base_document(args)
-# => #<SynapsePayRest::User> a new instance
+# reassign user to the output because it returns a new instance
+base_document = user.create_base_doc(args)
+# => #<SynapsePayRest::BaseDocument>
+
+# reassign user to this if you need the updated user
+user = base_doc.user
 
 ```
 
@@ -145,12 +156,30 @@ args = {
   address_country_code: 'US'
 }
 
-base_document = SynapsePayRest::BaseDocument.create(args)
+# reassign base_doc to the output because it returns a new instance
+base_doc = SynapsePayRest::BaseDocument.create(args)
+# => #<SynapsePayRest::BaseDocument>
+
+# reassign user to this if you need the updated user
+user = base_doc.user
+
+```
+
+#### Update User's Existing Base Document
+
+```ruby
+
+things_to_update = {
+  entity_scope: 'Lawyer',
+  birth_day:    22
+}
+
+base_doc = base_doc.update(things_to_update)
 # => #<SynapsePayRest::BaseDocument>
 
 ```
 
-#### Add a Physical Document
+#### Add a Physical Document to a CIP Base Document
 
 ```ruby
 
@@ -159,12 +188,16 @@ physical_doc = SynapsePayRest::PhysicalDocument.create(
   value: '/path/to/file.png'
 )
 
-base_document.add_physical_documents([physical_doc])
-# => #<SynapsePayRest::BaseDocument> (self)
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_physical_documents([physical_doc])
+# => #<SynapsePayRest::BaseDocument>
+
+# reassign user to this if you need the updated user
+user = base_doc.user
 
 ```
 
-#### Add a Social Document
+#### Add a Social Document to a CIP Base Document
 
 ```ruby
 
@@ -173,12 +206,16 @@ social_doc = SynapsePayRest::SocialDocument.create(
   value: 'facebook.com/sankaet'
 )
 
-base_document.add_social_documents([social_doc])
-# => #<SynapsePayRest::BaseDocument> (self)
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_social_documents([social_doc])
+# => #<SynapsePayRest::BaseDocument>
+
+# reassign user to this if you need the updated user
+user = base_doc.user
 
 ```
 
-#### Add a Virtual Document
+#### Add a Virtual Document to a CIP Base Document
 
 ```ruby
 
@@ -187,213 +224,235 @@ virtual_doc = SynapsePayRest::VirtualDocument.create(
   value: '3333'
 )
 
-base_document.add_virtual_documents([virtual_doc])
-# => #<SynapsePayRest::BaseDocument> (self)
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_virtual_documents([virtual_doc])
+# => #<SynapsePayRest::BaseDocument>
+
+# reassign user to this if you need the updated user
+user = base_doc.user
 
 ```
 
 ##### Answer KBA Questions for Virtual Document
 
+If a Virtual Document is returned with status **MFA|PENDING**, you will need to have the user answer some questions:
+
 ```ruby
 
+# check for any virtual docs with SUBMITTED|MFA_PENDING status
+virtual_doc = base_doc.virtual_documents.find do |doc|
+  doc.status == 'SUBMITTED|MFA_PENDING'
+end
 
+question_set = virtual_doc.question_set
+# => [#<SynapsePayRest::Question>, #<SynapsePayRest::Question>, ...]
+
+# follow this flow for each question in question_set
+question = question_set.first
+
+question_text = question.question
+# => "Which one of the following zip codes is associated with you?"
+
+question_answers = question.answers
+# => {1=>"49230", 2=>"49209", 3=>"49268", 4=>"49532", 5=>"None Of The Above"}
+
+question.choice = 1
+
+# when finished answering all questions in question_set
+virtual_doc = virtual_doc.submit_kba
+
+# reassign this if you need the updated base doc
+base_doc = virtual_doc.base_document
 
 ```
 
-##### Update Existing Base Document
+
+## Node Methods
+
+#### All Nodes for a User 
+
+##### a) User#nodes
 
 ```ruby
 
-new_govt_id_attachment = client.users.encode_attachment(file_path: FILE_PATH)
+nodes = user.nodes(page: 2, per_page: 5, type: 'ACH-US')
+# => [#<SynapsePayRest::AchUsNode>, #<SynapsePayRest::AchUsNode>, ...]
 
-update_existing_docs_payload = {
-  'documents' => [{
-    'id' => base_document['id'],
-    'email' => 'test3@test.com',
-    'phone_number' => '555-5555',
-    'physical_docs' => [{
-      'document_value' => new_govt_id_attachment,
-      'document_type' => 'GOVT_ID'
-    }]
-  }]
+```
+
+##### b) Node#all
+
+```ruby
+
+nodes = Node.all(user: user, page: 2, per_page: 5)
+# => [#<SynapsePayRest::AchUsNode>, #<SynapsePayRest::SynapseUsNode>, ...]
+
+```
+
+#### Find a User's Node by Node ID
+
+##### a) User#find_node
+
+```ruby
+
+node = user.find_node(id: '1a3efa1231as2f')
+# => #<SynapsePayRest::EftNpNode>
+
+```
+
+##### b) Node#find
+
+```ruby
+
+node = Node.find(user: user, id: '1a3efa1231as2f')
+# => #<SynapsePayRest::EftNpNode>
+
+```
+
+#### Create ACH-US Node(s) via Bank Login
+
+Returns a collection of `AchUsNode`s associated with the account unless bank requires MFA. Can also use `AchUsNode.create_via_bank_login` with the addition of a `user` argument.
+
+```ruby
+
+login_info = {
+  bank_name: 'bofa',
+  username:  'synapse_good',
+  password:  'test1234'
 }
 
-update_existing_docs_response = client.users.update(payload: update_existing_docs_payload)
+node = user.create_ach_us_nodes_via_bank_login(login_info)
+# => [#<SynapsePayRest::AchUsNode>, ...] if no MFA
+# => SynapsePayRest::UnverifiedNode if MFA
 
 ```
 
-## Node API Calls
+##### Verify Bank Login MFA
 
-##### Get All Nodes
+If the bank requires MFA, you will need to resolve the MFA question(s):
 
 ```ruby
 
-nodes_response = client.nodes.get
+node.mfa_verified
+# => false
 
+node.mfa_message
+# => "Enter the code we texted to your phone number."
+
+node.answer_mfa(answer: '428104')
+# => [#<SynapsePayRest::AchUsNode>, ...] if successful
+# => SynapsePayRest::UnverifiedNode if additional MFA question (check node.mfa_message)
+# => raises SynapsePayRest::Error if incorrect answer
+
+node.mfa_verified
+# => true
 
 ```
 
-##### Add SYNAPSE-US Node
+#### Create ACH-US Node via Account/Routing Number
+
+Can also use `AchUsNode.create` with the addition of a `user` argument.
 
 ```ruby
 
-synapse_node_payload = {
-  'type' => 'SYNAPSE-US',
-  'info' => {
-    'nickname' => 'My Synapse Wallet'
-  },
-  'extra' => {
-    'supp_id' => '123sa'
-  }
+account_info = {
+  nickname:       'Primary Joint Checking',
+  account_number: '111111111',
+  routing_number: '051000017',
+  account_type:   'PERSONAL',
+  account_class:  'CHECKING'
 }
 
-synapse_node_response = client.nodes.add(payload: synapse_node_payload)
-
+node = user.create_ach_us_node(account_info)
+# => #<SynapsePayRest::AchUsNode>
 
 ```
 
-##### Add ACH-US node through account login
+##### Verify Microdeposits
+
+`ACH-US Node`s added by account/routing must be verified with microdeposits:
 
 ```ruby
 
-login_payload = {
-  'type' => 'ACH-US',
-  'info' => {
-    'bank_id' => 'synapse_good',
-    'bank_pw' => 'test1234',
-    'bank_name' => 'fake'
-  }
+node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+
+```
+
+#### Deactivate a Node
+
+This deactivates the node. It does not automatically cancel any transactions already underway.
+
+```ruby
+
+node.deactivate
+# => :success
+
+```
+
+
+## Transaction Methods
+
+#### All Transactions from a Node
+
+a) Node#transactions
+
+```ruby
+
+transactions = node.transactions(page: 1, per_page: 15)
+# => [#<SynapsePayRest::Transaction>, #<SynapsePayRest::Transaction>, ...]
+
+```
+
+b) Transaction#all
+
+```ruby
+
+transactions = Transaction.all(node: node, page: 1, per_page: 15)
+# => [#<SynapsePayRest::Transaction>, #<SynapsePayRest::Transaction>, ...]
+
+```
+
+#### Find a Node's Transaction by ID
+
+```ruby
+
+transaction = node.find_transaction(id: '167e11516')
+# => #<SynapsePayRest::Transaction>
+
+```
+
+#### Create a Transaction
+
+```ruby
+
+transaction_settings = {
+  to_type: 'ACH-US',
+  to_id: '178a232123af',
+  amount: 50.0,
+  currency: 'USD',
+  ip: '127.0.0.1',
+  fee_amount: fee
 }
 
-login_response = client.nodes.add(payload: login_payload)
-
-
-```
-
-##### Verify ACH-US Node via MFA
-
-```ruby
-
-mfa_payload = {
-  'access_token' => ACCESS_TOKEN_IN_LOGIN_RESPONSE,
-  'mfa_answer' => 'test_answer'
-}
-
-mfa_response = client.nodes.verify(payload: mfa_payload)
-
+transaction = node.create_transaction(transaction_settings)
+# => #<SynapsePayRest::Transaction>
 
 ```
 
-##### Add ACH-US Node through Account and Routing Number Details
+#### Add a Comment to a Transaction's Status
 
 ```ruby
 
-acct_rout_payload = {
-  'type' => 'ACH-US',
-  'info' => {
-    'nickname' => 'Ruby Library Savings Account',
-    'name_on_account' => 'Ruby Library',
-    'account_num' => '72347235423',
-    'routing_num' => '051000017',
-    'type' => 'PERSONAL',
-    'class' => 'CHECKING'
-  },
-  'extra' => {
-    'supp_id' => '123sa'
-  }
-}
-
-acct_rout_response = client.nodes.add(payload: acct_rout_payload)
-
+transaction = transaction.add_comment('this is my favorite transaction')
+# => #<SynapsePayRest::Transaction>
 
 ```
 
-##### Verify ACH-US Node via Micro-Deposits
+#### Cancel a Transaction
 
 ```ruby
 
-micro_payload = {
-  'micro' => [0.1,0.1]
-}
-
-micro_response = client.nodes.verify(node_id: NODE_ID, payload: micro_payload)
-
-```
-
-##### Delete a Node
-
-```ruby
-
-delete_response = client.nodes.delete(node_id: NODE_ID)
-
-```
-
-## Transaction API Calls
-
-##### Get All Transactions
-
-```ruby
-
-transactions_response = client.trans.get(node_id: NODE_ID)
-
-```
-
-##### Create a Transaction
-
-```ruby
-
-trans_payload = {
-  'to' => {
-    'type' => 'SYNAPSE-US',
-    'id' => '560adb4e86c27331bb5ac86e'
-  },
-  'amount' => {
-    'amount' => 1.10,
-    'currency' => 'USD'
-  },
-  'extra' => {
-    'supp_id' => '1283764wqwsdd34wd13212',
-    'note' => 'Deposit to bank account',
-    'process_on' => 1,
-    'ip' => '192.168.0.1'
-  },
-  'fees' => [{
-    'fee' => 1.00,
-    'note' => 'Facilitator Fee',
-    'to' => {
-      'id' => '55d9287486c27365fe3776fb'
-    }
-  }]
-}
-
-create_response = client.trans.create(node_id: NODE_ID, payload: trans_payload)
-
-```
-
-##### Get a Transaction
-
-```ruby
-
-transaction_response = client.trans.get(node_id: NODE_ID, trans_id: TRANS_ID)
-
-```
-
-##### Update Transaction
-
-```ruby
-
-update_payload = {
-  'comment' =>  'hi'
-}
-
-update_response = client.trans.update(node_id: NODE_ID, trans_id: TRANS_ID, payload: update_payload)
-
-```
-
-##### Delete Transaction
-
-```ruby
-
-delete_trans_response = client.trans.delete(node_id: NODE_ID, trans_id: TRANS_ID)
+transaction = transaction.cancel
+# => #<SynapsePayRest::Transaction>
 
 ```

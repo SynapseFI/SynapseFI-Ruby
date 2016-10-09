@@ -10,6 +10,7 @@ module SynapsePayRest
     #   @return [String] question or MFA prompt from bank that must be answered
     # @!attribute [r] mfa_verified
     #   @return [Boolean] whether the node is verified yet
+    #   @todo should be mfa_verified? in Ruby idiom
     attr_reader :user, :mfa_access_token, :mfa_message, :mfa_verified
 
     def initialize(user:, mfa_access_token:, mfa_message:, mfa_verified:)
@@ -28,7 +29,7 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::AchUsNode>,SynapsePayRest::UnverifiedNode] may contain multiple nodes if successful, else self if new MFA question to answer
     # 
     # @todo make a new Error subclass for incorrect MFA
-    def answer_mfa(answer:)
+    def answer_mfa(answer)
       payload = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)
       

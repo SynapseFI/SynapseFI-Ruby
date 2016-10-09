@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'synapse_pay_rest'
 require 'minitest/autorun'
@@ -24,4 +27,3 @@ def refresh_user(client, user_id)
   client.users.refresh(payload: {'refresh_token' => user['refresh_token']})
   user
 end
-

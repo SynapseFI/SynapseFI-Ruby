@@ -177,11 +177,11 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [void]
+    # @return [:success]
     def deactivate
       user.authenticate
       user.client.nodes.delete(node_id: id)
-      nil
+      :success
     end
 
     # Checks if two BaseNode instances have same id (different instances of same record).

@@ -236,8 +236,7 @@ module SynapsePayRest
     # 
     # @return [SynapsePayRest::User] new instance corresponding to same API record
     def create_base_document(**args)
-      base_document = BaseDocument.create(user: self, **args)
-      base_document.user
+      BaseDocument.create(user: self, **args)
     end
 
     # Adds a login for the user.

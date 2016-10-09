@@ -211,7 +211,7 @@ class NodeTest < Minitest::Test
     refute_nil unverified_node.mfa_access_token
     refute_nil unverified_node.mfa_message
 
-    unverified_node.answer_mfa(answer: 'test_answer')
+    unverified_node.answer_mfa('test_answer')
     assert unverified_node.mfa_verified
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
@@ -238,7 +238,7 @@ class NodeTest < Minitest::Test
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
     refute unverified_node.mfa_verified
 
-    assert_raises(SynapsePayRest::Error) { unverified_node.answer_mfa(answer: 'wrong') }
+    assert_raises(SynapsePayRest::Error) { unverified_node.answer_mfa('wrong') }
     refute unverified_node.mfa_verified
   end
 

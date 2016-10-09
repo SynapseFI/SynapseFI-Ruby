@@ -35,13 +35,40 @@ Or install it yourself by executing:
 $ gem install synapse_pay_rest
 ```
 
-## Examples
+## Documentation
 
-Check out [samples.md](samples.md) and our [API documentation](http://docs.synapsepay.com/v3.1) for examples.
+- [Samples demonstrating common operations](samples.md)
+- [Gem docs](http://www.rubydoc.info/gems/synapse_pay_rest)
+- [API docs](http://docs.synapsepay.com/v3.1)
+
+## Contributing
+
+Just open a pull request. Please document and test any public constants/methods. Open an issue or email steven@synapsepay.com if you have any questions.
+
+## Running the Test Suite
+
+Make sure these values are set as enviroment variables (using [dotenv](https://github.com/bkeepers/dotenv) for example):
+
+```
+CLIENT_ID=your_sandbox_client_id
+CLIENT_SECRET=your_sandbox_client_secret
+```
+
+To run all tests, execute:
+
+```bash
+rake
+```
+
+To run a specific test or file, install the [m](https://github.com/qrush/m) gem and execute:
+
+```bash
+m path/to/file:line_number
+```
 
 ## Todos
 
-- Smartly update instance attributes with response data so they don't need to be reinstantiated with every response. This would be a high priority and probably won't even break anyone's implementation. I started with this approach but it is somewhat difficult and requires more testing (especially when you get to the various document types associated with users). I can't get to it just yet.
+- Smartly update the existing instances with response data instead of re-instantiating for every response. This would be a high priority and probably won't even break anyone's implementation. I started with this approach but there are some challenges, especially when dealing with situations where certain values are known when the user creates an object, but that same data is not retrievable from the API (e.g. SSN value). This is solveable but requires more time to develop.
 - Various factory helper methods should be private but are public. Would be good to refactor in a way that they can be private.
 - `User`/`Node`/`Transaction` have similar REST methods that could probably be factored into a superclass or module.
 - Use mixins instead of inheritance for the shared behavior of `Node`s and `Document`s. The parent classes are never instantiated anyways.
@@ -51,11 +78,13 @@ Check out [samples.md](samples.md) and our [API documentation](http://docs.synap
 - Organize tests better.
 - Use mocked responses whenever possible in tests.
 - More examples.
+- More Error types (bad MFA answer, for example).
+- Add some methods to BaseDocument to return doc by type (e.g. `base_document.ssn_doc`).
 
 Specific todos are marked throughout in this format:
 
 ```ruby
-# @todo Description
+# @todo Description of todo.
 ```
 
 ## License

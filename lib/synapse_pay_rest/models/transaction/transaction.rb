@@ -190,8 +190,8 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def add_comment(comment)
       payload = {'comment': comment}
-      node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
-      self
+      response = node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
+      self.class.create_from_response(node, response)
     end
 
     # Cancels this transaction if it has not already settled.
@@ -200,8 +200,8 @@ module SynapsePayRest
     # 
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def cancel
-      node.user.client.trans.delete(node_id: node.id, trans_id: id)
-      self
+      response = node.user.client.trans.delete(node_id: node.id, trans_id: id)
+      self.class.create_from_response(node, response)
     end
 
     # Checks if two Transaction instances have same id (different instances of same record).

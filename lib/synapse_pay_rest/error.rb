@@ -50,6 +50,9 @@ module SynapsePayRest
     GatewayTimeout = Class.new(ServerError)
 
     # HTTP status code to Error subclass mapping
+    #
+    # @todo need to add an error message for various 202 cases (fingerprint, mfa, etc)
+    # @todo doesn't do well when there's an html response from nginx for bad gateway/timeout
     ERRORS = {
       400 => SynapsePayRest::Error::BadRequest,
       401 => SynapsePayRest::Error::Unauthorized,
