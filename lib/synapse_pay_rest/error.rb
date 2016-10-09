@@ -1,4 +1,5 @@
 module SynapsePayRest
+  # Custom class for handling HTTP and API errors.
   class Error < StandardError
     # Raised on a 4xx HTTP status code
     ClientError = Class.new(self)
@@ -48,6 +49,10 @@ module SynapsePayRest
     # Raised on the HTTP status code 504
     GatewayTimeout = Class.new(ServerError)
 
+    # HTTP status code to Error subclass mapping
+    #
+    # @todo need to add an error message for various 202 cases (fingerprint, mfa, etc)
+    # @todo doesn't do well when there's an html response from nginx for bad gateway/timeout
     ERRORS = {
       400 => SynapsePayRest::Error::BadRequest,
       401 => SynapsePayRest::Error::Unauthorized,
@@ -62,8 +67,8 @@ module SynapsePayRest
       500 => SynapsePayRest::Error::InternalServerError,
       502 => SynapsePayRest::Error::BadGateway,
       503 => SynapsePayRest::Error::ServiceUnavailable,
-      504 => SynapsePayRest::Error::GatewayTimeout,
-    }
+      504 => SynapsePayRest::Error::GatewayTimeout
+    }.freeze
 
     # The SynapsePay API Error Code
     #
@@ -82,6 +87,7 @@ module SynapsePayRest
       # @param code [Integer]
       # @return [SynapsePayRest::Error]
       def error_from_response(body, code)
+        code = code.to_i
         klass = ERRORS[code] || SynapsePayRest::Error
         message, error_code = parse_error(body)
         klass.new(message: message, code: error_code, response: body)

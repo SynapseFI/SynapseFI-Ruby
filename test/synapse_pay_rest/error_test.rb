@@ -14,10 +14,10 @@ class ErrorTest < Minitest::Test
   end
 
   def test_404_error_code_with_real_request
-    nonexistant_user_id = '11111111111111'
+    nonexistent_user_id = '11111111111111'
 
     assert_raises SynapsePayRest::Error::NotFound do
-      test_client.users.get(user_id: nonexistant_user_id)
+      test_client.users.get(user_id: nonexistent_user_id)
     end
   end
 end

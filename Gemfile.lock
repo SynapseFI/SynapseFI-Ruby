@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    synapse_pay_rest (0.0.13)
-      rest-client
+    synapse_pay_rest (2.0)
+      rest-client (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -12,8 +12,11 @@ GEM
     domain_name (0.5.20160826)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.1.1)
-    http-cookie (1.0.2)
+    faker (1.6.6)
+      i18n (~> 0.5)
+    http-cookie (1.0.3)
       domain_name (~> 0.5)
+    i18n (0.7.0)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
@@ -39,9 +42,10 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.10)
-  dotenv
-  minitest
-  minitest-reporters
+  dotenv (~> 2.1.1)
+  faker (~> 1.6.6)
+  minitest (~> 5.8.2)
+  minitest-reporters (~> 1.1.5)
   rake (~> 10.0)
   synapse_pay_rest!
 
