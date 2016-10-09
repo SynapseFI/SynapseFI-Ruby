@@ -151,7 +151,8 @@ class UserTest < Minitest::Test
     user = test_user
     args = test_base_document_args_with_three_documents
     args.delete(:user)
-    user = user.create_base_document(args)
+    base_document = user.create_base_document(args)
+    user = base_document.user
 
     refute_empty user.base_documents
     assert user.base_documents.first.social_documents.any? { |d| d.type == args[:social_documents].first.type }
@@ -164,8 +165,9 @@ class UserTest < Minitest::Test
     args1.delete(:user)
     args2 = test_base_document_args_with_three_documents
     args2.delete(:user)
-    user = user.create_base_document(args1)
-    user = user.create_base_document(args2)
+    base_document1 = user.create_base_document(args1)
+    base_document2 = user.create_base_document(args2)
+    user = base_document2.user
 
     assert_equal 2, user.base_documents.length
     refute_equal user.base_documents.first, user.base_documents.last

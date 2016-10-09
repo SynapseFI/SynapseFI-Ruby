@@ -362,7 +362,7 @@ node = user.create_ach_us_node(account_info)
 
 ```ruby
 
-node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
 # => #<SynapsePayRest::AchUsNode>
 
 ```

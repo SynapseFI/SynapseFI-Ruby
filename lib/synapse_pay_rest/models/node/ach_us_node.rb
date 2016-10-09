@@ -98,7 +98,7 @@ module SynapsePayRest
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
-      self.class.create_from_response(response)
+      self.class.create_from_response(user, response)
     end
 
     private

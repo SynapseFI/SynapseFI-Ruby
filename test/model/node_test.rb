@@ -144,7 +144,7 @@ class NodeTest < Minitest::Test
 
     assert_equal 'CREDIT', node.permission
     # verify microdeposits
-    node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+    node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permission
   end
 
@@ -169,7 +169,7 @@ class NodeTest < Minitest::Test
 
     assert_equal 'CREDIT', node.permission
     # verify microdeposits
-    node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+    node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permission
 
     # verify again

@@ -98,6 +98,41 @@ module SynapsePayRest
         create_multiple_from_response(node, response['trans'])
       end
 
+      # Creates a Transaction from a response hash.
+      # 
+      # @note Shouldn't need to call this directly.
+      # 
+      # @todo convert the nodes and users in response into User/Node objects
+      # @todo rework to handle multiple fees
+      def create_from_response(node, response)
+        args = {
+          node:          node,
+          id:            response['_id'],
+          amount:        response['amount']['amount'],
+          currency:      response['amount']['currency'],
+          client_id:     response['client']['id'],
+          client_name:   response['client']['name'],
+          created_on:    response['extra']['created_on'],
+          ip:            response['extra']['ip'],
+          latlon:        response['extra']['latlon'],
+          note:          response['extra']['note'],
+          process_on:    response['extra']['process_on'],
+          supp_id:       response['extra']['supp_id'],
+          webhook:       response['extra']['webhook'],
+          fees:          response['fees'],
+          recent_status: response['recent_status'],
+          timeline:      response['timeline'],
+          from:          response['from'],
+          to:            response['to'],
+          to_type:       response['to']['type'],
+          to_id:         response['to']['id'],
+          fee_amount:    response['fees'].last['fee'],
+          fee_note:      response['fees'].last['note'],
+          fee_to_id:     response['fees'].last['to']['id'],
+        }
+        self.new(args)
+      end
+
       private
 
       def payload_for_create(node:, to_type:, to_id:, amount:, currency:, ip:,
@@ -134,41 +169,6 @@ module SynapsePayRest
         payload
       end
 
-      # Creates a Transaction from a response hash.
-      # 
-      # @note Shouldn't need to call this directly.
-      # 
-      # @todo convert the nodes and users in response into User/Node objects
-      # @todo rework to handle multiple fees
-      def create_from_response(node, response)
-        args = {
-          node:          node,
-          id:            response['_id'],
-          amount:        response['amount']['amount'],
-          currency:      response['amount']['currency'],
-          client_id:     response['client']['id'],
-          client_name:   response['client']['name'],
-          created_on:    response['extra']['created_on'],
-          ip:            response['extra']['ip'],
-          latlon:        response['extra']['latlon'],
-          note:          response['extra']['note'],
-          process_on:    response['extra']['process_on'],
-          supp_id:       response['extra']['supp_id'],
-          webhook:       response['extra']['webhook'],
-          fees:          response['fees'],
-          recent_status: response['recent_status'],
-          timeline:      response['timeline'],
-          from:          response['from'],
-          to:            response['to'],
-          to_type:       response['to']['type'],
-          to_id:         response['to']['id'],
-          fee_amount:    response['fees'].last['fee'],
-          fee_note:      response['fees'].last['note'],
-          fee_to_id:     response['fees'].last['to']['id'],
-        }
-        self.new(args)
-      end
-
       def create_multiple_from_response(node, response)
         return [] if response.empty?
         response.map { |trans_data| create_from_response(node, trans_data) }
@@ -191,7 +191,7 @@ module SynapsePayRest
     def add_comment(comment)
       payload = {'comment': comment}
       response = node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
-      self.class.create_from_response(node, response)
+      self.class.create_from_response(node, response['trans'])
     end
 
     # Cancels this transaction if it has not already settled.
