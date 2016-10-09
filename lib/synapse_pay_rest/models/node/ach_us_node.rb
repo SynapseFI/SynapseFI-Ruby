@@ -90,7 +90,7 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error] if wrong guess or HTTP error
     # 
-    # @return [:successs] if successful
+    # @return [SynapsePayRest::AchUsNode]
     def verify_microdeposits(amount1:, amount2:)
       [amount1, amount2].each do |arg|
         raise ArgumentError, "#{arg} must be float" unless arg.is_a?(Float)
@@ -98,8 +98,7 @@ module SynapsePayRest
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
-      @permission = response['allowed']
-      :success
+      self.class.create_from_response(response)
     end
 
     private

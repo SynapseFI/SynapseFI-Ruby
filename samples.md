@@ -3,9 +3,6 @@
 ```ruby
 require 'synapse_pay_rest'
 
-require 'dotenv'
-Dotenv.load
-
 args = {
   # synapse client_id
   client_id:        ENV.fetch('CLIENT_ID'),
@@ -36,9 +33,12 @@ client = SynapsePayRest::Client.new(args)
 
 args = {
   client:   client,
-  page:     1, # (optional) uses API default unless specified
-  per_page: 50, # (optional) uses API default unless specified, larger values take longer
-  query:    nil, # (optional) filters by name/email match
+  # (optional) uses API default unless specified
+  page:     1,
+  # (optional) uses API default of 20 unless specified, larger values take longer
+  per_page: 50,
+  # (optional) filters by name/email match
+  query:    nil,
 }
 
 users = SynapsePayRest::User.all(args)
@@ -128,9 +128,6 @@ args = {
 base_document = user.create_base_doc(args)
 # => #<SynapsePayRest::BaseDocument>
 
-# reassign user to this if you need the updated user
-user = base_doc.user
-
 ```
 
 ##### b) BaseDocument#create
@@ -184,16 +181,13 @@ base_doc = base_doc.update(things_to_update)
 ```ruby
 
 physical_doc = SynapsePayRest::PhysicalDocument.create(
-  type: 'GOVT_ID',
+  type:  'GOVT_ID',
   value: '/path/to/file.png'
 )
 
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_physical_documents([physical_doc])
 # => #<SynapsePayRest::BaseDocument>
-
-# reassign user to this if you need the updated user
-user = base_doc.user
 
 ```
 
@@ -202,16 +196,13 @@ user = base_doc.user
 ```ruby
 
 social_doc = SynapsePayRest::SocialDocument.create(
-  type: 'FACEBOOK',
+  type:  'FACEBOOK',
   value: 'facebook.com/sankaet'
 )
 
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_social_documents([social_doc])
 # => #<SynapsePayRest::BaseDocument>
-
-# reassign user to this if you need the updated user
-user = base_doc.user
 
 ```
 
@@ -220,16 +211,13 @@ user = base_doc.user
 ```ruby
 
 virtual_doc = SynapsePayRest::VirtualDocument.create(
-  type: 'SSN',
+  type:  'SSN',
   value: '3333'
 )
 
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_virtual_documents([virtual_doc])
 # => #<SynapsePayRest::BaseDocument>
-
-# reassign user to this if you need the updated user
-user = base_doc.user
 
 ```
 
@@ -253,7 +241,7 @@ question = question_set.first
 question_text = question.question
 # => "Which one of the following zip codes is associated with you?"
 
-question_answers = question.answers
+question.answers
 # => {1=>"49230", 2=>"49209", 3=>"49268", 4=>"49532", 5=>"None Of The Above"}
 
 question.choice = 1
@@ -284,7 +272,7 @@ nodes = user.nodes(page: 2, per_page: 5, type: 'ACH-US')
 
 ```ruby
 
-nodes = Node.all(user: user, page: 2, per_page: 5)
+nodes = SynapsePayRest::Node.all(user: user, page: 2, per_page: 5)
 # => [#<SynapsePayRest::AchUsNode>, #<SynapsePayRest::SynapseUsNode>, ...]
 
 ```
@@ -304,7 +292,7 @@ node = user.find_node(id: '1a3efa1231as2f')
 
 ```ruby
 
-node = Node.find(user: user, id: '1a3efa1231as2f')
+node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
 # => #<SynapsePayRest::EftNpNode>
 
 ```
@@ -321,7 +309,7 @@ login_info = {
   password:  'test1234'
 }
 
-node = user.create_ach_us_nodes_via_bank_login(login_info)
+nodes = user.create_ach_us_nodes_via_bank_login(login_info)
 # => [#<SynapsePayRest::AchUsNode>, ...] if no MFA
 # => SynapsePayRest::UnverifiedNode if MFA
 
@@ -339,7 +327,7 @@ node.mfa_verified
 node.mfa_message
 # => "Enter the code we texted to your phone number."
 
-node.answer_mfa(answer: '428104')
+nodes = node.answer_mfa(answer: '428104')
 # => [#<SynapsePayRest::AchUsNode>, ...] if successful
 # => SynapsePayRest::UnverifiedNode if additional MFA question (check node.mfa_message)
 # => raises SynapsePayRest::Error if incorrect answer
@@ -357,7 +345,7 @@ Can also use `AchUsNode.create` with the addition of a `user` argument.
 
 account_info = {
   nickname:       'Primary Joint Checking',
-  account_number: '111111111',
+  account_number: '2222222222',
   routing_number: '051000017',
   account_type:   'PERSONAL',
   account_class:  'CHECKING'
@@ -375,6 +363,7 @@ node = user.create_ach_us_node(account_info)
 ```ruby
 
 node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
+# => #<SynapsePayRest::AchUsNode>
 
 ```
 
@@ -394,7 +383,7 @@ node.deactivate
 
 #### All Transactions from a Node
 
-a) Node#transactions
+##### a) Node#transactions
 
 ```ruby
 
@@ -403,16 +392,18 @@ transactions = node.transactions(page: 1, per_page: 15)
 
 ```
 
-b) Transaction#all
+##### b) Transaction#all
 
 ```ruby
 
-transactions = Transaction.all(node: node, page: 1, per_page: 15)
+transactions = SynapsePayRest::Transaction.all(node: node, page: 1, per_page: 15)
 # => [#<SynapsePayRest::Transaction>, #<SynapsePayRest::Transaction>, ...]
 
 ```
 
 #### Find a Node's Transaction by ID
+
+##### a) Node#find_transaction
 
 ```ruby
 
@@ -421,20 +412,48 @@ transaction = node.find_transaction(id: '167e11516')
 
 ```
 
+##### b) Transaction#find
+
+```ruby
+
+transaction = SynapsePayRest::Transaction.find(node: node, id: '57fab7d186c2733525dd7eac')
+# => #<SynapsePayRest::Transaction>
+
+```
+
 #### Create a Transaction
+
+##### a) Node#create_transaction
 
 ```ruby
 
 transaction_settings = {
-  to_type: 'ACH-US',
-  to_id: '178a232123af',
-  amount: 50.0,
+  to_type:  'ACH-US',
+  to_id:    '57fab4b286c2732210c73486',
+  amount:   50.0,
   currency: 'USD',
-  ip: '127.0.0.1',
-  fee_amount: fee
+  ip:       '127.0.0.1'
 }
 
 transaction = node.create_transaction(transaction_settings)
+# => #<SynapsePayRest::Transaction>
+
+```
+
+##### b) Transaction#create
+
+```ruby
+
+transaction_settings = {
+  node:     node,
+  to_type:  'ACH-US',
+  to_id:    '178a232123af',
+  amount:   50.0,
+  currency: 'USD',
+  ip:       '127.0.0.1'
+}
+
+transaction = SynapsePayRest::Transaction.create(transaction_settings)
 # => #<SynapsePayRest::Transaction>
 
 ```
