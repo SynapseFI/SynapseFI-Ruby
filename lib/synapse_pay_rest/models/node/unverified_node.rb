@@ -30,7 +30,7 @@ module SynapsePayRest
     # 
     # @todo make a new Error subclass for incorrect MFA
     def answer_mfa(answer)
-      payload = payload_for_answer_mfa(answer: answer)
+      payload  = payload_for_answer_mfa(answer: answer)
       response = user.client.nodes.post(payload: payload)
       
       handle_answer_mfa_response(response)
@@ -65,11 +65,9 @@ module SynapsePayRest
       elsif response['error_code'] == '10'
         # new additional MFA question. need to call #answer_mfa with new answer
         @mfa_access_token = response['mfa']['access_token']
-        @mfa_message = response['mfa']['message']
+        @mfa_message      = response['mfa']['message']
         self
       end
-      # shouldn't get to this point but will need to see the response if it does
-      response
     end
   end
 end

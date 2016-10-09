@@ -102,7 +102,7 @@ user = user.update(args)
 
 #### Add CIP Base Document to a User
 
-##### a) User#create_base_doc
+##### a) User#create_base_document
 
 ```ruby
 
@@ -125,7 +125,7 @@ args = {
 }
 
 # reassign user to the output because it returns a new instance
-base_document = user.create_base_doc(args)
+base_document = user.create_base_document(args)
 # => #<SynapsePayRest::BaseDocument>
 
 ```
@@ -321,18 +321,18 @@ If the bank requires MFA, you will need to resolve the MFA question(s):
 
 ```ruby
 
-node.mfa_verified
+nodes.mfa_verified
 # => false
 
-node.mfa_message
+nodes.mfa_message
 # => "Enter the code we texted to your phone number."
 
-nodes = node.answer_mfa(answer: '428104')
+nodes = nodes.answer_mfa('test_answer')
 # => [#<SynapsePayRest::AchUsNode>, ...] if successful
 # => SynapsePayRest::UnverifiedNode if additional MFA question (check node.mfa_message)
 # => raises SynapsePayRest::Error if incorrect answer
 
-node.mfa_verified
+nodes.mfa_verified
 # => true
 
 ```
@@ -447,7 +447,7 @@ transaction = node.create_transaction(transaction_settings)
 transaction_settings = {
   node:     node,
   to_type:  'ACH-US',
-  to_id:    '178a232123af',
+  to_id:    '57fab4b286c2732210c73486',
   amount:   50.0,
   currency: 'USD',
   ip:       '127.0.0.1'
