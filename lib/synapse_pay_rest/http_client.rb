@@ -62,6 +62,8 @@ module SynapsePayRest
     # @param ip_address [String,void]
     # 
     # @return [void]
+    # 
+    # @todo logic to update user_id doesn't belong here
     def update_headers(user_id: nil, oauth_key: nil, fingerprint: nil,
                        client_id: nil, client_secret: nil, ip_address: nil)
       self.user_id           = user_id if user_id

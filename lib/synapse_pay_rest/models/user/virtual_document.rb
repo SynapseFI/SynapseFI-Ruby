@@ -12,7 +12,6 @@ module SynapsePayRest
       # @note Do not call this method directly.
       def create_from_response(data)
         virtual_doc = super(data)
-        require 'pry'; 
         virtual_doc.add_question_set(data['meta']['question_set']) if data['meta']
         virtual_doc
       end
