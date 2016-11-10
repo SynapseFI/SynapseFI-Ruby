@@ -22,7 +22,6 @@ args = {
 
 client = SynapsePayRest::Client.new(args)
 # => #<SynapsePayRest::Client>
-
 ```
 
 ## User Methods
@@ -30,7 +29,6 @@ client = SynapsePayRest::Client.new(args)
 #### All Users
 
 ```ruby
-
 args = {
   client:   client,
   # (optional) uses API default unless specified
@@ -43,31 +41,25 @@ args = {
 
 users = SynapsePayRest::User.all(args)
   # => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, ...]
-
 ```
 
 #### Find a User by User ID
 
 ```ruby
-
 user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
 # => #<SynapsePayRest::User>
-
 ```
 
 #### Search for a User by Name/Email
 
 ```ruby
-
 users = SynapsePayRest::User.search(client: client, query: 'Steven')
 # => [#<SynapsePayRest::User>, #<SynapsePayRest::User>, ...]
-
 ```
 
 #### Create User
 
 ```ruby
-
 user_create_settings = {
   client:        client,
   logins:        [{email: 'steven@synapsepay.com'}],
@@ -77,7 +69,6 @@ user_create_settings = {
 
 user = SynapsePayRest::User.create(user_create_settings)
 # => #<SynapsePayRest::User>
-
 ```
 
 #### Update a User's Personal Info
@@ -85,7 +76,6 @@ user = SynapsePayRest::User.create(user_create_settings)
 Note: this returns a new instance, so remember to reassign the user variable to the method output.
 
 ```ruby
-
 user_update_settings = {
   login:                {email: 'newemail@gmail.com'}, # add a login email
   phone_number:         '415-555-5555',                # add a phone number
@@ -97,7 +87,6 @@ user_update_settings = {
 # reassign user to the output because it returns a new instance
 user = user.update(args)
 # => #<SynapsePayRest::User>
-
 ```
 
 #### Add CIP Base Document to a User
@@ -105,7 +94,6 @@ user = user.update(args)
 ##### a) User#create_base_document
 
 ```ruby
-
 args = {
   email:                'steven@synapsepay.com',
   phone_number:         '415-555-5555',
@@ -127,13 +115,11 @@ args = {
 # reassign user to the output because it returns a new instance
 base_document = user.create_base_document(args)
 # => #<SynapsePayRest::BaseDocument>
-
 ```
 
 ##### b) BaseDocument#create
 
 ```ruby
-
 args = {
   user:                 user,
   email:                'steven@synapsepay.com',
@@ -159,13 +145,11 @@ base_doc = SynapsePayRest::BaseDocument.create(args)
 
 # reassign user to this if you need the updated user
 user = base_doc.user
-
 ```
 
 #### Update User's Existing Base Document
 
 ```ruby
-
 things_to_update = {
   entity_scope: 'Lawyer',
   birth_day:    22
@@ -173,13 +157,11 @@ things_to_update = {
 
 base_doc = base_doc.update(things_to_update)
 # => #<SynapsePayRest::BaseDocument>
-
 ```
 
 #### Add a Physical Document to a CIP Base Document
 
 ```ruby
-
 physical_doc = SynapsePayRest::PhysicalDocument.create(
   type:  'GOVT_ID',
   value: '/path/to/file.png'
@@ -188,13 +170,11 @@ physical_doc = SynapsePayRest::PhysicalDocument.create(
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_physical_documents([physical_doc])
 # => #<SynapsePayRest::BaseDocument>
-
 ```
 
 #### Add a Social Document to a CIP Base Document
 
 ```ruby
-
 social_doc = SynapsePayRest::SocialDocument.create(
   type:  'FACEBOOK',
   value: 'facebook.com/sankaet'
@@ -203,13 +183,11 @@ social_doc = SynapsePayRest::SocialDocument.create(
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_social_documents([social_doc])
 # => #<SynapsePayRest::BaseDocument>
-
 ```
 
 #### Add a Virtual Document to a CIP Base Document
 
 ```ruby
-
 virtual_doc = SynapsePayRest::VirtualDocument.create(
   type:  'SSN',
   value: '3333'
@@ -218,15 +196,13 @@ virtual_doc = SynapsePayRest::VirtualDocument.create(
 # reassign base_doc to the output because it returns a new instance
 base_doc = base_doc.add_virtual_documents([virtual_doc])
 # => #<SynapsePayRest::BaseDocument>
-
 ```
 
 ##### Answer KBA Questions for Virtual Document
 
-If a Virtual Document is returned with status **MFA|PENDING**, you will need to have the user answer some questions:
+If a Virtual Document is returned with status **SUBMITTED|MFA_PENDING**, you will need to have the user answer some questions:
 
 ```ruby
-
 # check for any virtual docs with SUBMITTED|MFA_PENDING status
 virtual_doc = base_doc.virtual_documents.find do |doc|
   doc.status == 'SUBMITTED|MFA_PENDING'
@@ -251,7 +227,6 @@ virtual_doc = virtual_doc.submit_kba
 
 # reassign this if you need the updated base doc
 base_doc = virtual_doc.base_document
-
 ```
 
 
@@ -262,19 +237,15 @@ base_doc = virtual_doc.base_document
 ##### a) User#nodes
 
 ```ruby
-
 nodes = user.nodes(page: 2, per_page: 5, type: 'ACH-US')
 # => [#<SynapsePayRest::AchUsNode>, #<SynapsePayRest::AchUsNode>, ...]
-
 ```
 
 ##### b) Node#all
 
 ```ruby
-
 nodes = SynapsePayRest::Node.all(user: user, page: 2, per_page: 5)
 # => [#<SynapsePayRest::AchUsNode>, #<SynapsePayRest::SynapseUsNode>, ...]
-
 ```
 
 #### Find a User's Node by Node ID
@@ -282,19 +253,15 @@ nodes = SynapsePayRest::Node.all(user: user, page: 2, per_page: 5)
 ##### a) User#find_node
 
 ```ruby
-
 node = user.find_node(id: '1a3efa1231as2f')
 # => #<SynapsePayRest::EftNpNode>
-
 ```
 
 ##### b) Node#find
 
 ```ruby
-
 node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
 # => #<SynapsePayRest::EftNpNode>
-
 ```
 
 #### Create ACH-US Node(s) via Bank Login
@@ -302,7 +269,6 @@ node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
 Returns a collection of `AchUsNode`s associated with the account unless bank requires MFA. Can also use `AchUsNode.create_via_bank_login` with the addition of a `user` argument.
 
 ```ruby
-
 login_info = {
   bank_name: 'bofa',
   username:  'synapse_good',
@@ -312,7 +278,6 @@ login_info = {
 nodes = user.create_ach_us_nodes_via_bank_login(login_info)
 # => [#<SynapsePayRest::AchUsNode>, ...] if no MFA
 # => SynapsePayRest::UnverifiedNode if MFA
-
 ```
 
 ##### Verify Bank Login MFA
@@ -320,7 +285,6 @@ nodes = user.create_ach_us_nodes_via_bank_login(login_info)
 If the bank requires MFA, you will need to resolve the MFA question(s):
 
 ```ruby
-
 nodes.mfa_verified
 # => false
 
@@ -334,7 +298,6 @@ nodes = nodes.answer_mfa('test_answer')
 
 nodes.mfa_verified
 # => true
-
 ```
 
 #### Create ACH-US Node via Account/Routing Number
@@ -342,7 +305,6 @@ nodes.mfa_verified
 Can also use `AchUsNode.create` with the addition of a `user` argument.
 
 ```ruby
-
 account_info = {
   nickname:       'Primary Joint Checking',
   account_number: '2222222222',
@@ -353,7 +315,6 @@ account_info = {
 
 node = user.create_ach_us_node(account_info)
 # => #<SynapsePayRest::AchUsNode>
-
 ```
 
 ##### Verify Microdeposits
@@ -361,10 +322,8 @@ node = user.create_ach_us_node(account_info)
 `ACH-US Node`s added by account/routing must be verified with microdeposits:
 
 ```ruby
-
 node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
 # => #<SynapsePayRest::AchUsNode>
-
 ```
 
 #### Deactivate a Node
@@ -372,10 +331,8 @@ node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
 This deactivates the node. It does not automatically cancel any transactions already underway.
 
 ```ruby
-
 node.deactivate
 # => :success
-
 ```
 
 
@@ -386,19 +343,15 @@ node.deactivate
 ##### a) Node#transactions
 
 ```ruby
-
 transactions = node.transactions(page: 1, per_page: 15)
 # => [#<SynapsePayRest::Transaction>, #<SynapsePayRest::Transaction>, ...]
-
 ```
 
 ##### b) Transaction#all
 
 ```ruby
-
 transactions = SynapsePayRest::Transaction.all(node: node, page: 1, per_page: 15)
 # => [#<SynapsePayRest::Transaction>, #<SynapsePayRest::Transaction>, ...]
-
 ```
 
 #### Find a Node's Transaction by ID
@@ -406,19 +359,15 @@ transactions = SynapsePayRest::Transaction.all(node: node, page: 1, per_page: 15
 ##### a) Node#find_transaction
 
 ```ruby
-
 transaction = node.find_transaction(id: '167e11516')
 # => #<SynapsePayRest::Transaction>
-
 ```
 
 ##### b) Transaction#find
 
 ```ruby
-
 transaction = SynapsePayRest::Transaction.find(node: node, id: '57fab7d186c2733525dd7eac')
 # => #<SynapsePayRest::Transaction>
-
 ```
 
 #### Create a Transaction
@@ -426,7 +375,6 @@ transaction = SynapsePayRest::Transaction.find(node: node, id: '57fab7d186c27335
 ##### a) Node#create_transaction
 
 ```ruby
-
 transaction_settings = {
   to_type:  'ACH-US',
   to_id:    '57fab4b286c2732210c73486',
@@ -437,13 +385,11 @@ transaction_settings = {
 
 transaction = node.create_transaction(transaction_settings)
 # => #<SynapsePayRest::Transaction>
-
 ```
 
 ##### b) Transaction#create
 
 ```ruby
-
 transaction_settings = {
   node:     node,
   to_type:  'ACH-US',
@@ -455,23 +401,18 @@ transaction_settings = {
 
 transaction = SynapsePayRest::Transaction.create(transaction_settings)
 # => #<SynapsePayRest::Transaction>
-
 ```
 
 #### Add a Comment to a Transaction's Status
 
 ```ruby
-
 transaction = transaction.add_comment('this is my favorite transaction')
 # => #<SynapsePayRest::Transaction>
-
 ```
 
 #### Cancel a Transaction
 
 ```ruby
-
 transaction = transaction.cancel
 # => #<SynapsePayRest::Transaction>
-
 ```

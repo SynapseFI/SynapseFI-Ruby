@@ -173,7 +173,6 @@ module SynapsePayRest
         user.base_documents.find { |doc| doc.id == id }
       else
         # first time submission, assume last doc is updated version of self
-        require 'pry'; 
         user.base_documents.last
       end
     end
