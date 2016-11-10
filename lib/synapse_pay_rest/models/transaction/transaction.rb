@@ -156,7 +156,7 @@ module SynapsePayRest
         payload['extra']['process_on'] = options[:process_in] if options[:process_in]
         other = {}
         other['attachments'] = options[:attachments] if options[:attachments]
-        payload['other'] = other if other.any?
+        payload['extra']['other'] = other if other.any?
         fees = []
         fee = {}
         fee['fee']  = options[:fee_amount] if options[:fee_amount]

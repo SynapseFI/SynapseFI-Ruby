@@ -3,14 +3,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'synapse_pay_rest/version'
 
 Gem::Specification.new do |s|
-  s.name        = 'synapse_pay_rest'
-  s.version     = SynapsePayRest::VERSION
-  s.date        = Date.today.to_s
-  s.authors     = ['Thomas Hipps', 'Steven Broderick']
-  s.email       = 'help@synapsepay.com'
-  s.summary     = 'SynapsePay v3 Rest Native API Library'
-  s.homepage    = 'https://rubygems.org/gems/synapse_pay_rest'
-  s.license     = 'MIT'
+  s.name     = 'synapse_pay_rest'
+  s.version  = SynapsePayRest::VERSION
+  s.date     = Date.today.to_s
+  s.authors  = ['Thomas Hipps', 'Steven Broderick']
+  s.email    = 'help@synapsepay.com'
+  s.summary  = 'SynapsePay v3 Rest Native API Library'
+  s.homepage = 'https://rubygems.org/gems/synapse_pay_rest'
+  s.license  = 'MIT'
 
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   s.bindir        = 'exe'
