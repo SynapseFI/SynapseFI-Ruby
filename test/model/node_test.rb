@@ -183,7 +183,8 @@ class NodeTest < Minitest::Test
 
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :permission, :bank_name, :balance, :currency, :routing_number,
-                           :account_number, :account_class, :account_type, :type]
+                           :account_number, :account_class, :account_type, :type,
+                           :email_match, :name_match, :phonenumber_match]
 
     assert_instance_of Array, nodes
     assert_equal 2, nodes.length

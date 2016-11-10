@@ -19,7 +19,8 @@ module SynapsePayRest
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
                 :correspondent_routing_number, :correspondent_bank_name,
                 :correspondent_address, :correspondent_swift, :account_id, :balance,
-                :ifsc, :swift, :bank_long_name, :type, :gateway_restricted
+                :ifsc, :swift, :bank_long_name, :type, :gateway_restricted,
+                :email_match, :name_match, :phonenumber_match
 
     class << self
       # Creates a new node in the API associated to the provided user and
@@ -96,6 +97,12 @@ module SynapsePayRest
           args[:correspondent_routing_number] = response['info']['correspondent_info']['routing_num']
           args[:correspondent_address]        = response['info']['correspondent_info']['address']
           args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
+        end
+
+        if response['info']['match_info']
+          args[:email_match]       = response['info']['match_info']['email_match']
+          args[:name_match]        = response['info']['match_info']['name_match']
+          args[:phonenumber_match] = response['info']['match_info']['phonenumber_match']
         end
 
         if response['info']['balance']
