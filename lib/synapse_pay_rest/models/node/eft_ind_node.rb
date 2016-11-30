@@ -1,5 +1,6 @@
 module SynapsePayRest
   # Represents an Indian bank account for EFT credits.
+  # DEPRECATED
   class EftIndNode < EftNode
     class << self
       private

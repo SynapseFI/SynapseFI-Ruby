@@ -6,16 +6,17 @@ module SynapsePayRest
 
     # Node type to node class mappings.
     NODE_TYPES_TO_CLASSES = {
-      'ACH-US'      => AchUsNode,
-      'EFT-NP'      => EftNpNode,
-      'EFT-IND'     => EftIndNode,
-      'IOU'         => IouNode,
-      'RESERVE-US'  => ReserveUsNode,
-      'SYNAPSE-IND' => SynapseIndNode,
-      'SYNAPSE-NP'  => SynapseNpNode,
-      'SYNAPSE-US'  => SynapseUsNode,
-      'WIRE-INT'    => WireIntNode,
-      'WIRE-US'     => WireUsNode
+      'ACH-US'                 => AchUsNode,
+      'EFT-NP'                 => EftNpNode,
+      'EFT-IND'                => EftIndNode,
+      'IOU'                    => IouNode,
+      'RESERVE-US'             => ReserveUsNode,
+      'SYNAPSE-IND'            => SynapseIndNode,
+      'SYNAPSE-NP'             => SynapseNpNode,
+      'SYNAPSE-US'             => SynapseUsNode,
+      'TRIUMPH-SUBACCOUNT-US'  => TriumphSubaccountUsNode,
+      'WIRE-INT'               => WireIntNode,
+      'WIRE-US'                => WireUsNode
     }.freeze
 
     class << self

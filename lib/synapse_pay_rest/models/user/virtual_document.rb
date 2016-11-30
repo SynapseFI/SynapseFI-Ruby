@@ -12,7 +12,7 @@ module SynapsePayRest
       # @note Do not call this method directly.
       def create_from_response(data)
         virtual_doc = super(data)
-        virtual_doc.add_question_set(data['meta']['question_set']) if data['meta']
+        virtual_doc.add_question_set(data['meta']['question_set']) if data['status'] == 'SUBMITTED|MFA_PENDING'
         virtual_doc
       end
     end

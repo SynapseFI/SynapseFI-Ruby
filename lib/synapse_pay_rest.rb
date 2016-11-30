@@ -44,6 +44,8 @@ require 'synapse_pay_rest/models/node/wire_us_node.rb'
 require 'synapse_pay_rest/models/node/wire_int_node.rb'
 # reserve
 require 'synapse_pay_rest/models/node/reserve_us_node.rb'
+# triump subaccount
+require 'synapse_pay_rest/models/node/triumph_subaccount_us_node.rb'
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'
 

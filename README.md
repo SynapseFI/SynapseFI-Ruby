@@ -60,7 +60,7 @@ To run all tests, execute:
 rake
 ```
 
-To run a specific test or file, install the [m](https://github.com/qrush/m) gem and execute:
+To run a specific file or test, install the [m](https://github.com/qrush/m) gem and execute:
 
 ```bash
 m path/to/file:line_number

@@ -202,7 +202,7 @@ module SynapsePayRest
         raise ArgumentError, 'must provide a key-value pair to update. keys: login,
           read_only, phone_number, legal_name, remove_phone_number, remove_login'
       end
-
+      authenticate
       response = client.users.update(payload: payload_for_update(options))
       # return an updated user instance
       self.class.create_from_response(client, response)

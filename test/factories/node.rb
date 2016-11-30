@@ -124,6 +124,18 @@ def test_synapse_us_create_args(user: test_user,
   }
 end
 
+def test_triumph_subaccount_us_create_args(user: test_user,
+                                           nickname: 'Test TRIUMPH-SUBACCOUNT-US Account',
+                                           supp_id: Faker::Number.number(10).to_s,
+                                           gateway_restricted: nil)
+  {
+    user: user,
+    nickname: nickname,
+    supp_id: supp_id,
+    gateway_restricted: gateway_restricted
+  }
+end
+
 def test_wire_int_create_args(user: test_user,
                               nickname: 'Test WIRE-INT Account',
                               bank_name: 'Bank of America',
