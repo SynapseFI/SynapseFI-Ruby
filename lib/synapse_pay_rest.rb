@@ -22,7 +22,7 @@ require 'synapse_pay_rest/models/user/question'
 
 # node-related classes
 
-# ancestor of all BaseNodes
+# ancestor of all node classes
 require 'synapse_pay_rest/models/node/base_node'
 
 # BaseNode subclasses

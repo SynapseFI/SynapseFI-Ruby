@@ -11,7 +11,7 @@ module SynapsePayRest
     attr_accessor :base_document, :status, :id, :type, :value, :last_updated
 
     class << self
-      # Creates a document instances but does not submit it to the API. Use
+      # Creates a document instance but does not submit it to the API. Use
       # BaseDocument#create/#update/#add_physical_documents or related methods
       # to submit the document to the API.
       # 
