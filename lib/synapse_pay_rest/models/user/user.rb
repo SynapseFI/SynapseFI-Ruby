@@ -58,7 +58,7 @@ module SynapsePayRest
 
         payload = payload_for_create(logins: logins, phone_numbers: phone_numbers, legal_names: legal_names, **options)
         response = client.users.create(payload: payload)
-        create_from_response(client, response)
+        from_response(client, response)
       end
 
       # Queries the API for a user by id and returns a User instances if found.
@@ -74,7 +74,7 @@ module SynapsePayRest
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         response = client.users.get(user_id: id)
-        create_from_response(client, response)
+        from_response(client, response)
       end
 
       # Queries the API for all users (with optional filters) and returns them
@@ -101,7 +101,7 @@ module SynapsePayRest
         end
 
         response = client.users.get(page: page, per_page: per_page, query: query)
-        create_multiple_from_response(client, response['users'])
+        multiple_from_response(client, response['users'])
       end
 
       # Queries the API for all users with name/email matching the given query
@@ -141,7 +141,7 @@ module SynapsePayRest
 
       # Constructs a user instance from a user response.
       # @note Do not call directly.
-      def create_from_response(client, response)
+      def from_response(client, response)
         user = self.new(
           client:            client,
           id:                response['_id'],
@@ -157,16 +157,16 @@ module SynapsePayRest
         )
 
         unless response['documents'].empty?
-          base_documents = BaseDocument.create_from_response(user, response)
+          base_documents = BaseDocument.from_response(user, response)
           user.base_documents = base_documents
         end
         user
       end
 
-      # Calls create_from_response on each member of a response collection.
-      def create_multiple_from_response(client, response)
+      # Calls from_response on each member of a response collection.
+      def multiple_from_response(client, response)
         return [] if response.empty?
-        response.map { |user_data| create_from_response(client, user_data)}
+        response.map { |user_data| from_response(client, user_data)}
       end
     end
 
@@ -205,7 +205,7 @@ module SynapsePayRest
       authenticate
       response = client.users.update(payload: payload_for_update(options))
       # return an updated user instance
-      self.class.create_from_response(client, response)
+      self.class.from_response(client, response)
     end
 
     # Creates a new base document for the user. To update an existing base
@@ -435,6 +435,8 @@ module SynapsePayRest
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::EftIndNode]
+    # 
+    # @deprecated
     def create_eft_ind_node(**options)
       EftIndNode.create(user: self, **options)
     end
@@ -490,6 +492,8 @@ module SynapsePayRest
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::SynapseIndNode]
+    # 
+    # @deprecated
     def create_synapse_ind_node(**options)
       SynapseIndNode.create(user: self, **options)
     end
@@ -518,6 +522,19 @@ module SynapsePayRest
     # @return [SynapsePayRest::SynapseUsNode]
     def create_synapse_us_node(**options)
       SynapseUsNode.create(user: self, **options)
+    end
+
+    # Creates a TRIUMPH-SUBACCOUNT-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::TriumphSubaccountUsNode]
+    def create_triumph_subaccount_us_node(**options)
+      TriumphSubaccountUsNode.create(user: self, **options)
     end
 
     # Creates a WIRE-INT node.

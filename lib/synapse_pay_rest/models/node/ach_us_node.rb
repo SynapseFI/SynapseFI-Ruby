@@ -30,7 +30,7 @@ module SynapsePayRest
         if response['mfa']
           create_unverified_node(user, response)
         else
-          create_multiple_from_response(user, response['nodes'])
+          multiple_from_response(user, response['nodes'])
         end
       end
 
@@ -39,23 +39,15 @@ module SynapsePayRest
       # Converts args into payload for request JSON.
       def payload_for_create(nickname:, account_number:, routing_number:, 
         account_type:, account_class:, **options)
-        payload = {
-          'type' => 'ACH-US',
-          'info' => {
-            'nickname'    => nickname,
-            'account_num' => account_number,
-            'routing_num' => routing_number,
-            'type'        => account_type,
-            'class'       => account_class
-          }
-        }
-        # optional payload fields
-        extra = {}
-        extra['supp_id']            = options[:supp_id] if options[:supp_id]
-        extra['gateway_restricted'] = options[:gateway_restricted] if options[:gateway_restricted]
-        payload['extra'] = extra if extra.any?
-
-        payload
+        args = {
+          type: 'ACH-US',
+          nickname:       nickname,
+          account_number: account_number,
+          routing_number: routing_number,
+          account_type:   account_type,
+          account_class:  account_class
+        }.merge(options)
+        super(args)
       end
 
       def payload_for_create_via_bank_login(bank_name:, username:, password:)
@@ -98,7 +90,7 @@ module SynapsePayRest
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
       response = user.client.nodes.patch(node_id: id, payload: payload)
-      self.class.create_from_response(user, response)
+      self.class.from_response(user, response)
     end
 
     private

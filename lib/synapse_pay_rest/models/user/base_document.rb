@@ -93,21 +93,21 @@ module SynapsePayRest
 
       # Parses multiple base_documents from response
       # @note Do not call directly (it's automatic).
-      def create_from_response(user, response)
+      def from_response(user, response)
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
-            doc = PhysicalDocument.create_from_response(data)
+            doc = PhysicalDocument.from_response(data)
             doc.base_document = self
             doc
           end
           social_docs = base_document_data['social_docs'].map do |data|
-            doc = SocialDocument.create_from_response(data)
+            doc = SocialDocument.from_response(data)
             doc.base_document = self
             doc
           end
           virtual_docs = base_document_data['virtual_docs'].map do |data|
-            doc = VirtualDocument.create_from_response(data)
+            doc = VirtualDocument.from_response(data)
             doc.base_document = self
             doc
           end
@@ -166,7 +166,7 @@ module SynapsePayRest
     def submit
       user.authenticate
       response = user.client.users.update(payload: payload_for_submit)
-      @user    = User.create_from_response(user.client, response)
+      @user    = User.from_response(user.client, response)
 
       if id
         # return updated version of self
@@ -213,7 +213,7 @@ module SynapsePayRest
       user.authenticate
       payload  = payload_for_update(changes)
       response = user.client.users.update(payload: payload)
-      @user    = User.create_from_response(user.client, response)
+      @user    = User.from_response(user.client, response)
 
       if id
         # return updated version of self

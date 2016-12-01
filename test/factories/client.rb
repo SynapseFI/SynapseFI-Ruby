@@ -4,7 +4,7 @@ def test_client(client_id: ENV.fetch('CLIENT_ID'),
                 ip_address: '127.0.0.1',
                 user_id: nil,
                 development_mode: true,
-                logging: true,
+                logging: false,
                 log_to: nil)
 
   SynapsePayRest::Client.new(

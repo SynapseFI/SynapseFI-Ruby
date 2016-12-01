@@ -1,6 +1,6 @@
 module SynapsePayRest
   # Represents a non-US account for wire payments.
-  class WireIntNode < WireNode
+  class WireIntNode < BaseNode
     class << self
       private 
 
@@ -11,12 +11,11 @@ module SynapsePayRest
           nickname: nickname,
           bank_name: bank_name,
           account_number: account_number,
+          swift: swift,
           name_on_account: name_on_account,
           address: address
         }.merge(options)
-        payload = super(args)
-        payload['info']['swift'] = swift
-        payload
+        super(args)
       end
     end
   end

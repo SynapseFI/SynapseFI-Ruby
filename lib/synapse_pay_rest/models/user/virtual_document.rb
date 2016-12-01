@@ -10,7 +10,7 @@ module SynapsePayRest
 
     class << self
       # @note Do not call this method directly.
-      def create_from_response(data)
+      def from_response(data)
         virtual_doc = super(data)
         virtual_doc.add_question_set(data['meta']['question_set']) if data['status'] == 'SUBMITTED|MFA_PENDING'
         virtual_doc
@@ -31,7 +31,7 @@ module SynapsePayRest
     def submit_kba
       user     = base_document.user
       response = user.client.users.update(payload: payload_for_kba)
-      user     = User.create_from_response(user.client, response)
+      user     = User.from_response(user.client, response)
       base_doc = user.base_documents.find { |doc| doc.id == base_document.id }
       ssn_doc  = base_doc.virtual_documents.find { |doc| doc.id == id }
     end

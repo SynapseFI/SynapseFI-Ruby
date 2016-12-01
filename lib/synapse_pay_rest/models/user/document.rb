@@ -34,7 +34,7 @@ module SynapsePayRest
       end
 
       # @note Do not call this method. It is used by child classes only.
-      def create_from_response(data)
+      def from_response(data)
         self.new(
           type:         data['document_type'],
           id:           data['id'],
