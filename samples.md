@@ -221,7 +221,7 @@ social_doc = SynapsePayRest::SocialDocument.create(
 )
 
 # reassign base_doc to the output because it returns a new instance
-base_doc = base_doc.add_social_documents([social_doc])
+base_doc = base_doc.add_social_documents(social_doc)
 # => #<SynapsePayRest::BaseDocument>
 ```
 
@@ -234,7 +234,7 @@ virtual_doc = SynapsePayRest::VirtualDocument.create(
 )
 
 # reassign base_doc to the output because it returns a new instance
-base_doc = base_doc.add_virtual_documents([virtual_doc])
+base_doc = base_doc.add_virtual_documents(virtual_doc)
 # => #<SynapsePayRest::BaseDocument>
 ```
 
