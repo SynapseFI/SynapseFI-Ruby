@@ -6,16 +6,17 @@ module SynapsePayRest
 
     # Node type to node class mappings.
     NODE_TYPES_TO_CLASSES = {
-      'ACH-US'      => AchUsNode,
-      'EFT-NP'      => EftNpNode,
-      'EFT-IND'     => EftIndNode,
-      'IOU'         => IouNode,
-      'RESERVE-US'  => ReserveUsNode,
-      'SYNAPSE-IND' => SynapseIndNode,
-      'SYNAPSE-NP'  => SynapseNpNode,
-      'SYNAPSE-US'  => SynapseUsNode,
-      'WIRE-INT'    => WireIntNode,
-      'WIRE-US'     => WireUsNode
+      'ACH-US'                 => AchUsNode,
+      'EFT-NP'                 => EftNpNode,
+      'EFT-IND'                => EftIndNode,
+      'IOU'                    => IouNode,
+      'RESERVE-US'             => ReserveUsNode,
+      'SYNAPSE-IND'            => SynapseIndNode,
+      'SYNAPSE-NP'             => SynapseNpNode,
+      'SYNAPSE-US'             => SynapseUsNode,
+      'TRIUMPH-SUBACCOUNT-US'  => TriumphSubaccountUsNode,
+      'WIRE-INT'               => WireIntNode,
+      'WIRE-US'                => WireUsNode
     }.freeze
 
     class << self
@@ -34,7 +35,7 @@ module SynapsePayRest
 
         user.authenticate
         response = user.client.nodes.get(user_id: user.id, node_id: id)
-        create_from_response(user, response)
+        from_response(user, response)
       end
 
       # Queries the API for all nodes belonging to the supplied user (with optional
@@ -62,7 +63,7 @@ module SynapsePayRest
 
         user.authenticate
         response = user.client.nodes.get(page: page, per_page: per_page, type: type)
-        create_multiple_from_response(user, response['nodes'])
+        multiple_from_response(user, response['nodes'])
       end
 
       # Queries the API for all nodes belonging to the supplied user (with optional
@@ -85,14 +86,14 @@ module SynapsePayRest
 
       # determines the proper node type to instantiate from the response
       # implemented differently in each BaseNode subclass
-      def create_from_response(user, response)
-        klass = NODE_TYPES_TO_CLASSES.fetch(response['type'])
-        klass.create_from_response(user, response)
+      def from_response(user, response)
+        klass = NODE_TYPES_TO_CLASSES.fetch(response['type']) || BaseNode
+        klass.from_response(user, response)
       end
 
-      def create_multiple_from_response(user, response)
+      def multiple_from_response(user, response)
         return [] if response.empty?
-        response.map { |node_data| create_from_response(user, node_data)}
+        response.map { |node_data| from_response(user, node_data)}
       end
     end
   end

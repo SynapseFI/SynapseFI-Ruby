@@ -134,8 +134,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -244,6 +243,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_eft_ind_node
+    skip 'deprecated'
     args = test_eft_ind_create_args(user: @user)
     node = SynapsePayRest::EftIndNode.create(args)
 
@@ -278,8 +278,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -300,8 +299,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -322,8 +320,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -332,6 +329,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_synapse_ind_node
+    skip 'deprecated'
     args = test_synapse_ind_create_args(user: @user)
     node = SynapsePayRest::SynapseIndNode.create(args)
 
@@ -345,8 +343,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -368,8 +365,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -391,13 +387,33 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
     end
     other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_create_triumph_subaccount_us_node
+    args = test_synapse_us_create_args(user: @user)
+    node = SynapsePayRest::TriumphSubaccountUsNode.create(args)
+
+    other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
+                           :permission, :type]
+
+    assert_instance_of SynapsePayRest::TriumphSubaccountUsNode, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        refute_nil node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| node.send(var) }
   end
 
   def test_create_wire_int_node
@@ -411,8 +427,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end
@@ -431,8 +446,7 @@ class NodeTest < Minitest::Test
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
-        # these are sliced to last 4 digits in response
-        assert_equal value[-4..-1], node.send(var_name)
+        refute_nil node.send(var_name)
       else
         assert_equal value, node.send(var_name)
       end

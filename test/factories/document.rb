@@ -1,7 +1,7 @@
 def test_physical_document
   SynapsePayRest::PhysicalDocument.create(
     type: 'GOVT_ID',
-    value: fixture_path('id.png')
+    file_path: fixture_path('id.png')
   )
 end
 

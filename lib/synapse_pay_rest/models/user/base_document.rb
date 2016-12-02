@@ -93,21 +93,21 @@ module SynapsePayRest
 
       # Parses multiple base_documents from response
       # @note Do not call directly (it's automatic).
-      def create_from_response(user, response)
+      def from_response(user, response)
         base_documents_data = response['documents']
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
-            doc = PhysicalDocument.create_from_response(data)
+            doc = PhysicalDocument.from_response(data)
             doc.base_document = self
             doc
           end
           social_docs = base_document_data['social_docs'].map do |data|
-            doc = SocialDocument.create_from_response(data)
+            doc = SocialDocument.from_response(data)
             doc.base_document = self
             doc
           end
           virtual_docs = base_document_data['virtual_docs'].map do |data|
-            doc = VirtualDocument.create_from_response(data)
+            doc = VirtualDocument.from_response(data)
             doc.base_document = self
             doc
           end
@@ -166,7 +166,7 @@ module SynapsePayRest
     def submit
       user.authenticate
       response = user.client.users.update(payload: payload_for_submit)
-      @user    = User.create_from_response(user.client, response)
+      @user    = User.from_response(user.client, response)
 
       if id
         # return updated version of self
@@ -213,7 +213,7 @@ module SynapsePayRest
       user.authenticate
       payload  = payload_for_update(changes)
       response = user.client.users.update(payload: payload)
-      @user    = User.create_from_response(user.client, response)
+      @user    = User.from_response(user.client, response)
 
       if id
         # return updated version of self
@@ -227,13 +227,12 @@ module SynapsePayRest
     # Adds one or more physical documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::PhysicalDocument>]
+    # @param documents [Array<SynapsePayRest::PhysicalDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_physical_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_physical_documents(*documents)
       unless documents.first.is_a?(PhysicalDocument)
         raise ArgumentError, 'must contain a PhysicalDocument'
       end
@@ -244,13 +243,12 @@ module SynapsePayRest
     # Adds one or more social documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::SocialDocument>]
+    # @param documents [Array<SynapsePayRest::SocialDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_social_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_social_documents(*documents)
       unless documents.first.is_a?(SocialDocument)
         raise ArgumentError, 'must contain a SocialDocument'
       end
@@ -261,13 +259,12 @@ module SynapsePayRest
     # Adds one or more virtual documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::VirtualDocument>]
+    # @param documents [Array<SynapsePayRest::VirtualDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_virtual_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_virtual_documents(*documents)
       unless documents.first.is_a?(VirtualDocument)
         raise ArgumentError, 'must contain a VirtualDocument'
       end

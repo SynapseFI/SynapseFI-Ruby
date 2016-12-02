@@ -279,6 +279,7 @@ class UserTest < Minitest::Test
   end
 
   def test_create_eft_ind_node
+    skip 'deprecated'
     user = test_user
     args = test_eft_ind_create_args
     args.delete(:user)
@@ -319,6 +320,7 @@ class UserTest < Minitest::Test
   end
 
   def test_create_synapse_ind_node
+    skip 'deprecated'
     user = test_user
     args = test_synapse_ind_create_args
     args.delete(:user)
@@ -345,6 +347,16 @@ class UserTest < Minitest::Test
     node = user.create_synapse_us_node(args)
 
     assert_instance_of SynapsePayRest::SynapseUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_triumph_subaccount_us_node
+    user = test_user
+    args = test_synapse_us_create_args
+    args.delete(:user)
+    node = user.create_triumph_subaccount_us_node(args)
+
+    assert_instance_of SynapsePayRest::TriumphSubaccountUsNode, node
     assert_includes user.nodes, node
   end
 

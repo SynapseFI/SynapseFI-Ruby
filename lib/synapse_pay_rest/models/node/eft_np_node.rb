@@ -1,6 +1,6 @@
 module SynapsePayRest
   # Represents a Nepali bank account for EFT credits.
-  class EftNpNode < EftNode
+  class EftNpNode < BaseNode
     class << self
       private
 
@@ -8,11 +8,10 @@ module SynapsePayRest
         args = {
           type: 'EFT-NP',
           nickname: nickname,
+          bank_name: bank_name,
           account_number: account_number
         }.merge(options)
-        payload = super(args)
-        payload['info']['bank_name'] = bank_name
-        payload
+        super(args)
       end
     end
   end

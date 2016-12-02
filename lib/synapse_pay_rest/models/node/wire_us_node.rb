@@ -1,6 +1,6 @@
 module SynapsePayRest
   # Represents a US bank account for processing wire payments.
-  class WireUsNode < WireNode
+  class WireUsNode < BaseNode
     class << self
       private
 
@@ -15,7 +15,6 @@ module SynapsePayRest
           name_on_account: name_on_account,
           address: address
         }.merge(options)
-        
         super(args)
       end
     end

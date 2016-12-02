@@ -40,7 +40,7 @@ module SynapsePayRest
         payload = payload_for_create(nickname: nickname, **options)
         user.authenticate
         response = user.client.nodes.add(payload: payload)
-        create_from_response(user, response['nodes'].first)
+        from_response(user, response['nodes'].first)
       end
 
       # Queries the API for all nodes belonging to the supplied user (with optional
@@ -66,11 +66,11 @@ module SynapsePayRest
         
         user.authenticate
         response = user.client.nodes.get(page: page, per_page: per_page, type: self.type)
-        create_multiple_from_response(user, response['nodes'])
+        multiple_from_response(user, response['nodes'])
       end
 
       # @note Not meant to be accessed directly on BaseNode but through children.
-      def create_from_response(user, response)
+      def from_response(user, response)
         args = {
           user:            user,
           type:            response['type'],
@@ -92,35 +92,106 @@ module SynapsePayRest
         }
 
         if response['info']['correspondent_info']
-          args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
-          args[:correspondent_bank_name]      = response['info']['correspondent_info']['bank_name']
-          args[:correspondent_routing_number] = response['info']['correspondent_info']['routing_num']
-          args[:correspondent_address]        = response['info']['correspondent_info']['address']
-          args[:correspondent_swift]          = response['info']['correspondent_info']['swift']
+          correspondent_info = response['info']['correspondent_info']
+          args[:correspondent_swift]          = correspondent_info['swift']
+          args[:correspondent_bank_name]      = correspondent_info['bank_name']
+          args[:correspondent_routing_number] = correspondent_info['routing_num']
+          args[:correspondent_address]        = correspondent_info['address']
         end
 
         if response['info']['match_info']
-          args[:email_match]       = response['info']['match_info']['email_match']
-          args[:name_match]        = response['info']['match_info']['name_match']
-          args[:phonenumber_match] = response['info']['match_info']['phonenumber_match']
+          match_info = response['info']['match_info']
+          args[:email_match]       = match_info['email_match']
+          args[:name_match]        = match_info['name_match']
+          args[:phonenumber_match] = match_info['phonenumber_match']
         end
 
         if response['info']['balance']
-          args[:balance]  = response['info']['balance']['amount']
-          args[:currency] = response['info']['balance']['currency']
+          balance = response['info']['balance']
+          args[:balance]  = balance['amount']
+          args[:currency] = balance['currency']
         end
 
         if response['extra']
-          args[:supp_id]            = response['extra']['supp_id']
-          args[:gateway_restricted] = response['extra']['gateway_restricted']
+          extra = response['extra']
+          args[:supp_id]            = extra['supp_id']
+          args[:gateway_restricted] = extra['gateway_restricted']
         end
 
         self.new(**args)
       end
 
       # @note Not meant to be accessed directly on BaseNode but through children.
-      def create_multiple_from_response(user, response)
-        response.map { |node_data| create_from_response(user, node_data)}
+      def multiple_from_response(user, response)
+        response.map { |node_data| from_response(user, node_data)}
+      end
+
+      def payload_for_create(type:, **options)
+        payload = {
+            'type' => type,
+            'info' => {}
+        }
+
+        info_fields = [
+          :swift, :name_on_account, :bank_name, :address, :ifsc,:nickname,
+          :bank_name
+        ]
+        info_fields.each do |field|
+          payload['info'][field.to_s] = options[field] if options[field]
+        end
+
+        # the rest are done individually since they are custom renamed
+        correspondent_info = {}
+        if options[:correspondent_routing_number]
+          correspondent_info['routing_num'] = options[:correspondent_routing_number]
+        end
+        if options[:correspondent_bank_name]
+          correspondent_info['bank_name'] = options[:correspondent_bank_name]
+        end
+        if options[:correspondent_address]
+          correspondent_info['address'] = options[:correspondent_address]
+        end
+        if options[:correspondent_swift]
+          correspondent_info['swift'] = options[:correspondent_swift]
+        end
+        payload['info']['correspondent_info'] = correspondent_info if correspondent_info.any?
+
+        if options[:account_number]
+          payload['info']['account_num'] = options[:account_number]
+        end
+        if options[:routing_number]
+          payload['info']['routing_num'] = options[:routing_number]
+        end
+        if options[:account_type]
+          payload['info']['type'] = options[:account_type]
+        end
+        if options[:account_class]
+          payload['info']['class'] = options[:account_class]
+        end
+        if options[:username]
+          payload['info']['bank_id'] = options[:username]
+        end
+        if options[:password]
+          payload['info']['bank_pw'] = options[:password]
+        end
+
+        balance_fields = [:currency]
+        balance_fields.each do |field|
+          if options[field]
+            payload['info']['balance'] ||= {}
+            payload['info']['balance'][field.to_s] = options[field] if options[field]
+          end
+        end
+
+        extra_fields = [:supp_id, :gateway_restricted]
+        extra_fields.each do |field|
+          if options[field]
+            payload['extra'] ||= {}
+            payload['extra'][field.to_s] = options[field] 
+          end
+        end
+
+        payload
       end
     end
 

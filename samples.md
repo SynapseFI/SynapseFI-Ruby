@@ -159,16 +159,56 @@ base_doc = base_doc.update(things_to_update)
 # => #<SynapsePayRest::BaseDocument>
 ```
 
-#### Add a Physical Document to a CIP Base Document
+#### Add a Physical Document to a CIP Base Document using image file path
 
 ```ruby
 physical_doc = SynapsePayRest::PhysicalDocument.create(
   type:  'GOVT_ID',
-  value: '/path/to/file.png'
+  file_path: '/path/to/file.png'
 )
 
 # reassign base_doc to the output because it returns a new instance
-base_doc = base_doc.add_physical_documents([physical_doc])
+base_doc = base_doc.add_physical_documents(physical_doc)
+# => #<SynapsePayRest::BaseDocument>
+```
+
+#### Add a Physical Document to a CIP Base Document using image URL
+
+```ruby
+physical_doc = SynapsePayRest::PhysicalDocument.create(
+  type:  'GOVT_ID',
+  url: 'https://cdn.synapsepay.com/static_assets/logo@2x.png'
+)
+
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_physical_documents(physical_doc)
+# => #<SynapsePayRest::BaseDocument>
+```
+
+#### Add a Physical Document to a CIP Base Document using byte stream
+
+```ruby
+physical_doc = SynapsePayRest::PhysicalDocument.create(
+  type:  'GOVT_ID',
+  byte_stream: '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00...',
+  mime_type: 'image/png'
+)
+
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_physical_documents(physical_doc)
+# => #<SynapsePayRest::BaseDocument>
+```
+
+#### Add a Physical Document to a CIP Base Document using base64
+
+```ruby
+physical_doc = SynapsePayRest::PhysicalDocument.create(
+  type:  'GOVT_ID',
+  value: 'data:image/png;base64,SUQs=='
+)
+
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_physical_documents(physical_doc)
 # => #<SynapsePayRest::BaseDocument>
 ```
 

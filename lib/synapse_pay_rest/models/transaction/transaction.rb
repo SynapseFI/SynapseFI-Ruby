@@ -54,7 +54,7 @@ module SynapsePayRest
           amount: amount, currency: currency, ip: ip, **options)
         node.user.authenticate
         response = node.user.client.trans.create(node_id: node.id, payload: payload)
-        create_from_response(node, response)
+        from_response(node, response)
       end
 
       # Queries the API for a transaction belonging to the supplied node by transaction id
@@ -72,7 +72,7 @@ module SynapsePayRest
 
         node.user.authenticate
         response = node.user.client.trans.get(node_id: node.id, trans_id: id)
-        create_from_response(node, response)
+        from_response(node, response)
       end
 
       # Queries the API for all transactions belonging to the supplied node and returns
@@ -95,7 +95,7 @@ module SynapsePayRest
 
         node.user.authenticate
         response = node.user.client.trans.get(node_id: node.id, page: page, per_page: per_page)
-        create_multiple_from_response(node, response['trans'])
+        multiple_from_response(node, response['trans'])
       end
 
       # Creates a Transaction from a response hash.
@@ -104,7 +104,7 @@ module SynapsePayRest
       # 
       # @todo convert the nodes and users in response into User/Node objects
       # @todo rework to handle multiple fees
-      def create_from_response(node, response)
+      def from_response(node, response)
         args = {
           node:          node,
           id:            response['_id'],
@@ -169,9 +169,9 @@ module SynapsePayRest
         payload
       end
 
-      def create_multiple_from_response(node, response)
+      def multiple_from_response(node, response)
         return [] if response.empty?
-        response.map { |trans_data| create_from_response(node, trans_data) }
+        response.map { |trans_data| from_response(node, trans_data) }
       end
     end
 
@@ -191,7 +191,7 @@ module SynapsePayRest
     def add_comment(comment)
       payload = {'comment': comment}
       response = node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
-      self.class.create_from_response(node, response['trans'])
+      self.class.from_response(node, response['trans'])
     end
 
     # Cancels this transaction if it has not already settled.
@@ -201,7 +201,7 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def cancel
       response = node.user.client.trans.delete(node_id: node.id, trans_id: id)
-      self.class.create_from_response(node, response)
+      self.class.from_response(node, response)
     end
 
     # Checks if two Transaction instances have same id (different instances of same record).

@@ -53,7 +53,7 @@ module SynapsePayRest
       if response['error_code'] == '0'
         # correct answer
         @mfa_verified = true
-        AchUsNode.create_multiple_from_response(user, response['nodes'])
+        AchUsNode.multiple_from_response(user, response['nodes'])
       elsif response['error_code'] == '10' && response['mfa']['message'] == mfa_message
         # wrong answer (mfa message the same), retry if allowed
         args = {

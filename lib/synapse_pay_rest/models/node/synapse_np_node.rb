@@ -1,6 +1,6 @@
 module SynapsePayRest
   # Represents a Synapse node allowing any user to hold Nepali Rupees.
-  class SynapseNpNode < SynapseNode
+  class SynapseNpNode < BaseNode
     class << self
       private
 
@@ -9,13 +9,7 @@ module SynapsePayRest
           type: 'SYNAPSE-NP',
           nickname: nickname
         }.merge(options)
-        payload = super(args)
-        # optional payload fields
-        extra = {}
-        extra['supp_id']            = options[:supp_id] if options[:supp_id]
-        extra['gateway_restricted'] = options[:gateway_restricted] if options[:gateway_restricted]
-        payload['extra'] = extra if extra.any?
-        payload
+        super(args)
       end
     end
   end

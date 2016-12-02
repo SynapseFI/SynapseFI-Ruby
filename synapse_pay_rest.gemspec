@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name     = 'synapse_pay_rest'
   s.version  = SynapsePayRest::VERSION
   s.date     = Date.today.to_s
-  s.authors  = ['Thomas Hipps', 'Steven Broderick']
+  s.authors  = ['Steven Broderick', 'Thomas Hipps']
   s.email    = 'help@synapsepay.com'
   s.summary  = 'SynapsePay v3 Rest Native API Library'
   s.homepage = 'https://rubygems.org/gems/synapse_pay_rest'
