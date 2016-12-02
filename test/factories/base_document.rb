@@ -39,8 +39,18 @@ def test_base_document_args_with_three_documents(physical_documents: [test_physi
                                                  virtual_documents: [test_virtual_document])
   test_base_document_args.merge({
     physical_documents: physical_documents,
-    social_documents: social_documents,
-    virtual_documents: virtual_documents
+    social_documents:   social_documents,
+    virtual_documents:  virtual_documents
+  })
+end
+
+def test_base_document_args_with_six_documents(physical_documents: [test_physical_document, test_physical_document],
+                                               social_documents: [test_social_document, test_social_document],
+                                               virtual_documents: [test_virtual_document, test_virtual_document])
+  test_base_document_args.merge({
+    physical_documents: physical_documents,
+    social_documents:   social_documents,
+    virtual_documents:  virtual_documents
   })
 end
 

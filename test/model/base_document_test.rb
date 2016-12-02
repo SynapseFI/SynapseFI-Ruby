@@ -64,13 +64,13 @@ class BaseDocumentTest < Minitest::Test
     response_virtual_docs = response_after_update['documents'].first['virtual_docs']
 
     response_physical_docs.each do |doc|
-      assert base_document.physical_documents.any? { |pd| pd.id == doc['id'] && pd.status = doc['status'] }
+      assert base_document.physical_documents.any? { |pd| pd.id == doc['id'] && pd.status == doc['status'] }
     end
     response_social_docs.each do |doc|
-      assert base_document.social_documents.any? { |sd| sd.id == doc['id'] && sd.status = doc['status'] }
+      assert base_document.social_documents.any? { |sd| sd.id == doc['id'] && sd.status == doc['status'] }
     end
     response_virtual_docs.each do |doc|
-      assert base_document.virtual_documents.any? { |vd| vd.id == doc['id'] && vd.status = doc['status'] }
+      assert base_document.virtual_documents.any? { |vd| vd.id == doc['id'] && vd.status == doc['status'] }
     end
 
     # id should match id in response
@@ -79,12 +79,12 @@ class BaseDocumentTest < Minitest::Test
     # @todo test last updated changes on virtual/physical docs
   end
 
-  def test_add_physical_documents
+  def test_add_physical_document
     base_doc = test_base_document_with_no_documents
     assert_empty base_doc.physical_documents
 
     physical_doc = test_physical_document
-    base_doc = base_doc.add_physical_documents([physical_doc])
+    base_doc = base_doc.add_physical_documents(physical_doc)
     assert base_doc.physical_documents.any? { |d| d.type == physical_doc.type }
 
     # verify added in api
@@ -92,11 +92,11 @@ class BaseDocumentTest < Minitest::Test
     assert response['documents'].first['physical_docs'].any? {|d| d['document_type'] == 'GOVT_ID'}
   end
 
-  def test_add_social_documents
+  def test_add_social_document
     base_doc = test_base_document_with_no_documents
 
     social_doc = test_social_document
-    base_doc = base_doc.add_social_documents([social_doc])
+    base_doc = base_doc.add_social_documents(social_doc)
     assert base_doc.social_documents.any? { |d| d.type == social_doc.type }
 
     # verify added in api
@@ -104,16 +104,63 @@ class BaseDocumentTest < Minitest::Test
     assert response['documents'].first['social_docs'].any? {|d| d['document_type'] == 'FACEBOOK'}
   end
 
-  def test_add_virtual_documents
+  def test_add_virtual_document
     base_doc = test_base_document_with_no_documents
     assert_empty base_doc.virtual_documents
 
     virtual_doc = test_virtual_document
-    base_doc = base_doc.add_virtual_documents([virtual_doc])
+    base_doc = base_doc.add_virtual_documents(virtual_doc)
     assert base_doc.virtual_documents.any? { |d| d.type == virtual_doc.type }
 
     # verify added in api
     response = test_client.users.get(user_id: base_doc.user.id)
     assert response['documents'].first['virtual_docs'].any? {|d| d['document_type'] == 'SSN'}
+  end
+
+  def test_add_physical_documents
+    base_doc = test_base_document_with_no_documents
+    assert_empty base_doc.physical_documents
+
+    physical_doc = test_physical_document
+    physical_doc2 = physical_doc.dup
+    physical_doc2.type = 'SELFIE'
+    base_doc = base_doc.add_physical_documents(physical_doc, physical_doc2)
+    assert_equal 2, base_doc.physical_documents.length
+
+    # verify added in api
+    response = test_client.users.get(user_id: base_doc.user.id)
+    assert response['documents'].first['physical_docs'].any? {|d| d['document_type'] == physical_doc.type}
+    assert response['documents'].first['physical_docs'].any? {|d| d['document_type'] == physical_doc2.type}
+  end
+
+  def test_add_social_documents
+    base_doc = test_base_document_with_no_documents
+
+    social_doc = test_social_document
+    social_doc2 = social_doc.dup
+    social_doc2.type = 'TWITTER'
+    base_doc = base_doc.add_social_documents(social_doc, social_doc2)
+    assert_equal 4, base_doc.social_documents.length
+
+    # verify added in api
+    response = test_client.users.get(user_id: base_doc.user.id)
+    assert response['documents'].first['social_docs'].any? {|d| d['document_type'] == social_doc.type}
+    assert response['documents'].first['social_docs'].any? {|d| d['document_type'] == social_doc2.type}
+  end
+
+  def test_add_virtual_documents
+    base_doc = test_base_document_with_no_documents
+    assert_empty base_doc.virtual_documents
+
+    virtual_doc = test_virtual_document
+    virtual_doc2 = virtual_doc.dup
+    virtual_doc2.type = 'PASSPORT'
+    base_doc = base_doc.add_virtual_documents(virtual_doc, virtual_doc2)
+    assert_equal 2, base_doc.virtual_documents.length
+
+    # verify added in api
+    response = test_client.users.get(user_id: base_doc.user.id)
+    assert response['documents'].first['virtual_docs'].any? {|d| d['document_type'] == virtual_doc.type}
+    assert response['documents'].first['virtual_docs'].any? {|d| d['document_type'] == virtual_doc2.type}
   end
 end

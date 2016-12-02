@@ -227,13 +227,12 @@ module SynapsePayRest
     # Adds one or more physical documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::PhysicalDocument>]
+    # @param documents [Array<SynapsePayRest::PhysicalDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_physical_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_physical_documents(*documents)
       unless documents.first.is_a?(PhysicalDocument)
         raise ArgumentError, 'must contain a PhysicalDocument'
       end
@@ -244,13 +243,12 @@ module SynapsePayRest
     # Adds one or more social documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::SocialDocument>]
+    # @param documents [Array<SynapsePayRest::SocialDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_social_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_social_documents(*documents)
       unless documents.first.is_a?(SocialDocument)
         raise ArgumentError, 'must contain a SocialDocument'
       end
@@ -261,13 +259,12 @@ module SynapsePayRest
     # Adds one or more virtual documents to the base document and submits
     # them to the API using KYC 2.0 endpoints.
     # 
-    # @param documents [Array<SynapsePayRest::VirtualDocument>]
+    # @param documents [Array<SynapsePayRest::VirtualDocument>] (one or more documents)
     # 
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::BaseDocument] new instance with updated info
-    def add_virtual_documents(documents)
-      raise ArgumentError, 'must be an Array' unless documents.is_a?(Array)
+    def add_virtual_documents(*documents)
       unless documents.first.is_a?(VirtualDocument)
         raise ArgumentError, 'must contain a VirtualDocument'
       end

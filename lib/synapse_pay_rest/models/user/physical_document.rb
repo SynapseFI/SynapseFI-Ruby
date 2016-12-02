@@ -16,11 +16,11 @@ module SynapsePayRest
       #   Document itself.
       # 
       # @param type [String]
-      # @param value [String] (optional) base64-encoded image
+      # @param value [String] (optional) padded base64-encoded image ("data:#{mime_type};base64,#{base64}")
       # @param file_path [String] (optional) path to image file
       # @param url [String] (optional) image file url
       # @param byte_stream [String] (optional) byte representation of image
-      # @param mime_type [String] (optional) mime type of byte_stream
+      # @param mime_type [String] (optional) mime type of byte_stream (e.g. 'image/png')
       # 
       # @return [SynapsePayRest::Document]
       # 

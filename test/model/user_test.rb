@@ -356,7 +356,7 @@ class UserTest < Minitest::Test
     args.delete(:user)
     node = user.create_triumph_subaccount_us_node(args)
 
-    assert_instance_of SynapsePayRest::SynapseUsNode, node
+    assert_instance_of SynapsePayRest::TriumphSubaccountUsNode, node
     assert_includes user.nodes, node
   end
 
