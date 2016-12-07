@@ -88,8 +88,7 @@ module SynapsePayRest
       # @return [SynapsePayRest::Error]
       def error_from_response(body, code)
         # require 'pry'; binding.pry
-        code = code.to_i
-        klass = ERRORS[code] || SynapsePayRest::Error
+        klass = ERRORS[code.to_i] || SynapsePayRest::Error
         message, error_code = parse_error(body)
         klass.new(message: message, code: error_code, response: body)
       end

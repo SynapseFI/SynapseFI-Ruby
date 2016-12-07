@@ -413,7 +413,7 @@ class NodeTest < Minitest::Test
         assert_equal value, node.send(var_name)
       end
     end
-    other_instance_vars.each { |var| node.send(var) }
+    other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 
   def test_create_wire_int_node

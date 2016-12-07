@@ -26,6 +26,7 @@ class VirtualDocumentTest < Minitest::Test
   end
 
   def test_ssn_partially_successful_with_kba_and_correct_answers
+    skip 'deprecated'
     ssn = '3333'
     base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
@@ -45,6 +46,7 @@ class VirtualDocumentTest < Minitest::Test
   end
 
   def test_ssn_partially_successful_with_kba_and_incorrect_answers
+    skip 'deprecated'
     ssn = '3333'
     base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
