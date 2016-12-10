@@ -1,5 +1,7 @@
 module SynapsePayRest
   # Represents a subaccount inside a FBO account at Triumph Bank.
+  # 
+  # @deprecated
   class TriumphSubaccountUsNode < BaseNode
     class << self
       private

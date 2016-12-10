@@ -36,13 +36,9 @@ module SynapsePayRest
     # rolling our own, probably error-prone and untested version
     # https://github.com/rest-client/rest-client#usage-raw-url
     def get(user_id: nil, **options)
-      path = create_user_path(user_id: user_id)
+      path = user_path(user_id: user_id)
 
-      if user_id
-        response = client.get(path)
-        client.update_headers(user_id: response['_id']) if response['_id']
-        return response
-      end
+      return client.get(path) if user_id
 
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
@@ -63,15 +59,13 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def create(payload:)
-      path = create_user_path
-      response = client.post(path, payload)
-      client.update_headers(user_id: response['_id']) if response['_id']
-      response
+      client.post(user_path, payload)
     end
 
     # Sends a POST request to /oauth/:user_id endpoint to obtain a new oauth key
     # and update the client's headers, and returns the response
     # 
+    # @param user_id [String]
     # @param payload [Hash]
     # @see https://docs.synapsepay.com/docs/get-oauth_key-refresh-token payload structure
     # 
@@ -79,9 +73,9 @@ module SynapsePayRest
     # HTTP response from API
     # 
     # @return [Hash] API response
-    def refresh(payload:)
-      path = "/oauth/#{@client.user_id}"
-      response = @client.post(path, payload)
+    def refresh(user_id:, payload:)
+      path = "/oauth/#{user_id}"
+      response = client.post(path, payload)
       client.update_headers(oauth_key: response['oauth_key']) if response['oauth_key']
       response
     end
@@ -101,11 +95,9 @@ module SynapsePayRest
     # HTTP response from API
     # 
     # @return [Hash] API response
-    def update(payload:)
-      path = create_user_path(user_id: client.user_id)
-      response = client.patch(path, payload)
-      client.update_headers(user_id: response['_id']) if response['_id']
-      response
+    def update(user_id:, payload:)
+      path = user_path(user_id: user_id)
+      client.patch(path, payload)
     end
     # Alias for #update (legacy name)
     alias_method :answer_kba, :update
@@ -142,16 +134,16 @@ module SynapsePayRest
     # 
     # @param file_path [String]
     # @deprecated Use #update with KYC 2.0 payload instead.
-    def attach_file(file_path:)
+    def attach_file(user_id:, file_path:)
       warn caller.first + " DEPRECATION WARNING: #{self.class}##{__method__} is deprecated. Use #update with encode_attachment instead."
 
       file_contents = open(file_path) { |f| f.read }
       content_types = MIME::Types.type_for(file_path)
       file_type = content_types.first.content_type if content_types.any?
       if file_type.nil?
-        raise('File type not found. Use attach_file_with_file_type(file_path: <file_path>, file_type: <file_type>)')
+        raise('File type not found. Use attach_file_with_file_type(user_id: <user_id>, file_path: <file_path>, file_type: <file_type>)')
       else
-        attach_file_with_file_type(file_path: file_path, file_type: file_type)
+        attach_file_with_file_type(user_id: user_id, file_path: file_path, file_type: file_type)
       end
     end
 
@@ -161,10 +153,10 @@ module SynapsePayRest
     # @param file_path [String]
     # @param file_type [String] MIME type
     # @deprecated Use #update with KYC 2.0 payload instead.
-    def attach_file_with_file_type(file_path:, file_type:)
+    def attach_file_with_file_type(user_id:, file_path:, file_type:)
       warn caller.first + " DEPRECATION WARNING: #{self.class}##{__method__} is deprecated. Use #update with encode_attachment instead."
 
-      path = create_user_path(user_id: @client.user_id)
+      path = user_path(user_id: user_id)
       file_contents = open(file_path) { |f| f.read }
       encoded = Base64.encode64(file_contents)
       mime_padding = "data:#{file_type};base64,"
@@ -180,10 +172,10 @@ module SynapsePayRest
 
     private
 
-    def create_user_path(user_id: nil)
-      path = ['/users']
-      path << user_id if user_id
-      path.join('/')
+    def user_path(user_id: nil)
+      path = "/users"
+      path += "/#{user_id}" if user_id
+      path
     end
   end
 end

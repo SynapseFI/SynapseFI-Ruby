@@ -24,6 +24,6 @@ end
 
 def refresh_user(client, user_id)
   user = client.users.get(user_id: user_id)
-  client.users.refresh(payload: {'refresh_token' => user['refresh_token']})
+  client.users.refresh(user_id: user_id, payload: {'refresh_token' => user['refresh_token']})
   user
 end
