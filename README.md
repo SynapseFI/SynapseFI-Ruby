@@ -43,7 +43,7 @@ $ gem install synapse_pay_rest
 
 ## Contributing
 
-Just open a pull request. Please document and test any public constants/methods. Open an issue or email steven@synapsepay.com if you have any questions.
+For minor issues, just open a pull request. For larger changes or features, please email steven@synapsepay.com.Please document and test any public constants/methods. Open an issue or email steven@synapsepay.com if you have any questions.
 
 ## Running the Test Suite
 
@@ -64,27 +64,6 @@ To run a specific file or test, install the [m](https://github.com/qrush/m) gem 
 
 ```bash
 m path/to/file:line_number
-```
-
-## Todos
-
-- Smartly update the existing instances with response data instead of re-instantiating for every response. I started with this approach but it gets pretty complicated with the interconnected models of User/BaseDocument/Document. Also, certain values are only known if the user created an object, but not when the object is built from API response data. This is solveable but requires more dev time and testing.
-- Various factory helper methods should be private but are public. Would be good to refactor in a way that they can be private.
-- `User`/`Node`/`Transaction` have similar REST methods that could probably be factored into a superclass or module.
-- Use mixins instead of inheritance for the shared behavior of `Node`s and `Document`s. The parent classes are never instantiated anyways.
-- Refactor the redundant code in each `Node` type's version of `#payload_for_create`.
-- Better way to handle bank MFA nodes? Virtual doc KBA?
-- Add an option for logging responses in addition to requests.
-- Organize tests better.
-- Use mocked responses whenever possible in tests.
-- More examples.
-- More Error types (bad MFA answer, for example).
-- Add some methods to BaseDocument to return doc by type (e.g. `base_document.ssn_doc`).
-
-Specific todos are marked throughout in this format:
-
-```ruby
-# @todo Description of todo.
 ```
 
 ## License
