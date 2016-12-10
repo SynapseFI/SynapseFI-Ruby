@@ -57,6 +57,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_add_doc_kyc1_with_correct_answer_kba
+    skip 'deprecated'
     payload = test_add_doc_kyc1_payload(document_value: '3333')
     add_doc_response = @client.users.add_doc(
       user_id: @user['_id'],
@@ -101,6 +102,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_add_documents_via_kyc2_with_kba
+    skip 'deprecated'
     add_docs_response = @client.users.update(
       user_id: @user['_id'],
       payload: test_add_documents_kyc2_payload(virtual_docs: [test_kba_ssn_hash])
