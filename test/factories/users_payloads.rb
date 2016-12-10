@@ -87,7 +87,7 @@ def test_add_doc_kyc1_payload(birth_day: rand(1..28),
                                    name_last: Faker::Name.last_name,
                                    address_street1: Faker::Address.street_address,
                                    address_postal_code: Faker::Address.zip,
-                                   address_country_code: Faker::Address.country_code,
+                                   address_country_code: 'US',
                                    document_value: '2222',
                                    document_type: 'SSN')
   {

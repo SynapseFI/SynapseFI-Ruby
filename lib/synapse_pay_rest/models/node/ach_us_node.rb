@@ -25,7 +25,7 @@ module SynapsePayRest
 
         payload = payload_for_create_via_bank_login(bank_name: bank_name, username: username, password: password)
         user.authenticate
-        response = user.client.nodes.add(payload: payload)
+        response = user.client.nodes.add(user_id: user.id, payload: payload)
         # MFA questions
         if response['mfa']
           create_unverified_node(user, response)
@@ -89,7 +89,7 @@ module SynapsePayRest
       end
 
       payload = verify_microdeposits_payload(amount1: amount1, amount2: amount2)
-      response = user.client.nodes.patch(node_id: id, payload: payload)
+      response = user.client.nodes.patch(user_id: user.id, node_id: id, payload: payload)
       self.class.from_response(user, response)
     end
 

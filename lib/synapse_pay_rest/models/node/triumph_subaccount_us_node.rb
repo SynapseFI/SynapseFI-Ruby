@@ -1,6 +1,7 @@
 module SynapsePayRest
-  # Represents a Synapse node allowing any user to hold funds. You can use this
-  # node as a wallet, an escrow account or something else along those lines.
+  # Represents a subaccount inside a FBO account at Triumph Bank.
+  # 
+  # @deprecated
   class TriumphSubaccountUsNode < BaseNode
     class << self
       private

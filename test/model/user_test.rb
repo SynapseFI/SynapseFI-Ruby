@@ -107,12 +107,12 @@ class UserTest < Minitest::Test
   end
 
   def test_search_with_page_and_per_page
-    query = 'test'
-    page1 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 5)
-    assert_equal 5, page1.length
+    query = '.com'
+    page1 = SynapsePayRest::User.search(client: test_client, query: query, page: 2, per_page: 3)
+    assert_equal 3, page1.length
 
-    page2 = SynapsePayRest::User.search(client: test_client, query: query, page: 3, per_page: 5)
-    assert_equal 5, page2.length
+    page2 = SynapsePayRest::User.search(client: test_client, query: query, page: 3, per_page: 2)
+    assert_equal 2, page2.length
     refute_equal page1.first.id, page2.first.id
   end
 

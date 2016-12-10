@@ -22,19 +22,21 @@ module SynapsePayRest
     # @param client_secret [String] should be stored in environment variable
     # @param ip_address [String] user's IP address
     # @param fingerprint [String] a hashed value, either unique to user or static
-    # @param user_id [String] (optional)
     # @param development_mode [String] default true
     # @param logging [Boolean] (optional) logs to stdout when true
     # @param log_to [String] (optional) file path to log to file (logging must be true)
     def initialize(client_id:, client_secret:, ip_address:, fingerprint: nil,
-                   user_id: nil, development_mode: true, **options)
-      base_url = 'https://api-qa.synapsefi.com/v3.1'
+                   development_mode: true, **options)
+      base_url = if development_mode
+                   'https://sandbox.synapsepay.com/api/3'
+                 else
+                   'https://synapsepay.com/api/3'
+                 end
 
       @http_client  = HTTPClient.new(base_url: base_url,
-                                     client_id: 'client_id_b8d24e32b6aa11e6bba40242ac110003',
-                                     client_secret: 'test1234',
-                                     user_id: user_id,
-                                     fingerprint: 'e716990e50b67a1177736960b6357524b22090ccab093d068b3d7a18dbde3f4c',
+                                     client_id: client_id,
+                                     client_secret: client_secret,
+                                     fingerprint: fingerprint,
                                      ip_address: ip_address,
                                      **options)
       @users        = Users.new @http_client

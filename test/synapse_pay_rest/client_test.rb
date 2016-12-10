@@ -15,7 +15,7 @@ class ClientTest < Minitest::Test
     client = SynapsePayRest::Client.new(@options)
     # these keys don't exist in config
     @options.delete(:development_mode)
-    @options.delete(:ip_address)
+    @options[:oauth_key] = ''
     assert_equal client.client.config, @options
     assert_equal client.client.config, @options
     assert_equal client.client.base_url, 'https://sandbox.synapsepay.com/api/3'
