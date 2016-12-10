@@ -8,7 +8,6 @@ module SynapsePayRest
   #   better to refactor this into a mixin altogether since this shouldn't be instantiated. 
   # @todo reduce duplicated logic between User/BaseNode/Transaction
   class Transaction
-
     # @!attribute [rw] node
     #   @return [SynapsePayRest::Node] the node to which the transaction belongs
     attr_reader :node, :id, :amount, :currency, :client_id, :client_name, :created_on,
@@ -53,7 +52,11 @@ module SynapsePayRest
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
           amount: amount, currency: currency, ip: ip, **options)
         node.user.authenticate
-        response = node.user.client.trans.create(node_id: node.id, payload: payload)
+        response = node.user.client.trans.create(
+          user_id: node.user.id,
+          node_id: node.id,
+          payload: payload
+        )
         from_response(node, response)
       end
 
@@ -71,7 +74,11 @@ module SynapsePayRest
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         node.user.authenticate
-        response = node.user.client.trans.get(node_id: node.id, trans_id: id)
+        response = node.user.client.trans.get(
+          user_id: node.user.id,
+          node_id: node.id,
+          trans_id: id
+        )
         from_response(node, response)
       end
 
@@ -94,7 +101,12 @@ module SynapsePayRest
         end
 
         node.user.authenticate
-        response = node.user.client.trans.get(node_id: node.id, page: page, per_page: per_page)
+        response = node.user.client.trans.get(
+          user_id: node.user.id,
+          node_id: node.id,
+          page: page,
+          per_page: per_page
+        )
         multiple_from_response(node, response['trans'])
       end
 
@@ -190,7 +202,12 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def add_comment(comment)
       payload = {'comment': comment}
-      response = node.user.client.trans.update(node_id: node.id, trans_id: id, payload: payload)
+      response = node.user.client.trans.update(
+        user_id: node.user.id,
+        node_id: node.id,
+        trans_id: id,
+        payload: payload
+      )
       self.class.from_response(node, response['trans'])
     end
 
@@ -200,7 +217,11 @@ module SynapsePayRest
     # 
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def cancel
-      response = node.user.client.trans.delete(node_id: node.id, trans_id: id)
+      response = node.user.client.trans.delete(
+        user_id: node.user.id,
+        node_id: node.id,
+        trans_id: id
+      )
       self.class.from_response(node, response)
     end
 

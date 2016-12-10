@@ -160,7 +160,8 @@ class TransactionTest < Minitest::Test
 
     # verify comment added in api
     response = @user.client.transactions.get(
-      node_id: @from_node.id,
+      user_id:  @user.id,
+      node_id:  @from_node.id,
       trans_id: transaction.id
     )
     assert_includes response['recent_status']['note'], 'testing 1 2 3'

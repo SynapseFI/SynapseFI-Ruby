@@ -31,7 +31,7 @@ module SynapsePayRest
     # @todo make a new Error subclass for incorrect MFA
     def answer_mfa(answer)
       payload  = payload_for_answer_mfa(answer: answer)
-      response = user.client.nodes.post(payload: payload)
+      response = user.client.nodes.post(user_id: user.id, payload: payload)
       
       handle_answer_mfa_response(response)
     end

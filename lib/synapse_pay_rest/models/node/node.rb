@@ -62,7 +62,12 @@ module SynapsePayRest
         end
 
         user.authenticate
-        response = user.client.nodes.get(page: page, per_page: per_page, type: type)
+        response = user.client.nodes.get(
+          user_id: user.id,
+          page: page,
+          per_page: per_page,
+          type: type
+        )
         multiple_from_response(user, response['nodes'])
       end
 

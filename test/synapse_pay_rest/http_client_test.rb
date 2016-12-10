@@ -2,9 +2,8 @@ require 'test_helper'
 
 class HTTPClientTest < Minitest::Test
   def setup
-    @client = test_client_with_user
-    refresh_user(@client, @client.client.user_id)
-    @http_client = @client.client
+    @client = test_client
+    @http_client = @client.http_client
   end
 
   def test_base_url
@@ -27,7 +26,6 @@ class HTTPClientTest < Minitest::Test
 
   def test_update_headers
     new_options = {
-      user_id:       'new user_id',
       fingerprint:   'new fingerprint',
       client_id:     'new client_id',
       client_secret: 'new client_secret',
@@ -37,7 +35,6 @@ class HTTPClientTest < Minitest::Test
     @http_client.update_headers(new_options)
     config = @http_client.config
 
-    assert_equal @http_client.user_id, new_options[:user_id]
     assert_equal config[:fingerprint], new_options[:fingerprint]
     assert_equal config[:client_id], new_options[:client_id]
     assert_equal config[:client_secret], new_options[:client_secret]

@@ -165,7 +165,7 @@ module SynapsePayRest
     # @return [SynapsePayRest::BaseDocument] new instance with updated info (id will be different if email or phone changed)
     def submit
       user.authenticate
-      response = user.client.users.update(payload: payload_for_submit)
+      response = user.client.users.update(user_id: user.id, payload: payload_for_submit)
       @user    = User.from_response(user.client, response)
 
       if id
@@ -212,7 +212,7 @@ module SynapsePayRest
       end
       user.authenticate
       payload  = payload_for_update(changes)
-      response = user.client.users.update(payload: payload)
+      response = user.client.users.update(user_id: user.id, payload: payload)
       @user    = User.from_response(user.client, response)
 
       if id
