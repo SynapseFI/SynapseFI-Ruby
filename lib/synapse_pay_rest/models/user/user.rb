@@ -174,7 +174,6 @@ module SynapsePayRest
     #   to instantiate via API action.
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
-      @client.http_client.user_id = id
       @base_documents  ||= []
     end
 
@@ -203,7 +202,7 @@ module SynapsePayRest
           read_only, phone_number, legal_name, remove_phone_number, remove_login'
       end
       authenticate
-      response = client.users.update(payload: payload_for_update(options))
+      response = client.users.update(user_id: id, payload: payload_for_update(options))
       # return an updated user instance
       self.class.from_response(client, response)
     end
@@ -308,7 +307,7 @@ module SynapsePayRest
     # 
     # @return [SynapsePayRest::User] (self)
     def authenticate
-      client.users.refresh(payload: payload_for_refresh)
+      client.users.refresh(user_id: id, payload: payload_for_refresh)
       self
     end
 
@@ -342,7 +341,7 @@ module SynapsePayRest
 
       payload = payload_for_refresh
       payload['phone_number'] = device
-      client.users.refresh(payload: payload)
+      client.users.refresh(user_id: id, payload: payload)
       :success
     end
 
@@ -362,7 +361,7 @@ module SynapsePayRest
       payload = payload_for_refresh
       payload['phone_number']   = device
       payload['validation_pin'] = pin
-      client.users.refresh(payload: payload)
+      client.users.refresh(user_id: id, payload: payload)
       :success
     end
 

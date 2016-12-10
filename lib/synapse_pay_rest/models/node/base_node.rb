@@ -39,7 +39,7 @@ module SynapsePayRest
 
         payload = payload_for_create(nickname: nickname, **options)
         user.authenticate
-        response = user.client.nodes.add(payload: payload)
+        response = user.client.nodes.add(user_id: user.id, payload: payload)
         from_response(user, response['nodes'].first)
       end
 
@@ -65,7 +65,12 @@ module SynapsePayRest
         end
         
         user.authenticate
-        response = user.client.nodes.get(page: page, per_page: per_page, type: self.type)
+        response = user.client.nodes.get(
+          user_id: user.id,
+          page: page,
+          per_page: per_page,
+          type: self.type
+        )
         multiple_from_response(user, response['nodes'])
       end
 
@@ -258,7 +263,7 @@ module SynapsePayRest
     # @return [:success]
     def deactivate
       user.authenticate
-      user.client.nodes.delete(node_id: id)
+      user.client.nodes.delete(user_id: user.id, node_id: id)
       :success
     end
 

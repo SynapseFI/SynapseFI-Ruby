@@ -30,7 +30,7 @@ module SynapsePayRest
     # @todo should raise error if any questions aren't answered yet.
     def submit_kba
       user     = base_document.user
-      response = user.client.users.update(payload: payload_for_kba)
+      response = user.client.users.update(user_id: user.id, payload: payload_for_kba)
       user     = User.from_response(user.client, response)
       base_doc = user.base_documents.find { |doc| doc.id == base_document.id }
       ssn_doc  = base_doc.virtual_documents.find { |doc| doc.id == id }
