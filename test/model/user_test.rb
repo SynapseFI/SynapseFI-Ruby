@@ -229,11 +229,11 @@ class UserTest < Minitest::Test
     assert_instance_of Array, devices
     assert_operator devices.length, :>, 0
 
+    # special header forces API to accept PIN '123456'
+    user.client.http_client.update_headers(fingerprint: 'static_pin')
     confirmation = user.select_2fa_device(devices.first)
     assert_equal :success, confirmation
 
-    # special header forces API to accept PIN '123456'
-    user.client.http_client.update_headers(fingerprint: 'static_pin')
     confirmation = user.confirm_2fa_pin(device: devices.first, pin: '123456')
     assert_equal :success, confirmation
   end
