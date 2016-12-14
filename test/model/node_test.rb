@@ -124,7 +124,7 @@ class NodeTest < Minitest::Test
   def test_create_ach_us_via_account_routing_numbers
     args = test_ach_us_create_args(user: @user)
     node = SynapsePayRest::AchUsNode.create(args)
-
+    
     other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
                            :permission, :type]
 
