@@ -57,11 +57,8 @@ class UsersTest < Minitest::Test
   end
 
   def test_add_doc_kyc1_with_correct_answer_kba
-    payload = test_add_doc_kyc1_payload(document_value: '3333')
-    add_doc_response = @client.users.add_doc(
-      user_id: @user['_id'],
-      payload: payload
-    )
+    skip 'deprecated'
+    add_doc_response = @client.users.add_doc(payload: test_add_doc_kyc1_payload(document_value: '3333'))
 
     assert_equal add_doc_response['error_code'], '10'
     assert_equal add_doc_response['http_code'], '202'
@@ -101,10 +98,15 @@ class UsersTest < Minitest::Test
   end
 
   def test_add_documents_via_kyc2_with_kba
+<<<<<<< HEAD
     add_docs_response = @client.users.update(
       user_id: @user['_id'],
       payload: test_add_documents_kyc2_payload(virtual_docs: [test_kba_ssn_hash])
     )
+=======
+    skip 'deprecated'
+    add_docs_response = @client.users.update(payload: test_add_documents_kyc2_payload(virtual_docs: [test_kba_ssn_hash]))
+>>>>>>> qa
     base_document = add_docs_response['documents'].last
 
     assert_operator base_document.length, :>=, 4

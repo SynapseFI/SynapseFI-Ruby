@@ -223,17 +223,19 @@ class UserTest < Minitest::Test
     refute_includes response['phone_numbers'], phone_number
   end
 
-  # @todo need to mock this to test (tested manually for now)
   def test_register_new_fingerprint
-    skip 'mock needed. tested manually for now.'
-    user = SynapsePayRest::User.find(client: test_client, id: ENV.fetch('USER_ID'))
+    user = test_user
     devices = user.register_fingerprint('new_fingerprint')
     assert_instance_of Array, devices
+    assert_operator devices.length, :>, 0
 
     confirmation = user.select_2fa_device(devices.first)
-    assert confirmation['success']
+    assert_equal :success, confirmation
 
-    user.confirm_2fa_pin(device: devices.first, pin: 'asdf')
+    # special header forces API to accept PIN '123456'
+    user.client.http_client.update_headers(fingerprint: 'static_pin')
+    confirmation = user.confirm_2fa_pin(device: devices.first, pin: '123456')
+    assert_equal :success, confirmation
   end
 
   def test_nodes
