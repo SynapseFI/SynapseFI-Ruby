@@ -323,7 +323,7 @@ module SynapsePayRest
       raise ArgumentError, 'fingerprint must be a String' unless fingerprint.is_a?(String)
 
       client.http_client.update_headers(fingerprint: fingerprint)
-      response = client.users.refresh(payload: payload_for_refresh)
+      response = client.users.refresh(user_id: id, payload: payload_for_refresh)
       response['phone_numbers']
     end
 

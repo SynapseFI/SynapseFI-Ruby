@@ -2,6 +2,7 @@ require 'test_helper'
 
 class QuestionTest < Minitest::Test
   def test_invalid_answer_choice_given
+    skip 'deprecated'
     ssn = '3333'
     base_document_info = test_base_document_args
     ssn_doc = SynapsePayRest::VirtualDocument.create(type: 'SSN', value: ssn)
