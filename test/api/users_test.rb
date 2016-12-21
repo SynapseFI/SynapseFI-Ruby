@@ -31,7 +31,7 @@ class UsersTest < Minitest::Test
   end
 
   def test_users_get_with_query
-    response = @client.users.get(query: 'Selena')
+    response = @client.users.get(query: '.com')
 
     assert_equal '200', response['http_code']
     assert_equal '0', response['error_code']
