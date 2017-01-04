@@ -33,9 +33,9 @@ module SynapsePayRest
                    'https://synapsepay.com/api/3'
                  end
 
-      @http_client  = HTTPClient.new(base_url: base_url,
-                                     client_id: client_id,
-                                     client_secret: client_secret,
+      @http_client  = HTTPClient.new(base_url: 'https://api-qa.synapsefi.com/v3.1',
+                                     client_id: 'client_id_a35b190ececd11e68b670242ac110005',
+                                     client_secret: 'test1234',
                                      fingerprint: fingerprint,
                                      ip_address: ip_address,
                                      **options)
