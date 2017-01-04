@@ -263,8 +263,8 @@ module SynapsePayRest
     # @return [:success]
     def deactivate
       user.authenticate
-      user.client.nodes.delete(user_id: user.id, node_id: id)
-      :success
+      response = user.client.nodes.delete(user_id: user.id, node_id: id)
+      self.class.from_response(user, response)
     end
 
     # Checks if two BaseNode instances have same id (different instances of same record).

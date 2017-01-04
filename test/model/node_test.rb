@@ -115,9 +115,11 @@ class NodeTest < Minitest::Test
     user = test_user_with_two_nodes
 
     assert_equal 2, user.nodes.length
-    user.nodes.first.deactivate
+    deactivated_node1 = user.nodes.first.deactivate
+    refute deactivated_node1.is_active
     assert_equal 1, user.nodes.length
-    user.nodes.last.deactivate
+    deactivated_node2 = user.nodes.last.deactivate
+    refute deactivated_node2.is_active
     assert_empty user.nodes
   end
 
