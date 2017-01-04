@@ -125,8 +125,7 @@ class NodeTest < Minitest::Test
     args = test_ach_us_create_args(user: @user)
     node = SynapsePayRest::AchUsNode.create(args)
     
-    other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permission, :type]
+    other_instance_vars = [:is_active, :bank_long_name, :permission, :type]
 
     assert_instance_of SynapsePayRest::AchUsNode, node
     assert_equal @user, node.user
@@ -180,9 +179,9 @@ class NodeTest < Minitest::Test
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
-    other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permission, :bank_name, :balance, :currency, :routing_number,
-                           :account_number, :account_class, :account_type, :type,
+    other_instance_vars = [:is_active, :bank_long_name, :permission, :bank_name,
+                           :balance, :currency, :routing_number, :type,
+                           :account_number, :account_class, :account_type,
                            :email_match, :name_match, :phonenumber_match]
 
     assert_instance_of Array, nodes
@@ -266,6 +265,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_eft_np_node
+    skip 'deprecated'
     args = test_eft_np_create_args(user: @user)
     node = SynapsePayRest::EftNpNode.create(args)
 
@@ -352,6 +352,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_create_synapse_np_node
+    skip 'deprecated'
     args = test_synapse_np_create_args(user: @user)
     node = SynapsePayRest::SynapseNpNode.create(args)
 
@@ -378,8 +379,7 @@ class NodeTest < Minitest::Test
     args = test_synapse_us_create_args(user: @user)
     node = SynapsePayRest::SynapseUsNode.create(args)
 
-    other_instance_vars = [:is_active, :account_id, :balance, :currency,
-                           :name_on_account, :permission, :type]
+    other_instance_vars = [:is_active, :balance, :currency, :permission, :type]
 
     assert_instance_of SynapsePayRest::SynapseUsNode, node
     assert_equal @user, node.user
@@ -399,8 +399,7 @@ class NodeTest < Minitest::Test
     args = test_synapse_us_create_args(user: @user)
     node = SynapsePayRest::TriumphSubaccountUsNode.create(args)
 
-    other_instance_vars = [:is_active, :balance, :currency, :name_on_account,
-                           :permission, :type]
+    other_instance_vars = [:is_active, :balance, :currency, :permission, :type]
 
     assert_instance_of SynapsePayRest::TriumphSubaccountUsNode, node
     assert_equal @user, node.user
@@ -421,13 +420,17 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::WireIntNode.create(args)
 
     other_instance_vars = [:is_active, :permission, :type]
-
+    not_returned = [:name_on_account, :correspondent_routing_number,
+                    :correspondent_bank_name, :correspondent_address, :swift,
+                    :correspondent_swift]
     assert_instance_of SynapsePayRest::WireIntNode, node
     assert_includes @user.nodes, node
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
         refute_nil node.send(var_name)
+      elsif not_returned.include? var_name
+        next
       else
         assert_equal value, node.send(var_name)
       end
@@ -439,7 +442,10 @@ class NodeTest < Minitest::Test
     args = test_wire_us_create_args(user: @user)
     node = SynapsePayRest::WireUsNode.create(args)
 
-    other_instance_vars = [:is_active, :permission, :type]
+    other_instance_vars = [:is_active, :permission, :type, :bank_name]
+    not_returned = [:name_on_account, :correspondent_routing_number,
+                    :correspondent_bank_name, :correspondent_address, :swift,
+                    :correspondent_swift]
 
     assert_instance_of SynapsePayRest::WireUsNode, node
     assert_includes @user.nodes, node
@@ -447,6 +453,8 @@ class NodeTest < Minitest::Test
     args.each do |var_name, value|
       if [:account_number, :routing_number].include? var_name
         refute_nil node.send(var_name)
+      elsif not_returned.include? var_name
+        next
       else
         assert_equal value, node.send(var_name)
       end

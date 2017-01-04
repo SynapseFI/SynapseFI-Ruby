@@ -23,6 +23,8 @@ class TransactionTest < Minitest::Test
       fee_to_id: fee_node.id
     )
     transaction = SynapsePayRest::Transaction.create(args)
+    # have to re-fetch because the facilitator fee is added asynchronously
+    transaction = SynapsePayRest::Transaction.find(id: transaction.id, node: @from_node)
 
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,

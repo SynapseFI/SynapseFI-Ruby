@@ -19,7 +19,7 @@ def test_ach_us_create_args(user: test_user,
 end
 
 def test_ach_us_create_via_bank_login_args(user: test_user,
-                                           bank_name: 'bofa',
+                                           bank_name: 'fake',
                                            username: 'synapse_nomfa',
                                            password: 'test1234')
   {
@@ -170,11 +170,9 @@ end
 
 def test_wire_us_create_args(user: test_user,
                              nickname: 'Test WIRE-US Account',
-                             bank_name: 'Bank of America',
                              account_number: Faker::Number.number(10).to_s,
                              routing_number: '051000017',
                              name_on_account: user.legal_names.first,
-                             address: Faker::Address.street_address,
                              correspondent_routing_number: '051000017',
                              correspondent_bank_name: 'Bank of America',
                              correspondent_address: Faker::Address.street_address,
@@ -183,11 +181,9 @@ def test_wire_us_create_args(user: test_user,
   {
     user: user,
     nickname: nickname,
-    bank_name: bank_name,
     account_number: account_number,
     routing_number: routing_number,
     name_on_account: name_on_account,
-    address: address,
     correspondent_routing_number: correspondent_routing_number,
     correspondent_bank_name: correspondent_bank_name,
     correspondent_address: correspondent_address,

@@ -310,7 +310,7 @@ Returns a collection of `AchUsNode`s associated with the account unless bank req
 
 ```ruby
 login_info = {
-  bank_name: 'bofa',
+  bank_name: 'fake',
   username:  'synapse_good',
   password:  'test1234'
 }
