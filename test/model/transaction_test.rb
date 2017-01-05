@@ -7,38 +7,42 @@ class TransactionTest < Minitest::Test
     @to_node   = @user.nodes.last
   end
 
-  def test_create_with_fee
+  def test_create_with_deprecated_fee_fields
     fee_node_args = test_synapse_us_create_args
     fee_node_args.delete(:user)
     fee_node = @user.create_synapse_us_node(fee_node_args)
 
     refute_equal @from_node.id, @to_node.id
 
+    amount = 2.0
     args = test_transaction_create_args(
       node:    @from_node,
       to_type: @to_node.type,
       to_id:   @to_node.id,
-      fee_amount: 2.00,
+      fee_amount: amount,
       fee_note: 'Test Fee',
       fee_to_id: fee_node.id
     )
     transaction = SynapsePayRest::Transaction.create(args)
-    # have to re-fetch because the facilitator fee is added asynchronously
-    transaction = SynapsePayRest::Transaction.find(id: transaction.id, node: @from_node)
+    # re-fetch because the facilitator fee is added asynchronously
+    transaction = SynapsePayRest::Transaction.find(id:   transaction.id,
+                                                   node: @from_node)
 
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,
       :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
       :recent_status, :timeline, :from, :to, :to_type, :to_id
     ]
-
+    assert_equal 2, transaction.fees.length
+    assert transaction.fees.any? { |fee| fee['fee'] == amount }
     assert_kind_of SynapsePayRest::BaseNode, transaction.node
     assert_equal @from_node, transaction.node
     assert_equal @to_node.id, transaction.to['id']
     # verify instance vars readable and mapped to values
+    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id]
     args.each do |var_name, value|
       # this gets replaced by process_on
-      next if var_name == :process_in
+      next if not_returned.include?(var_name) || var_name == :fees
       if var_name == :process_on
         assert_operator transaction.send(var_name), :>, Time.new.to_i
       else
@@ -49,12 +53,68 @@ class TransactionTest < Minitest::Test
   end
 
   def test_create_with_multiple_fees
-    skip 'pending. not implemented.'
+    fee_node_args = test_synapse_us_create_args
+    fee_node_args.delete(:user)
+    fee_node = @user.create_synapse_us_node(fee_node_args)
+    fee_node2 = @user.create_synapse_us_node(fee_node_args)
+
+    refute_equal @from_node.id, @to_node.id
+
+    amount1 = 0.11
+    amount2 = 0.33
+    args = test_transaction_create_args(
+      node:    @from_node,
+      to_type: @to_node.type,
+      to_id:   @to_node.id,
+      fees: [
+        {
+          fee: amount1,
+          note:   'Test Fee 1',
+          to:     {id: fee_node.id}
+        },
+        {
+          fee: amount2,
+          note:   'Test Fee 2',
+          to:     {id: fee_node.id}
+        }
+      ]
+    )
+    transaction = SynapsePayRest::Transaction.create(args)
+    # re-fetch because the facilitator fee is added asynchronously
+    transaction = SynapsePayRest::Transaction.find(id:   transaction.id,
+                                                   node: @from_node)
+    assert transaction.fees.any? { |fee| fee['fee'] == amount1 }
+    assert transaction.fees.any? { |fee| fee['fee'] == amount2 }
+    assert_equal 3, transaction.fees.length
+
+    other_instance_vars = [
+      :node, :amount, :currency, :client_id, :client_name, :created_on,
+      :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
+      :recent_status, :timeline, :from, :to, :to_type, :to_id
+    ]
+    assert_kind_of SynapsePayRest::BaseNode, transaction.node
+    assert_equal @from_node, transaction.node
+    assert_equal @to_node.id, transaction.to['id']
+    # verify instance vars readable and mapped to values
+    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id]
+    args.each do |var_name, value|
+      # this gets replaced by process_on
+      next if not_returned.include?(var_name) || var_name == :fees
+      if var_name == :process_on
+        assert_operator transaction.send(var_name), :>, Time.new.to_i
+      else
+        assert_equal value, transaction.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil transaction.send(var) }
   end
 
   def test_create_without_fee
     transaction = test_transaction(node: @from_node, to_type: @to_node.type, to_id: @to_node.id,)
-
+    # re-fetch because the facilitator fee is added asynchronously
+    transaction = SynapsePayRest::Transaction.find(id:   transaction.id,
+                                                   node: @from_node)
+    assert_equal 1, transaction.fees.length
     assert_kind_of SynapsePayRest::BaseNode, transaction.node
     assert_equal @from_node, transaction.node
     assert_equal @to_node.id, transaction.to['id']

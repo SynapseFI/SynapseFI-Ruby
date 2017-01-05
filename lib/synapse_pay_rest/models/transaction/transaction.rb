@@ -28,9 +28,10 @@ module SynapsePayRest
       # @param ip [String]
       # @param note [String] (optional)
       # @param process_in [Integer] (optional) days until processed (default/minimum 1)
-      # @param fee_amount [Float] (optional) fee amount to add to the transaction
-      # @param fee_to_id [String] (optional) node id to which to send the fee (must be SYNAPSE-US)
-      # @param fee_note [String] (optional)
+      # @param fees [Array] (optional) fee amounts to add to the transaction. Example: [{fee: 1.0, note: 'Test Fee', to: {id: 'fee_node_id'}}]
+      # @param fee_amount [Float] (deprecated) fee amount to add to the transaction
+      # @param fee_to_id [String] (deprecated) node id to which to send the fee (must be SYNAPSE-US)
+      # @param fee_note [String] (deprecated)
       # @param supp_id [String] (optional)
       # 
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
@@ -137,11 +138,13 @@ module SynapsePayRest
           from:          response['from'],
           to:            response['to'],
           to_type:       response['to']['type'],
-          to_id:         response['to']['id'],
-          fee_amount:    response['fees'].last['fee'],
-          fee_note:      response['fees'].last['note'],
-          fee_to_id:     response['fees'].last['to']['id'],
+          to_id:         response['to']['id']
         }
+        if response['fees'].any?
+          args[:fee_amount] = response['fees'].first['fee']
+          args[:fee_note]   = response['fees'].first['note']
+          args[:fee_to_id]  = response['fees'].first['to']['id']
+        end
         self.new(args)
       end
 
@@ -170,6 +173,7 @@ module SynapsePayRest
         other['attachments'] = options[:attachments] if options[:attachments]
         payload['extra']['other'] = other if other.any?
         fees = []
+        # deprecated fee flow
         fee = {}
         fee['fee']  = options[:fee_amount] if options[:fee_amount]
         fee['note'] = options[:fee_note] if options[:fee_note]
@@ -177,6 +181,8 @@ module SynapsePayRest
         fee_to['id'] = options[:fee_to_id] if options[:fee_to_id]
         fee['to'] = fee_to if fee_to.any?
         fees << fee if fee.any?
+        # new fee flow
+        fees = options[:fees] if options[:fees]
         payload['fees'] = fees if fees.any?
         payload
       end

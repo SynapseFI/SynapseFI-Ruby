@@ -9,7 +9,8 @@ def test_transaction_create_args(node:,
                                  ip: '127.0.0.1',
                                  fee_amount: nil,
                                  fee_note: nil,
-                                 fee_to_id: nil)
+                                 fee_to_id: nil,
+                                 fees: nil)
   {
     node: node,
     to_type: to_type,
@@ -22,7 +23,8 @@ def test_transaction_create_args(node:,
     ip: ip,
     fee_amount: fee_amount,
     fee_note: fee_note,
-    fee_to_id: fee_to_id
+    fee_to_id: fee_to_id,
+    fees: fees
   }
 end
 
