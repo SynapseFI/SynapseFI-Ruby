@@ -27,3 +27,10 @@ def refresh_user(client, user_id)
   client.users.refresh(user_id: user_id, payload: {'refresh_token' => user['refresh_token']})
   user
 end
+
+def kyc_user(user)
+  args = test_base_document_args
+  args.delete(:user)
+  base_doc = user.create_base_document(args)
+  user = base_doc.user
+end

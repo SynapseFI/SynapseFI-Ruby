@@ -292,6 +292,7 @@ class UserTest < Minitest::Test
   end
 
   def test_create_eft_np_node
+    skip 'deprecated'
     user = test_user
     args = test_eft_np_create_args
     args.delete(:user)

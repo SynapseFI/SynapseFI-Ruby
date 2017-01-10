@@ -582,7 +582,7 @@ module SynapsePayRest
 
     # Checks if two User instances have same id (different instances of same record).
     def ==(other)
-      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+      other.instance_of?(self.class) && !id.nil? && id == other.id
     end
 
     private

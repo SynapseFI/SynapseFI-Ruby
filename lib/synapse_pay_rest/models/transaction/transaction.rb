@@ -47,7 +47,9 @@ module SynapsePayRest
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'amount must be a Numeric (Integer or Float)' unless amount.is_a?(Numeric)
         [to_type, to_id, currency, ip].each do |arg|
-          raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
+          if options[arg] && !options[arg].is_a?(String)
+            raise ArgumentError, "#{arg} must be a String"
+          end
         end
 
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
@@ -214,7 +216,7 @@ module SynapsePayRest
         trans_id: id,
         payload: payload
       )
-      self.class.from_response(node, response['trans'])
+      self.class.from_response(node, response)
     end
 
     # Cancels this transaction if it has not already settled.
@@ -233,7 +235,7 @@ module SynapsePayRest
 
     # Checks if two Transaction instances have same id (different instances of same record).
     def ==(other)
-      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+      other.instance_of?(self.class) && !id.nil? && id == other.id
     end
   end
 end

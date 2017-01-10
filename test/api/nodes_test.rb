@@ -91,8 +91,5 @@ class NodesTest < Minitest::Test
     delete_response = client.nodes.delete(user_id: user['_id'], node_id: node_id)
 
     refute delete_response['is_active']
-    assert_raises SynapsePayRest::Error::NotFound do
-      client.nodes.get(user_id: user['_id'], node_id: node_id)
-    end
   end
 end

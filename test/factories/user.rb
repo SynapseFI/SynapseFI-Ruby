@@ -1,7 +1,7 @@
 def test_user(client: test_client,
               logins: [{
-                email: Faker::Internet.email, 
-                password: Faker::Internet.password, 
+                email: Faker::Internet.email,
+                password: Faker::Internet.password,
                 read_only: false
               }],
               phone_numbers: [Faker::PhoneNumber.phone_number],

@@ -2,7 +2,8 @@ require 'test_helper'
 
 class TransactionTest < Minitest::Test
   def setup
-    @user      = test_user_with_two_nodes
+    user       = test_user_with_two_nodes
+    @user      = kyc_user(user)
     @from_node = @user.nodes.first
     @to_node   = @user.nodes.last
   end
@@ -124,10 +125,10 @@ class TransactionTest < Minitest::Test
     skip 'pending. does nothing different immediately.'
 
     args = test_transaction_create_args(
-      node: @from_node,
+      node:    @from_node,
       to_type: @to_node.type,
-      to_id: @to_node.id,
-      amount: 1_000_000
+      to_id:   @to_node.id,
+      amount:  1_000_000
     )
 
     transaction = SynapsePayRest::Transaction.create(args)
@@ -141,7 +142,7 @@ class TransactionTest < Minitest::Test
   end
 
   def test_create_with_insufficient_permission
-    skip 'pending. does nothing differently currently(?)'
+    skip 'pending. does nothing different immediately.'
   end
 
   def test_ach_returns

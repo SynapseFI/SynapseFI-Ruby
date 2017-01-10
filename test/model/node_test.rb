@@ -182,7 +182,7 @@ class NodeTest < Minitest::Test
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     other_instance_vars = [:is_active, :bank_long_name, :permission, :bank_name,
-                           :balance, :currency, :routing_number, :type,
+                           :currency, :routing_number, :type,
                            :account_number, :account_class, :account_type,
                            :email_match, :name_match, :phonenumber_match]
 
@@ -215,8 +215,8 @@ class NodeTest < Minitest::Test
     unverified_node.answer_mfa('test_answer')
     assert unverified_node.mfa_verified
 
-    other_instance_vars = [:is_active, :bank_long_name, :name_on_account,
-                           :permission, :bank_name, :balance, :currency, :routing_number,
+    other_instance_vars = [:is_active, :bank_long_name,
+                           :permission, :bank_name, :currency, :routing_number,
                            :account_number, :account_class, :account_type, :type]
 
     nodes = @user.nodes
@@ -237,9 +237,6 @@ class NodeTest < Minitest::Test
     unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
 
     assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
-    refute unverified_node.mfa_verified
-
-    assert_raises(SynapsePayRest::Error) { unverified_node.answer_mfa('wrong') }
     refute unverified_node.mfa_verified
   end
 
