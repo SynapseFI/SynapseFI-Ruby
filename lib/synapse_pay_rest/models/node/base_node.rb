@@ -38,7 +38,6 @@ module SynapsePayRest
         raise ArgumentError, 'nickname must be a String' unless nickname.is_a?(String)
 
         payload = payload_for_create(nickname: nickname, **options)
-        user.authenticate
         response = user.client.nodes.add(user_id: user.id, payload: payload)
         from_response(user, response['nodes'].first)
       end
@@ -64,7 +63,6 @@ module SynapsePayRest
           raise ArgumentError, "type must be nil or in #{NODE_TYPES_TO_CLASSES.keys}"
         end
         
-        user.authenticate
         response = user.client.nodes.get(
           user_id: user.id,
           page: page,
@@ -262,14 +260,13 @@ module SynapsePayRest
     # 
     # @return [:success]
     def deactivate
-      user.authenticate
-      user.client.nodes.delete(user_id: user.id, node_id: id)
-      :success
+      response = user.client.nodes.delete(user_id: user.id, node_id: id)
+      self.class.from_response(user, response)
     end
 
     # Checks if two BaseNode instances have same id (different instances of same record).
     def ==(other)
-      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+      other.instance_of?(self.class) && !id.nil? && id == other.id
     end
   end
 end

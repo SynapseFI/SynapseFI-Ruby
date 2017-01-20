@@ -24,7 +24,6 @@ module SynapsePayRest
         raise ArgumentError, 'password must be a String' unless password.is_a?(String)
 
         payload = payload_for_create_via_bank_login(bank_name: bank_name, username: username, password: password)
-        user.authenticate
         response = user.client.nodes.add(user_id: user.id, payload: payload)
         # MFA questions
         if response['mfa']

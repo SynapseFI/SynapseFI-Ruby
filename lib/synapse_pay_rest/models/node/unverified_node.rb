@@ -54,16 +54,8 @@ module SynapsePayRest
         # correct answer
         @mfa_verified = true
         AchUsNode.multiple_from_response(user, response['nodes'])
-      elsif response['error_code'] == '10' && response['mfa']['message'] == mfa_message
-        # wrong answer (mfa message the same), retry if allowed
-        args = {
-          message: 'incorrect bank login mfa answer',
-          code: response['http_code'], 
-          response: response
-        }
-        raise SynapsePayRest::Error, args
       elsif response['error_code'] == '10'
-        # new additional MFA question. need to call #answer_mfa with new answer
+        # wrong answer or new additional MFA question
         @mfa_access_token = response['mfa']['access_token']
         @mfa_message      = response['mfa']['message']
         self

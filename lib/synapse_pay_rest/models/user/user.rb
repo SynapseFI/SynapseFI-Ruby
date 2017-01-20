@@ -160,7 +160,7 @@ module SynapsePayRest
           base_documents = BaseDocument.from_response(user, response)
           user.base_documents = base_documents
         end
-        user
+        user.authenticate
       end
 
       # Calls from_response on each member of a response collection.
@@ -175,6 +175,16 @@ module SynapsePayRest
     def initialize(**options)
       options.each { |key, value| instance_variable_set("@#{key}", value) }
       @base_documents  ||= []
+    end
+
+    # Updates the oauth token.
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::User] (self)
+    def authenticate
+      client.users.refresh(user_id: id, payload: payload_for_refresh)
+      self
     end
 
     # Updates the given key value pairs.
@@ -201,7 +211,6 @@ module SynapsePayRest
         raise ArgumentError, 'must provide a key-value pair to update. keys: login,
           read_only, phone_number, legal_name, remove_phone_number, remove_login'
       end
-      authenticate
       response = client.users.update(user_id: id, payload: payload_for_update(options))
       # return an updated user instance
       self.class.from_response(client, response)
@@ -299,16 +308,6 @@ module SynapsePayRest
       raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
 
       update(remove_phone_number: phone_number)
-    end
-
-    # Updates the user's oauth token.
-    # 
-    # @raise [SynapsePayRest::Error]
-    # 
-    # @return [SynapsePayRest::User] (self)
-    def authenticate
-      client.users.refresh(user_id: id, payload: payload_for_refresh)
-      self
     end
 
     # Step 1 of fingerprint registration. Requests a new fingerprint be
@@ -582,7 +581,7 @@ module SynapsePayRest
 
     # Checks if two User instances have same id (different instances of same record).
     def ==(other)
-      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+      other.instance_of?(self.class) && !id.nil? && id == other.id
     end
 
     private

@@ -27,10 +27,9 @@ module SynapsePayRest
     #
     # @return [SynapsePayRest::VirtualDocument] (self)
     #
-    # @todo should raise error if any questions aren't answered yet.
+    # @deprecated
     def submit_kba
       user = base_document.user
-      user.authenticate()
       response = user.client.users.update(user_id: user.id, payload: payload_for_kba)
       user     = User.from_response(user.client, response)
       base_doc = user.base_documents.find { |doc| doc.id == base_document.id }
@@ -38,6 +37,8 @@ module SynapsePayRest
     end
 
     # Maps question set from response to Question objects.
+    # 
+    # @deprecated
     def add_question_set(question_set_data)
       questions = question_set_data['questions'].map do |question_info|
         # re-map question/answer hash structure
@@ -58,6 +59,7 @@ module SynapsePayRest
 
     private
 
+    # @deprecated
     def payload_for_kba
       {
         'documents' => [{

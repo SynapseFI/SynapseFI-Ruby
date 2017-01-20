@@ -28,9 +28,10 @@ module SynapsePayRest
       # @param ip [String]
       # @param note [String] (optional)
       # @param process_in [Integer] (optional) days until processed (default/minimum 1)
-      # @param fee_amount [Float] (optional) fee amount to add to the transaction
-      # @param fee_to_id [String] (optional) node id to which to send the fee (must be SYNAPSE-US)
-      # @param fee_note [String] (optional)
+      # @param fees [Array] (optional) fee amounts to add to the transaction. Example: [{fee: 1.0, note: 'Test Fee', to: {id: 'fee_node_id'}}]
+      # @param fee_amount [Float] (deprecated) fee amount to add to the transaction
+      # @param fee_to_id [String] (deprecated) node id to which to send the fee (must be SYNAPSE-US)
+      # @param fee_note [String] (deprecated)
       # @param supp_id [String] (optional)
       # 
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
@@ -46,12 +47,13 @@ module SynapsePayRest
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'amount must be a Numeric (Integer or Float)' unless amount.is_a?(Numeric)
         [to_type, to_id, currency, ip].each do |arg|
-          raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
+          if options[arg] && !options[arg].is_a?(String)
+            raise ArgumentError, "#{arg} must be a String"
+          end
         end
 
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
           amount: amount, currency: currency, ip: ip, **options)
-        node.user.authenticate
         response = node.user.client.trans.create(
           user_id: node.user.id,
           node_id: node.id,
@@ -73,7 +75,6 @@ module SynapsePayRest
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
-        node.user.authenticate
         response = node.user.client.trans.get(
           user_id: node.user.id,
           node_id: node.id,
@@ -100,7 +101,6 @@ module SynapsePayRest
           end
         end
 
-        node.user.authenticate
         response = node.user.client.trans.get(
           user_id: node.user.id,
           node_id: node.id,
@@ -137,11 +137,13 @@ module SynapsePayRest
           from:          response['from'],
           to:            response['to'],
           to_type:       response['to']['type'],
-          to_id:         response['to']['id'],
-          fee_amount:    response['fees'].last['fee'],
-          fee_note:      response['fees'].last['note'],
-          fee_to_id:     response['fees'].last['to']['id'],
+          to_id:         response['to']['id']
         }
+        if response['fees'].any?
+          args[:fee_amount] = response['fees'].first['fee']
+          args[:fee_note]   = response['fees'].first['note']
+          args[:fee_to_id]  = response['fees'].first['to']['id']
+        end
         self.new(args)
       end
 
@@ -170,6 +172,7 @@ module SynapsePayRest
         other['attachments'] = options[:attachments] if options[:attachments]
         payload['extra']['other'] = other if other.any?
         fees = []
+        # deprecated fee flow
         fee = {}
         fee['fee']  = options[:fee_amount] if options[:fee_amount]
         fee['note'] = options[:fee_note] if options[:fee_note]
@@ -177,6 +180,8 @@ module SynapsePayRest
         fee_to['id'] = options[:fee_to_id] if options[:fee_to_id]
         fee['to'] = fee_to if fee_to.any?
         fees << fee if fee.any?
+        # new fee flow
+        fees = options[:fees] if options[:fees]
         payload['fees'] = fees if fees.any?
         payload
       end
@@ -208,7 +213,7 @@ module SynapsePayRest
         trans_id: id,
         payload: payload
       )
-      self.class.from_response(node, response['trans'])
+      self.class.from_response(node, response)
     end
 
     # Cancels this transaction if it has not already settled.
@@ -227,7 +232,7 @@ module SynapsePayRest
 
     # Checks if two Transaction instances have same id (different instances of same record).
     def ==(other)
-      other.instance_of?(self.class) && !id.nil? &&  id == other.id 
+      other.instance_of?(self.class) && !id.nil? && id == other.id
     end
   end
 end

@@ -90,12 +90,6 @@ class NodesTest < Minitest::Test
     node_id         = nodes_response['nodes'].first['_id']
     delete_response = client.nodes.delete(user_id: user['_id'], node_id: node_id)
 
-    assert_equal delete_response['http_code'], '200'
-    assert_equal delete_response['error_code'], '0'
-
-    # verify node deleted
-    assert_raises SynapsePayRest::Error::NotFound do
-      client.nodes.get(user_id: user['_id'], node_id: node_id)
-    end
+    refute delete_response['is_active']
   end
 end

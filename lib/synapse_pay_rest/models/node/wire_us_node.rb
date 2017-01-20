@@ -4,16 +4,14 @@ module SynapsePayRest
     class << self
       private
 
-      def payload_for_create(nickname:, bank_name:, account_number:, routing_number:,
-        name_on_account:, address:, **options)
+      def payload_for_create(nickname:, account_number:, routing_number:,
+        name_on_account:, **options)
         args = {
           type: 'WIRE-US',
           nickname: nickname,
-          bank_name: bank_name,
           account_number: account_number,
           routing_number: routing_number,
-          name_on_account: name_on_account,
-          address: address
+          name_on_account: name_on_account
         }.merge(options)
         super(args)
       end

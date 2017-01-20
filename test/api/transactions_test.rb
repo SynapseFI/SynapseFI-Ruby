@@ -70,10 +70,8 @@ class TransactionsTest < Minitest::Test
       trans_id: @transactions.first['_id'],
       payload: payload
     )
-    note = update_response['trans']['recent_status']['note']
-
-    assert_equal update_response['http_code'], '200'
-    assert_equal update_response['error_code'], '0'
+    refute_nil update_response['_id']
+    note = update_response['recent_status']['note']
     assert_match /Show me what you got/, note
   end
 

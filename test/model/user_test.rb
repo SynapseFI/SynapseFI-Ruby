@@ -225,7 +225,7 @@ class UserTest < Minitest::Test
 
   def test_register_new_fingerprint
     user = test_user
-    devices = user.register_fingerprint('new_fingerprint')
+    devices = user.register_fingerprint('static_pin')
     assert_instance_of Array, devices
     assert_operator devices.length, :>, 0
 
@@ -292,6 +292,7 @@ class UserTest < Minitest::Test
   end
 
   def test_create_eft_np_node
+    skip 'deprecated'
     user = test_user
     args = test_eft_np_create_args
     args.delete(:user)
@@ -333,6 +334,7 @@ class UserTest < Minitest::Test
   end
 
   def test_create_synapse_np_node
+    skip 'deprecated'
     user = test_user
     args = test_synapse_np_create_args
     args.delete(:user)
