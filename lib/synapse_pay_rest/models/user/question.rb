@@ -1,6 +1,8 @@
 module SynapsePayRest
   # Represents a question that is triggered when a document is returned with
   # status MFA|PENDING.
+  # 
+  # @deprecated
   class Question
     # @!attribute [r] question
     #   @return [String] the text of the question

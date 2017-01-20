@@ -54,7 +54,6 @@ module SynapsePayRest
 
         payload = payload_for_create(node: node, to_type: to_type, to_id: to_id,
           amount: amount, currency: currency, ip: ip, **options)
-        node.user.authenticate
         response = node.user.client.trans.create(
           user_id: node.user.id,
           node_id: node.id,
@@ -76,7 +75,6 @@ module SynapsePayRest
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
-        node.user.authenticate
         response = node.user.client.trans.get(
           user_id: node.user.id,
           node_id: node.id,
@@ -103,7 +101,6 @@ module SynapsePayRest
           end
         end
 
-        node.user.authenticate
         response = node.user.client.trans.get(
           user_id: node.user.id,
           node_id: node.id,

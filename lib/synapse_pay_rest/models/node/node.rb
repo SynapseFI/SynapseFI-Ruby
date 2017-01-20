@@ -33,7 +33,6 @@ module SynapsePayRest
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
-        user.authenticate
         response = user.client.nodes.get(user_id: user.id, node_id: id)
         from_response(user, response)
       end
@@ -61,7 +60,6 @@ module SynapsePayRest
           raise ArgumentError, "type must be nil or in #{NODE_TYPES_TO_CLASSES.keys}"
         end
 
-        user.authenticate
         response = user.client.nodes.get(
           user_id: user.id,
           page: page,

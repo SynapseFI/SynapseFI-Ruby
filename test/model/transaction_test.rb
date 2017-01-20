@@ -31,7 +31,7 @@ class TransactionTest < Minitest::Test
 
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,
-      :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
+      :ip, :latlon, :note, :process_on, :supp_id, :fees,
       :recent_status, :timeline, :from, :to, :to_type, :to_id
     ]
     assert_equal 2, transaction.fees.length
@@ -90,7 +90,7 @@ class TransactionTest < Minitest::Test
 
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,
-      :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
+      :ip, :latlon, :note, :process_on, :supp_id, :fees,
       :recent_status, :timeline, :from, :to, :to_type, :to_id
     ]
     assert_kind_of SynapsePayRest::BaseNode, transaction.node
@@ -184,17 +184,20 @@ class TransactionTest < Minitest::Test
       to_id:   @to_node.id
     )
 
+
     transaction2 = test_transaction(
       node:    @from_node,
       to_type: @to_node.type,
       to_id:   @to_node.id
     )
 
+
     transaction3 = test_transaction(
       node:    @from_node,
       to_type: @to_node.type,
       to_id:   @to_node.id
     )
+
 
     assert_equal 3, @from_node.transactions.length
     assert_instance_of SynapsePayRest::Transaction, @from_node.transactions.first
@@ -204,6 +207,7 @@ class TransactionTest < Minitest::Test
 
     page2 = SynapsePayRest::Transaction.all(node: @from_node, page: 3, per_page: 1)
     assert_equal 1, page2.length
+
 
     refute_includes page1, page2.first
   end
