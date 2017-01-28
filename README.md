@@ -50,8 +50,8 @@ For minor issues, just open a pull request. For larger changes or features, plea
 Make sure these values are set as enviroment variables (using [dotenv](https://github.com/bkeepers/dotenv) for example):
 
 ```
-CLIENT_ID=your_sandbox_client_id
-CLIENT_SECRET=your_sandbox_client_secret
+TEST_CLIENT_ID=your_sandbox_client_id
+TEST_CLIENT_SECRET=your_sandbox_client_secret
 ```
 
 To run all tests, execute:
