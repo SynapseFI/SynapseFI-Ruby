@@ -3,8 +3,8 @@ require 'test_helper'
 class ClientTest < Minitest::Test
   def setup
     @options = {
-      client_id:        ENV.fetch('CLIENT_ID'),
-      client_secret:    ENV.fetch('CLIENT_SECRET'),
+      client_id:        ENV.fetch('TEST_CLIENT_ID'),
+      client_secret:    ENV.fetch('TEST_CLIENT_SECRET'),
       ip_address:       '127.0.0.1',
       fingerprint:      'test_fp',
       development_mode: true
