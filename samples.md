@@ -1,8 +1,16 @@
+# Setup
+
+First, run `cp .env.sample .env` if you haven't already and make sure `CLIENT_ID`, `CLIENT_SECRET`, and `FINGERPRINT` are set.
+
+Start a console that will load this gem and your settings from `.env` automatically.
+
+```
+$ ./bin/console
+```
+
 ## Initialization
 
 ```ruby
-require 'synapse_pay_rest'
-
 args = {
   # synapse client_id
   client_id:        ENV.fetch('CLIENT_ID'),
@@ -272,7 +280,7 @@ base_doc = virtual_doc.base_document
 
 ## Node Methods
 
-#### All Nodes for a User 
+#### All Nodes for a User
 
 ##### a) User#nodes
 
