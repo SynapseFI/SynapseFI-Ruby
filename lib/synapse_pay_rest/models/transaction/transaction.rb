@@ -213,7 +213,7 @@ module SynapsePayRest
         trans_id: id,
         payload: payload
       )
-      self.class.from_response(node, response)
+      self.class.from_response(node, response['trans'])
     end
 
     # Cancels this transaction if it has not already settled.
