@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'dotenv', '~> 2.1.1'
   s.add_development_dependency 'faker', '~> 1.6.6'
   s.add_development_dependency 'simplecov', '~> 0.12.0'
+  s.add_development_dependency 'm', '~> 1.5.0'
 end
