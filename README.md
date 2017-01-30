@@ -47,12 +47,7 @@ For minor issues, just open a pull request. For larger changes or features, plea
 
 ## Running the Test Suite
 
-Make sure these values are set as enviroment variables (using [dotenv](https://github.com/bkeepers/dotenv) for example):
-
-```
-TEST_CLIENT_ID=your_sandbox_client_id
-TEST_CLIENT_SECRET=your_sandbox_client_secret
-```
+If you haven't already, run `cp .env.sample .env` and set the `TEST_CLIENT_ID` and `TEST_CLIENT_SECRET` environment variables.
 
 To run all tests, execute:
 
