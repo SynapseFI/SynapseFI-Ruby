@@ -35,6 +35,47 @@ class TransactionsTest < Minitest::Test
     assert_equal transaction_response['to']['id'], transaction_payload['to']['id']
   end
 
+  def test_transactions_create_with_idempotency_key
+    idempotency_key = Time.now.to_i
+    transaction_payload = {
+      'to' => {
+        'type' => 'SYNAPSE-US',
+        'id'   => @nodes.last['_id']
+      },
+      'amount' => {
+        'amount'   => 55,
+        'currency' => 'USD'
+      },
+      'extra' => {
+        'ip' => '192.168.0.1'
+      }
+    }
+    transaction_response = @client.trans.create(
+      user_id: @user['_id'],
+      node_id: @nodes.first['_id'],
+      payload: transaction_payload,
+      idempotency_key: idempotency_key,
+    )
+
+    # client is not modified
+    refute_includes @client.http_client.headers, 'X-SP-IDEMPOTENCY-KEY'
+
+    refute_nil transaction_response['_id']
+    assert_equal transaction_response['to']['id'], transaction_payload['to']['id']
+
+    error = assert_raises(SynapsePayRest::Error) {
+      @client.trans.create(
+        user_id: @user['_id'],
+        node_id: @nodes.first['_id'],
+        payload: transaction_payload,
+        idempotency_key: idempotency_key,
+      )
+    }
+    assert_kind_of SynapsePayRest::Error::Conflict, error
+    assert_equal '450', error.code
+    assert error.message =~ /Idempotency key already in use./i
+  end
+
   def test_transactions_get
     transactions_response = @client.trans.get(
       user_id: @user['_id'],

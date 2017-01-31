@@ -54,20 +54,20 @@ module SynapsePayRest
     # @todo need to add an error message for various 202 cases (fingerprint, mfa, etc)
     # @todo doesn't do well when there's an html response from nginx for bad gateway/timeout
     ERRORS = {
-      400 => SynapsePayRest::Error::BadRequest,
-      401 => SynapsePayRest::Error::Unauthorized,
-      402 => SynapsePayRest::Error::RequestDeclined,
-      403 => SynapsePayRest::Error::Forbidden,
-      404 => SynapsePayRest::Error::NotFound,
-      406 => SynapsePayRest::Error::NotAcceptable,
-      409 => SynapsePayRest::Error::Conflict,
-      415 => SynapsePayRest::Error::UnsupportedMediaType,
-      422 => SynapsePayRest::Error::UnprocessableEntity,
-      429 => SynapsePayRest::Error::TooManyRequests,
-      500 => SynapsePayRest::Error::InternalServerError,
-      502 => SynapsePayRest::Error::BadGateway,
-      503 => SynapsePayRest::Error::ServiceUnavailable,
-      504 => SynapsePayRest::Error::GatewayTimeout
+      '400' => SynapsePayRest::Error::BadRequest,
+      '401' => SynapsePayRest::Error::Unauthorized,
+      '402' => SynapsePayRest::Error::RequestDeclined,
+      '403' => SynapsePayRest::Error::Forbidden,
+      '404' => SynapsePayRest::Error::NotFound,
+      '406' => SynapsePayRest::Error::NotAcceptable,
+      '409' => SynapsePayRest::Error::Conflict,
+      '415' => SynapsePayRest::Error::UnsupportedMediaType,
+      '422' => SynapsePayRest::Error::UnprocessableEntity,
+      '429' => SynapsePayRest::Error::TooManyRequests,
+      '500' => SynapsePayRest::Error::InternalServerError,
+      '502' => SynapsePayRest::Error::BadGateway,
+      '503' => SynapsePayRest::Error::ServiceUnavailable,
+      '504' => SynapsePayRest::Error::GatewayTimeout
     }.freeze
 
     # The SynapsePay API Error Code
@@ -86,10 +86,10 @@ module SynapsePayRest
       # @param body [String]
       # @param code [Integer]
       # @return [SynapsePayRest::Error]
-      def error_from_response(body, code)
+      def from_response(body)
         # require 'pry'; binding.pry
-        klass = ERRORS[code.to_i] || SynapsePayRest::Error
-        message, error_code = parse_error(body)
+        message, error_code, http_code = parse_error(body)
+        klass = ERRORS[http_code] || SynapsePayRest::Error
         klass.new(message: message, code: error_code, response: body)
       end
 
@@ -97,9 +97,9 @@ module SynapsePayRest
 
       def parse_error(body)
         if body.nil? || body.empty?
-          ['', nil]
+          ['', nil, nil]
         elsif body.is_a?(Hash) && body['error'].is_a?(Hash)
-          [body['error']['en'], body['error_code']]
+          [body['error']['en'], body['error_code'], body['http_code']]
         end
       end
     end

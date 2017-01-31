@@ -21,7 +21,7 @@ module SynapsePayRest
                    client_secret:, **options)
       log_to         = options[:log_to] || 'stdout'
       RestClient.log = log_to if options[:logging]
-      @logging = options[:logging]
+      @logging       = options[:logging]
 
       @config = {
         client_id:     client_id,
@@ -73,11 +73,17 @@ module SynapsePayRest
     # 
     # @param path [String]
     # @param payload [Hash]
-    # 
+    # @param idempotency_key [String] (optional) avoid accidentally performing the same operation twice
+    #
     # @raise [SynapsePayRest::Error] subclass depends on HTTP response
     # 
     # @return [Hash] API response
-    def post(path, payload)
+    def post(path, payload, **options)
+      headers = get_headers
+      if options[:idempotency_key]
+        headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
+      end
+
       response = with_error_handling { RestClient.post(full_url(path), payload.to_json, headers) }
       p 'RESPONSE:', JSON.parse(response) if @logging
       JSON.parse(response)
@@ -133,7 +139,7 @@ module SynapsePayRest
       yield
     rescue RestClient::Exception => e
       body = JSON.parse(e.response.body)
-      raise Error.error_from_response(body, body['error_code'])
+      raise Error.from_response(body)
     end
   end
 end

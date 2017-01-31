@@ -32,7 +32,8 @@ module SynapsePayRest
       # @param fee_to_id [String] (deprecated) node id to which to send the fee (must be SYNAPSE-US)
       # @param fee_note [String] (deprecated)
       # @param supp_id [String] (optional)
-      # 
+      # @param idempotency_key [String] (optional)
+      #
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
       # 
       # @return [SynapsePayRest::Transaction]
@@ -56,7 +57,8 @@ module SynapsePayRest
         response = node.user.client.trans.create(
           user_id: node.user.id,
           node_id: node.id,
-          payload: payload
+          payload: payload,
+          idempotency_key: options[:idempotency_key],
         )
         from_response(node, response)
       end
