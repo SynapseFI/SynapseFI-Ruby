@@ -170,7 +170,7 @@ module SynapsePayRest
       # @note users created this way are not automatically OAuthed
       def multiple_from_response(client, response)
         return [] if response.empty?
-        response.map { |user_data| from_response(client, user_data, oauth: false)}
+        response.map { |user_data| from_response(client.dup, user_data, oauth: false)}
       end
     end
 
