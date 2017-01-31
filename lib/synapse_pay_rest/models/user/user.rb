@@ -4,8 +4,7 @@ module SynapsePayRest
   # is intended to make it easier to use the API without knowing payload formats
   # or knowledge of REST.
   # 
-  # @todo use mixins to remove duplication between Node and BaseNode. May be 
-  #   better to refactor this into a mixin altogether since this shouldn't be instantiated. 
+  # @todo use mixins to remove duplication between Node and BaseNode.
   # @todo reduce duplicated logic between User/BaseNode/Transaction
   class User
     # @!attribute [rw] base_documents
