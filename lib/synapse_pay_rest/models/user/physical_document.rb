@@ -11,19 +11,19 @@ module SynapsePayRest
       # Creates a document instance but does not submit it to the API. Use
       # BaseDocument#create/#update/#add_physical_documents or related methods
       # to submit the document to the API.
-      # 
-      # @note This should only be called on subclasses of Document, not on 
+      #
+      # @note This should only be called on subclasses of Document, not on
       #   Document itself.
-      # 
+      #
       # @param type [String]
       # @param value [String] (optional) padded base64-encoded image ("data:#{mime_type};base64,#{base64}")
       # @param file_path [String] (optional) path to image file
       # @param url [String] (optional) image file url
       # @param byte_stream [String] (optional) byte representation of image
       # @param mime_type [String] (optional) mime type of byte_stream (e.g. 'image/png')
-      # 
+      #
       # @return [SynapsePayRest::Document]
-      # 
+      #
       # @see https://docs.synapsepay.com/docs/user-resources#section-physical-document-types physical document types
       # @see https://docs.synapsepay.com/docs/user-resources#section-social-document-types social document types
       # @see https://docs.synapsepay.com/docs/user-resources#section-virtual-document-types virtual document types
@@ -37,7 +37,7 @@ module SynapsePayRest
         elsif options[:value]
           value = options[:value]
         end
-          
+
         super(type: type, value: value)
       end
 
@@ -46,7 +46,8 @@ module SynapsePayRest
         raise ArgumentError, 'url must be a String' unless url.is_a?(String)
         byte_stream = open(url).read
         begin
-          mime_type = MIME::Types.type_for(url).first.content_type
+          # remove any query params to get the mime type
+          mime_type = MIME::Types.type_for(url.gsub(/\?.*$/, '')).first.content_type
         rescue
           mime_type = nil
         end
@@ -62,8 +63,7 @@ module SynapsePayRest
       # Converts the supplied image byte stream to padded base64
       def byte_stream_to_base64(byte_stream, mime_type)
         base64 = Base64.encode64(byte_stream)
-        padding = "data:#{mime_type};base64,#{base64}"
-        padding + base64
+        "data:#{mime_type};base64,#{base64}"
       end
     end
   end

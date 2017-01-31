@@ -23,6 +23,13 @@ class PhysicalDocumentTest < Minitest::Test
     refute_empty base_doc.physical_documents
   end
 
+  def test_create_with_url_and_query_params
+    url = 'https://cdn.synapsepay.com/static_assets/logo@2x.png?testinh=1234'
+    doc = SynapsePayRest::PhysicalDocument.create(type: 'GOVT_ID', url: url)
+    base_doc = @base_document.add_physical_documents(doc)
+    refute_empty base_doc.physical_documents
+  end
+
   def test_create_with_file_path
     file_path = '/Users/Synapsepay/Documents/libraries/SynapsePayRest-Python/synapse_pay_rest/tests/fixtures/test.png'
     doc = SynapsePayRest::PhysicalDocument.create(type: 'GOVT_ID', file_path: file_path)
