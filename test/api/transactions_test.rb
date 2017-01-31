@@ -57,6 +57,9 @@ class TransactionsTest < Minitest::Test
       idempotency_key: idempotency_key,
     )
 
+    # client is not modified
+    refute_includes @client.http_client.headers, 'X-SP-IDEMPOTENCY-KEY'
+
     refute_nil transaction_response['_id']
     assert_equal transaction_response['to']['id'], transaction_payload['to']['id']
 
