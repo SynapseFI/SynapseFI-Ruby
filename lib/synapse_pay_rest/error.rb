@@ -112,7 +112,7 @@ module SynapsePayRest
     # @return [SynapsePayRest::Error]
     def initialize(message: '', code: nil, response: {})
       super(message)
-      @code = code
+      @code     = code
       @response = response
     end
   end

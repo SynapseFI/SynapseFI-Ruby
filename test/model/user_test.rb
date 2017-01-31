@@ -11,6 +11,8 @@ class UserTest < Minitest::Test
     refute_nil user.id
     # confirm refresh token from API response saved
     refute_nil user.refresh_token
+    # oauthed
+    refute_empty user.client.http_client.config[:oauth_key]
   end
 
   def test_create_user_with_incomplete_info
@@ -65,6 +67,9 @@ class UserTest < Minitest::Test
   def test_all
     user_instances = SynapsePayRest::User.all(client: test_client)
     user_instance  = user_instances.first
+
+    # not oauthed
+    assert_empty user_instance.client.http_client.config[:oauth_key]
     assert_instance_of Array, user_instances
     assert_equal 20, user_instances.length
     assert_instance_of SynapsePayRest::User, user_instance

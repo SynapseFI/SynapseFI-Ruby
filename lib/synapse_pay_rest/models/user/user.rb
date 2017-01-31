@@ -88,6 +88,8 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
       # 
       # @return [Array<SynapsePayRest::User>]
+      # 
+      # @note users created this way are not automatically OAuthed
       def all(client:, page: nil, per_page: nil, query: nil)
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         [page, per_page].each do |arg|
@@ -115,6 +117,8 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
       # 
       # @return [Array<SynapsePayRest::User>]
+      # 
+      # @note users created this way are not automatically OAuthed
       def search(client:, query:, page: nil, per_page: nil)
         all(client: client, query: query, page: page, per_page: per_page)
       end
@@ -140,7 +144,7 @@ module SynapsePayRest
 
       # Constructs a user instance from a user response.
       # @note Do not call directly.
-      def from_response(client, response)
+      def from_response(client, response, oauth: true)
         user = self.new(
           client:            client,
           id:                response['_id'],
@@ -159,13 +163,14 @@ module SynapsePayRest
           base_documents = BaseDocument.from_response(user, response)
           user.base_documents = base_documents
         end
-        user.authenticate
+        oauth ? user.authenticate : user
       end
 
       # Calls from_response on each member of a response collection.
+      # @note users created this way are not automatically OAuthed
       def multiple_from_response(client, response)
         return [] if response.empty?
-        response.map { |user_data| from_response(client, user_data)}
+        response.map { |user_data| from_response(client, user_data, oauth: false)}
       end
     end
 
