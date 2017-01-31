@@ -57,9 +57,9 @@ module SynapsePayRest
     # HTTP response from API
     # 
     # @return [Hash] API response
-    def create(user_id:, node_id:, payload:)
+    def create(user_id:, node_id:, payload:, idempotency_key: nil)
       path = create_transaction_path(user_id: user_id, node_id: node_id)
-      client.post(path, payload)
+      client.post(path, payload, idempotency_key: idempotency_key)
     end
 
     # Sends a PATCH request to /trans endpoint to update a transaction. 

@@ -10,7 +10,8 @@ def test_transaction_create_args(node:,
                                  fee_amount: nil,
                                  fee_note: nil,
                                  fee_to_id: nil,
-                                 fees: nil)
+                                 fees: nil,
+                                 idempotency_key: nil)
   {
     node: node,
     to_type: to_type,
@@ -24,11 +25,12 @@ def test_transaction_create_args(node:,
     fee_amount: fee_amount,
     fee_note: fee_note,
     fee_to_id: fee_to_id,
-    fees: fees
+    fees: fees,
+    idempotency_key: idempotency_key,
   }
 end
 
-def test_transaction(node:, to_type:, to_id:)
-    args = test_transaction_create_args(node: node, to_type: to_type, to_id: to_id)
+def test_transaction(node:, to_type:, to_id:, **options)
+    args = test_transaction_create_args(node: node, to_type: to_type, to_id: to_id, **options)
     SynapsePayRest::Transaction.create(args)
 end

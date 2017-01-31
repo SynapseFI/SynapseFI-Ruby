@@ -40,7 +40,7 @@ class TransactionTest < Minitest::Test
     assert_equal @from_node, transaction.node
     assert_equal @to_node.id, transaction.to['id']
     # verify instance vars readable and mapped to values
-    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id]
+    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id, :idempotency_key]
     args.each do |var_name, value|
       # this gets replaced by process_on
       next if not_returned.include?(var_name) || var_name == :fees
@@ -97,7 +97,7 @@ class TransactionTest < Minitest::Test
     assert_equal @from_node, transaction.node
     assert_equal @to_node.id, transaction.to['id']
     # verify instance vars readable and mapped to values
-    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id]
+    not_returned = [:process_in, :fee_note, :fee_amount, :fee_to_id, :idempotency_key]
     args.each do |var_name, value|
       # this gets replaced by process_on
       next if not_returned.include?(var_name) || var_name == :fees
@@ -254,4 +254,33 @@ class TransactionTest < Minitest::Test
       assert_equal t.timeline.last['status'], 'CANCELED'
     end
   end
+
+  def test_create_with_idempotency_key
+    idempotency_key = Time.now.to_i
+
+    # Create transaction with a unique key.
+    transaction = test_transaction(
+      node: @from_node,
+      to_type: @to_node.type,
+      to_id: @to_node.id,
+      idempotency_key: idempotency_key,
+    )
+
+    assert_kind_of SynapsePayRest::BaseNode, transaction.node
+    assert_equal @from_node, transaction.node
+    assert_equal @to_node.id, transaction.to['id']
+
+    # Now if we try to add it again it will fail.
+    error = assert_raises(SynapsePayRest::Error) {
+      transaction = test_transaction(
+        node: @from_node,
+        to_type: @to_node.type,
+        to_id: @to_node.id,
+        idempotency_key: idempotency_key,
+      )
+    }
+    assert_kind_of SynapsePayRest::Error::ClientError, error
+    assert error.message =~ /Idempotency key already used/i
+  end
+
 end

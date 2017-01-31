@@ -219,7 +219,8 @@ module SynapsePayRest
     # @param fee_note [String] (optional)
     # @param fee_to_id [String] (optional) node id to which to send the fee
     # @param supp_id [String] (optional)
-    # 
+    # @param idempotency_key [String] (optional) avoid accidentally performing the same operation twice
+    #
     # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
     # 
     # @return [SynapsePayRest::Transaction]
