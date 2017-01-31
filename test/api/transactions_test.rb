@@ -41,8 +41,8 @@ class TransactionsTest < Minitest::Test
       node_id: @nodes.first['_id']
     )
 
-    assert_equal transactions_response['error_code'], 0
-    assert_equal transactions_response['http_code'], 200
+    assert_equal '0', transactions_response['error_code']
+    assert_equal '200', transactions_response['http_code']
     assert_operator transactions_response['trans_count'], :>, 0
   end
 
