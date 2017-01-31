@@ -63,8 +63,7 @@ module SynapsePayRest
       # Converts the supplied image byte stream to padded base64
       def byte_stream_to_base64(byte_stream, mime_type)
         base64 = Base64.encode64(byte_stream)
-        padding = "data:#{mime_type};base64,#{base64}"
-        padding + base64
+        "data:#{mime_type};base64,#{base64}"
       end
     end
   end
