@@ -71,8 +71,9 @@ class TransactionsTest < Minitest::Test
         idempotency_key: idempotency_key,
       )
     }
-    assert_kind_of SynapsePayRest::Error::ClientError, error
-    assert error.message =~ /Idempotency key already used/i
+    assert_kind_of SynapsePayRest::Error::Conflict, error
+    assert_equal '450', error.code
+    assert error.message =~ /Idempotency key already in use./i
   end
 
   def test_transactions_get

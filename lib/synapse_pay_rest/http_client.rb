@@ -21,7 +21,7 @@ module SynapsePayRest
                    client_secret:, **options)
       log_to         = options[:log_to] || 'stdout'
       RestClient.log = log_to if options[:logging]
-      @logging = options[:logging]
+      @logging       = options[:logging]
 
       @config = {
         client_id:     client_id,
@@ -139,7 +139,7 @@ module SynapsePayRest
       yield
     rescue RestClient::Exception => e
       body = JSON.parse(e.response.body)
-      raise Error.error_from_response(body, body['error_code'])
+      raise Error.from_response(body)
     end
   end
 end
