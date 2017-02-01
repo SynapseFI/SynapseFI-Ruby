@@ -70,6 +70,8 @@ class UserTest < Minitest::Test
 
     # not oauthed
     assert_empty user_instance.client.http_client.config[:oauth_key]
+    # not same client
+    refute_equal user_instance.client, user_instances[1].client
     assert_instance_of Array, user_instances
     assert_equal 20, user_instances.length
     assert_instance_of SynapsePayRest::User, user_instance
