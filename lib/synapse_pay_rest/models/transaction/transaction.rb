@@ -214,7 +214,13 @@ module SynapsePayRest
         trans_id: id,
         payload: payload
       )
-      self.class.from_response(node, response)
+      if response['trans']
+        # api v3.1
+        self.class.from_response(node, response['trans'])
+      else
+        # api v3.1.1
+        self.class.from_response(node, response)
+      end
     end
 
     # Cancels this transaction if it has not already settled.

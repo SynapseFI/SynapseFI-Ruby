@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
   s.require_paths = ['lib']
 
+  s.required_ruby_version = '>= 2.1.0'
+
   s.add_dependency 'rest-client', '~> 2.0'
 
   s.add_development_dependency 'bundler', '~> 1.10'

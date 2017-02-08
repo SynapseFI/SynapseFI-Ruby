@@ -28,7 +28,7 @@ module SynapsePayRest
     def initialize(client_id:, client_secret:, ip_address:, fingerprint: nil,
                    development_mode: true, **options)
       base_url = if development_mode
-                   'https://sandbox.synapsepay.com/api/3'
+                   'https://uat-api.synapsefi.com/v3.1'
                  else
                    'https://synapsepay.com/api/3'
                  end

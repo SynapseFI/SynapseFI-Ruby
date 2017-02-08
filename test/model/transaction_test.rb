@@ -34,7 +34,7 @@ class TransactionTest < Minitest::Test
       :ip, :latlon, :note, :process_on, :supp_id, :fees,
       :recent_status, :timeline, :from, :to, :to_type, :to_id
     ]
-    assert_equal 2, transaction.fees.length
+    assert_equal 1, transaction.fees.length
     assert transaction.fees.any? { |fee| fee['fee'] == amount }
     assert_kind_of SynapsePayRest::BaseNode, transaction.node
     assert_equal @from_node, transaction.node
@@ -86,7 +86,7 @@ class TransactionTest < Minitest::Test
                                                    node: @from_node)
     assert transaction.fees.any? { |fee| fee['fee'] == amount1 }
     assert transaction.fees.any? { |fee| fee['fee'] == amount2 }
-    assert_equal 3, transaction.fees.length
+    assert_equal 2, transaction.fees.length
 
     other_instance_vars = [
       :node, :amount, :currency, :client_id, :client_name, :created_on,
