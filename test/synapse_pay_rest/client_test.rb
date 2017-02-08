@@ -18,7 +18,7 @@ class ClientTest < Minitest::Test
     @options[:oauth_key] = ''
     assert_equal client.client.config, @options
     assert_equal client.client.config, @options
-    assert_equal client.client.base_url, 'https://sandbox.synapsepay.com/api/3'
+    assert_equal client.client.base_url, 'https://uat-api.synapsefi.com/v3.1'
   end
 
   def test_endpoint_changes_when_development_mode_false
