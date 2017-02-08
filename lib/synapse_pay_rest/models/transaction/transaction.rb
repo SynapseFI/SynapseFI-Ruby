@@ -207,7 +207,7 @@ module SynapsePayRest
     # 
     # @return [Array<SynapsePayRest::Transaction>] (self)
     def add_comment(comment)
-      payload = {'comment': comment}
+      payload = {comment: comment}
       response = node.user.client.trans.update(
         user_id: node.user.id,
         node_id: node.id,
