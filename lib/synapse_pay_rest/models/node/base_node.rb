@@ -13,7 +13,7 @@ module SynapsePayRest
     # @!attribute [rw] user
     #   @return [SynapsePayRest::User] the user to which the node belongs
     # @!attribute [r] permission
-    #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-user-permissions
+    #   @return [String] https://docs.synapsepay.com/docs/node-resources#section-node-permissions
     attr_reader :user, :id, :nickname, :supp_id, :currency, :is_active, :permission,
                 :account_number, :routing_number, :name_on_account, :address,
                 :bank_name, :bank_id, :bank_pw, :account_class, :account_type,
