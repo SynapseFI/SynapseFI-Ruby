@@ -87,8 +87,8 @@ module SynapsePayRest
       # @param code [Integer]
       # @return [SynapsePayRest::Error]
       def from_response(body)
-        # require 'pry'; binding.pry
         message, error_code, http_code = parse_error(body)
+        http_code = http_code.to_s
         klass = ERRORS[http_code] || SynapsePayRest::Error
         klass.new(message: message, code: error_code, response: body)
       end
@@ -100,6 +100,8 @@ module SynapsePayRest
           ['', nil, nil]
         elsif body.is_a?(Hash) && body['error'].is_a?(Hash)
           [body['error']['en'], body['error_code'], body['http_code']]
+        elsif body.is_a?(Hash) && body[:error].is_a?(Hash)
+          [body[:error][:en], body[:error_code], body[:http_code]]
         end
       end
     end

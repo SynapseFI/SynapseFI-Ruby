@@ -138,7 +138,16 @@ module SynapsePayRest
     def with_error_handling
       yield
     rescue RestClient::Exception => e
-      body = JSON.parse(e.response.body)
+      if e.response.headers[:content_type] == 'application/json' 
+        body = JSON.parse(e.response.body)
+      else
+        body = {
+          error: {
+            en: e.response.body
+          },
+          http_code: e.response.code
+        }
+      end
       raise Error.from_response(body)
     end
   end
