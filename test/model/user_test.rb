@@ -230,6 +230,20 @@ class UserTest < Minitest::Test
     refute_includes response['phone_numbers'], phone_number
   end
 
+  def test_remove_legal_name
+    user = test_user
+    legal_name = 'Remove Legal Name'
+    user = user.add_legal_name(legal_name)
+    assert_includes user.legal_names, legal_name
+
+    user = user.remove_legal_name(legal_name)
+    refute_includes user.legal_names, legal_name
+
+    # verify removed in api
+    response = test_client.users.get(user_id: user.id)
+    refute_includes response['legal_names'], legal_name
+  end
+
   def test_register_new_fingerprint
     user = test_user
     devices = user.register_fingerprint('static_pin')

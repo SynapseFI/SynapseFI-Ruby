@@ -199,6 +199,7 @@ module SynapsePayRest
     # @param remove_login [Hash]
     # @param remove_phone_number [String]
     # @param read_only [Boolean]
+    # @param remove_legal_name [String]
     # 
     # @example login/remove_login argument (only email is required)
     #   {
@@ -312,6 +313,19 @@ module SynapsePayRest
       raise ArgumentError, 'phone_number must be a String' unless phone_number.is_a? String
 
       update(remove_phone_number: phone_number)
+    end
+
+    # Removes a legal_name from the user
+    # 
+    # @param legal_name [String]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
+    def remove_legal_name(legal_name)
+      raise ArgumentError, 'legal_name must be a String' unless legal_name.is_a? String
+
+      update(remove_legal_name: legal_name)
     end
 
     # Step 1 of fingerprint registration. Requests a new fingerprint be
@@ -602,6 +616,7 @@ module SynapsePayRest
       payload['update']['legal_name']          = options[:legal_name] if options[:legal_name]
       payload['update']['phone_number']        = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
+      payload['update']['remove_legal_name']   = options[:remove_legal_name] if options[:remove_legal_name]
       payload
     end
 
