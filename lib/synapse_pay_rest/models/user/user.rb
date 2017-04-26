@@ -602,6 +602,7 @@ module SynapsePayRest
       payload['update']['legal_name']          = options[:legal_name] if options[:legal_name]
       payload['update']['phone_number']        = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
+      payload['update']['remove_legal_name']   = options[:remove_legal_name] if options[:remove_legal_name]
       payload
     end
 
