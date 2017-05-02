@@ -32,6 +32,13 @@ module SynapsePayRest
           multiple_from_response(user, response['nodes'])
         end
       end
+      
+      def create_via_bank_login_mfa(user:, access_token:)
+        raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
+        raise ArgumentError, 'access_token must be a String' unless access_token.is_a?(String)
+        payload = payload_for_create_via_bank_login_mfa(access_token: access_token)
+        create_unverified_node(user, payload)
+      end
 
       private
 
@@ -56,6 +63,15 @@ module SynapsePayRest
             'bank_id'   => username,
             'bank_pw'   => password,
             'bank_name' => bank_name
+          }
+        }
+      end
+
+      def payload_for_create_via_bank_login_mfa(access_token:)
+        {
+          'mfa' => {
+              'access_token' => access_token,
+              'message' => ''
           }
         }
       end

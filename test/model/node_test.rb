@@ -232,6 +232,39 @@ class NodeTest < Minitest::Test
     end
   end
 
+  def test_create_ach_us_via_bank_login_with_mfa_questions2
+    args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
+    unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
+
+    assert_instance_of SynapsePayRest::UnverifiedNode, unverified_node
+    refute unverified_node.mfa_verified
+    refute_nil unverified_node.mfa_access_token
+    refute_nil unverified_node.mfa_message
+
+    args = test_ach_us_create_via_bank_login_mfa_args(user: @user, access_token: unverified_node.mfa_access_token)
+    unverified_node2 = SynapsePayRest::AchUsNode.create_via_bank_login_mfa(args)
+    refute unverified_node2.mfa_verified
+
+    unverified_node2.answer_mfa('test_answer')
+    assert unverified_node2.mfa_verified
+
+    other_instance_vars = [:is_active, :bank_long_name,
+                           :permission, :bank_name, :currency, :routing_number,
+                           :account_number, :account_class, :account_type, :type]
+
+    nodes = @user.nodes
+    assert_instance_of Array, nodes
+    assert_equal 2, nodes.length
+
+    nodes.each do |node|
+      assert_instance_of SynapsePayRest::AchUsNode, node
+      assert_equal @user, node.user
+      assert_includes @user.nodes, node
+      # verify instance vars readable and mapped to values
+      other_instance_vars.each { |var| refute_nil node.send(var) }
+    end
+  end
+
   def test_create_ach_us_via_bank_login_with_wrong_mfa_answers
     args = test_ach_us_create_via_bank_login_args(user: @user, username: 'synapse_good')
     unverified_node = SynapsePayRest::AchUsNode.create_via_bank_login(args)
