@@ -30,6 +30,14 @@ def test_ach_us_create_via_bank_login_args(user: test_user,
   }
 end
 
+def test_ach_us_create_via_bank_login_mfa_args(user: test_user,
+                                           access_token: 'fake')
+  {
+    user: user,
+    access_token: access_token
+  }
+end
+
 def test_eft_ind_create_args(user: test_user,
                              nickname: 'Test EFT-IND Account',
                              ifsc: 'BKID0005046',
