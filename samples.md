@@ -89,6 +89,7 @@ user_update_settings = {
   phone_number:         '415-555-5555',                # add a phone number
   legal_name:           'Big Bird',                    # add a legal name
   remove_phone_number:  '555-555-5555',                # remove a phone number
+  remove_legal_name:    'Big Bird',                    # remove a legal name
   remove_login:          nil                           # remove a login email
 }
 
@@ -338,6 +339,27 @@ nodes.mfa_verified
 
 nodes.mfa_message
 # => "Enter the code we texted to your phone number."
+
+nodes = nodes.answer_mfa('test_answer')
+# => [#<SynapsePayRest::AchUsNode>, ...] if successful
+# => SynapsePayRest::UnverifiedNode if additional MFA question (check node.mfa_message)
+# => raises SynapsePayRest::Error if incorrect answer
+
+nodes.mfa_verified
+# => true
+```
+
+##### Verify Bank Login MFA without existing node object
+
+If you are unable to finish MFA in one session with `AchUsNode.create_via_bank_login`, you can create another unverified node with just the access token. Use `AchUsNode.create_via_bank_login_mfa` with the addition of an `access_token` argument.
+
+```ruby
+unverified_node = user.create_ach_us_nodes_via_bank_login_mfa(access_token:)
+```
+
+Then proceed to resolve the MFA question(s) as before:
+
+```ruby
 
 nodes = nodes.answer_mfa('test_answer')
 # => [#<SynapsePayRest::AchUsNode>, ...] if successful
