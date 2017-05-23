@@ -45,6 +45,8 @@ args = {
   per_page: 50,
   # (optional) filters by name/email match
   query:    nil,
+  # (optional) returns all KYC on user
+  full_dehydrate: yes
 }
 
 users = SynapsePayRest::User.all(args)

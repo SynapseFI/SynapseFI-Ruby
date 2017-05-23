@@ -7,7 +7,7 @@ module SynapsePayRest
   class Users
     # Valid optional args for #get
     # @todo Should refactor this to HTTPClient
-    VALID_QUERY_PARAMS = [:query, :page, :per_page].freeze
+    VALID_QUERY_PARAMS = [:query, :page, :per_page, :full_dehydrate].freeze
 
     # @!attribute [rw] client
     #   @return [SynapsePayRest::HTTPClient]
@@ -26,6 +26,7 @@ module SynapsePayRest
     #   users with matching name/email
     # @param page [String,Integer] (optional) response will default to 1
     # @param per_page [String,Integer] (optional) response will default to 20
+    # @param full_dehydrate [String, String] (optional) response will inclulde all KYC info on user
     # 
     # @raise [SynapsePayRest::Error] may return subclasses of error based on 
     # HTTP response from API
@@ -37,8 +38,6 @@ module SynapsePayRest
     # https://github.com/rest-client/rest-client#usage-raw-url
     def get(user_id: nil, **options)
       path = user_path(user_id: user_id)
-
-      return client.get(path) if user_id
 
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
