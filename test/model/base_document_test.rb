@@ -140,7 +140,7 @@ class BaseDocumentTest < Minitest::Test
     social_doc2 = social_doc.dup
     social_doc2.type = 'TWITTER'
     base_doc = base_doc.add_social_documents(social_doc, social_doc2)
-    assert_equal 4, base_doc.social_documents.length
+    assert_equal 5, base_doc.social_documents.length
 
     # verify added in api
     response = test_client.users.get(user_id: base_doc.user.id)

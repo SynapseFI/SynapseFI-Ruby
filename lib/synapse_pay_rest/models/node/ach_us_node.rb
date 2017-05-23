@@ -16,7 +16,7 @@ module SynapsePayRest
       # 
       # @raise [SynapsePayRest::Error]
       # 
-      # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)s
+      # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)
       def create_via_bank_login(user:, bank_name:, username:, password:)
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'bank_name must be a String' unless bank_name.is_a?(String)
@@ -32,6 +32,15 @@ module SynapsePayRest
           multiple_from_response(user, response['nodes'])
         end
       end
+
+      # Creates an ACH-US node via access token, belonging to user supplied.
+      # 
+      # @param user [SynapsePayRest::User] the user to whom the node belongs 
+      # @param access_token [String] user's access token 
+      # 
+      # @raise [SynapsePayRest::Error]
+      # 
+      # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)
       
       def create_via_bank_login_mfa(user:, access_token:)
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)

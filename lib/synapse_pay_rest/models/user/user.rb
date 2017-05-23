@@ -64,15 +64,16 @@ module SynapsePayRest
       # 
       # @param client [SynapsePayRest::Client]
       # @param id [String] id of the user to find
+      # @param full_dehydrate [String] (optional) if 'yes', returns all KYC on user
       # 
       # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
       # 
       # @return [SynapsePayRest::User]
-      def find(client:, id:)
+      def find(client:, id:, full_dehydrate:)
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
-        response = client.users.get(user_id: id)
+        response = client.users.get(user_id: id, full_dehydrate: full_dehydrate)
         from_response(client, response)
       end
 
