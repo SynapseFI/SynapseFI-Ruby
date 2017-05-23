@@ -45,6 +45,8 @@ args = {
   per_page: 50,
   # (optional) filters by name/email match
   query:    nil,
+  # (optional) returns all KYC on user
+  full_dehydrate: yes
 }
 
 users = SynapsePayRest::User.all(args)
@@ -54,7 +56,7 @@ users = SynapsePayRest::User.all(args)
 #### Find a User by User ID
 
 ```ruby
-user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
+user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1', full_dehydrate: 'no')
 # => #<SynapsePayRest::User>
 ```
 
