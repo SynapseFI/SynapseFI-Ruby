@@ -27,6 +27,59 @@ module SynapsePayRest
         from_response(response)
       end
 
+      # Queries the API for a subscription by id and returns a Subscription instances if found.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param id [String] id of the subscription to find
+      # 
+      # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
+      # 
+      # @return [SynapsePayRest::Subscription]
+      def find(client:, id:)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
+        response = client.subscriptions.get(subscription_id: id)
+        from_response(response)
+      end
+
+      # Queries the API for all subscriptions and returns them as Subscription instances.
+      # 
+      # @param client [SynapsePayRest::Client]
+      # @param page [String,Integer] (optional) response will default to 1
+      # @param per_page [String,Integer] (optional) response will default to 20
+      # 
+      # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+      # 
+      # @return [Array<SynapsePayRest::Subscription>]
+      def all(client:, page: nil, per_page: nil)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        [page, per_page].each do |arg|
+          if arg && (!arg.is_a?(Integer) || arg < 1)
+            raise ArgumentError, "#{arg} must be nil or an Integer >= 1"
+          end
+        end
+        response = client.subscriptions.get(page: page, per_page: per_page)
+        multiple_from_response(response['subscriptions'])
+      end
+
+      # Updates the given key value pairs.
+      # 
+      # @param is_active [boolean]
+      # @param url [String]
+      # @param scope [Array<String>]
+      #
+      # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+      # 
+      # @return [SynapsePayRest::Subscription] new instance corresponding to same API record
+      def update(client:, is_active:, url:, scope:, **options)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        
+        payload = payload_for_update(is_active: is_active, url: url, scope: scope, **options)
+        response = client.subscriptions.update(payload: payload)
+        from_response(response)
+      end
+
       # Creates a Subscription from a response hash.
       # 
       # @note Shouldn't need to call this directly.
@@ -38,6 +91,12 @@ module SynapsePayRest
           url:           response['url']
         }
         self.new(args)
+      end
+
+      # Calls from_response on each member of a response collection.
+      def multiple_from_response(response)
+        return [] if response.empty?
+        response.map { |subscription_data| from_response(subscription_data)}
       end
 
       private
