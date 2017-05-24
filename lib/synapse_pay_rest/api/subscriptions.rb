@@ -48,7 +48,7 @@ module SynapsePayRest
     # @todo Probably should use CGI or RestClient's param builder instead of
     # rolling our own, probably error-prone and untested version
     # https://github.com/rest-client/rest-client#usage-raw-url
-    def get(subscription_id:, **options)
+    def get(subscription_id: nil, **options)
       path = subscription_path(subscription_id: subscription_id)
 
       params = VALID_QUERY_PARAMS.map do |p|
@@ -59,6 +59,22 @@ module SynapsePayRest
       client.get(path)
     end
 
+    # Sends a PATCH request to /subscriptions endpoint, updating the current subscription
+    # and returns the response.
+    # 
+    # @param payload [Hash]
+    # @see https://docs.synapsepay.com/docs/update-subscription payload structure for
+    #   updating subscription
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
+    def update(subscription_id:, payload:)
+      path = subscription_path(subscription_id: subscription_id)
+      client.patch(path, payload)
+    end
+    
     private
 
     def subscription_path(subscription_id: nil)

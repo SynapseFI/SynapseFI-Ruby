@@ -83,3 +83,10 @@ def test_client_with_two_transactions
   )
   {client: client, user: user, nodes: nodes, transactions: [trans1, trans2]}
 end
+
+def test_client_with_one_subscription
+  client = test_client
+  payload  = test_subscription_payload
+  subscription = client.subscriptions.create(payload: payload)
+  {client: client, subscription: subscription}
+end
