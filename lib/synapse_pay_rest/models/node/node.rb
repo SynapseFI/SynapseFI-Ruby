@@ -25,15 +25,16 @@ module SynapsePayRest
       # 
       # @param user [SynapsePayRest::User]
       # @param id [String] id of the node to find
+      # @param full_dehydrate [String] (optional) if 'yes', returns all trans data on node
       # 
       # @raise [SynapsePayRest::Error] if HTTP error
       # 
       # @return [SynapsePayRest::BaseNode] subclass depends on node type
-      def find(user:, id:)
+      def find(user:, id:, full_dehydrate:)
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
-        response = user.client.nodes.get(user_id: user.id, node_id: id)
+        response = user.client.nodes.get(user_id: user.id, node_id: id, full_dehydrate: full_dehydrate)
         from_response(user, response)
       end
 

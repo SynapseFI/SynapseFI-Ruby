@@ -311,7 +311,8 @@ node = user.find_node(id: '1a3efa1231as2f')
 ##### b) Node#find
 
 ```ruby
-node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
+# full_dehydrate: 'yes' (optional) returns all trans data on node
+node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f', full_dehydrate: 'no')
 # => #<SynapsePayRest::EftNpNode>
 ```
 
