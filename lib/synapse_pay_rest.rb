@@ -6,6 +6,7 @@ require 'synapse_pay_rest/http_client'
 require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
 require 'synapse_pay_rest/api/transactions'
+require 'synapse_pay_rest/api/subscriptions'
 
 # general library classes
 require 'synapse_pay_rest/error'
@@ -51,6 +52,9 @@ require 'synapse_pay_rest/models/node/node'
 
 # transaction-related classes
 require 'synapse_pay_rest/models/transaction/transaction'
+
+# subscription-related classes
+require 'synapse_pay_rest/models/subscription/subscription'
 
 # Namespace for all SynapsePayRest classes and modules
 module SynapsePayRest
