@@ -11,7 +11,9 @@ module SynapsePayRest
     #   @return [SynapsePayRest::Nodes]
     # @!attribute [rw] transactions
     #   @return [SynapsePayRest::Transactions]
-    attr_accessor :http_client, :users, :nodes, :transactions
+    # @!attribute [rw] subscriptions
+    #   @return [SynapsePayRest::Subscriptions]
+    attr_accessor :http_client, :users, :nodes, :transactions, :subscriptions
 
     # Alias for #transactions (legacy name)
     alias_method :trans, :transactions
@@ -39,9 +41,10 @@ module SynapsePayRest
                                      fingerprint: fingerprint,
                                      ip_address: ip_address,
                                      **options)
-      @users        = Users.new @http_client
-      @nodes        = Nodes.new @http_client
-      @transactions = Transactions.new @http_client
+      @users         = Users.new @http_client
+      @nodes         = Nodes.new @http_client
+      @transactions  = Transactions.new @http_client
+      @subscriptions = Subscriptions.new @http_client
     end
   end
 end

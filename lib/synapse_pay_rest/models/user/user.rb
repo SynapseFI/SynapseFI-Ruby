@@ -13,7 +13,7 @@ module SynapsePayRest
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-user-permissions
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
                 :supp_id, :is_business, :cip_tag, :permission
-    attr_accessor :refresh_token, :base_documents
+    attr_accessor :refresh_token, :base_documents, :oauth_key, :expires_in
 
     class << self
       # Creates a new user in the API and returns a User instance from the
@@ -69,7 +69,7 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
       # 
       # @return [SynapsePayRest::User]
-      def find(client:, id:, full_dehydrate:)
+      def find(client:, id:, full_dehydrate:'no')
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
@@ -186,9 +186,11 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::User] (self)
+    # @return [SynapsePayRest::User] (new instance with updated tokens)
     def authenticate
-      client.users.refresh(user_id: id, payload: payload_for_refresh)
+      response        = client.users.refresh(user_id: id, payload: payload_for_refresh)
+      self.oauth_key  = response['oauth_key']
+      self.expires_in = response['expires_in']
       self
     end
 

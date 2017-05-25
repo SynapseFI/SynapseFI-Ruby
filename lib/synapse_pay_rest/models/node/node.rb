@@ -30,7 +30,7 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if HTTP error
       # 
       # @return [SynapsePayRest::BaseNode] subclass depends on node type
-      def find(user:, id:, full_dehydrate:)
+      def find(user:, id:, full_dehydrate: 'no')
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
