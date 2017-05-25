@@ -3,7 +3,7 @@ module SynapsePayRest
   class Nodes
     # Valid optional args for #get
     # @todo Should refactor this to HTTPClient
-    VALID_QUERY_PARAMS = [:page, :per_page, :type].freeze
+    VALID_QUERY_PARAMS = [:page, :per_page, :type, :full_dehydrate].freeze
 
     # @!attribute [rw] client
     #   @return [SynapsePayRest::HTTPClient]
@@ -23,6 +23,7 @@ module SynapsePayRest
     # @param per_page [String,Integer] (optional) response will default to 20
     # @param type [String] (optional)
     # @see https://docs.synapsepay.com/docs/node-resources node types
+    # @param full_dehydrate [String, String] (optional) response will inclulde all transaction data
     # 
     # @raise [SynapsePayRest::Error] may return subclasses of error based on 
     # HTTP response from API

@@ -8,7 +8,7 @@ class NodeTest < Minitest::Test
   def test_find
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
-    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
+    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id, full_dehydrate: 'no')
 
     assert_equal nodes.first.id, node.id
     assert_kind_of SynapsePayRest::BaseNode, node
