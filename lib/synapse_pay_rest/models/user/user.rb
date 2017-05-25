@@ -69,7 +69,7 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
       # 
       # @return [SynapsePayRest::User]
-      def find(client:, id:, full_dehydrate:)
+      def find(client:, id:, full_dehydrate:'no')
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
