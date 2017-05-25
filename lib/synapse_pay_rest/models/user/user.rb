@@ -13,7 +13,7 @@ module SynapsePayRest
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-user-permissions
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
                 :supp_id, :is_business, :cip_tag, :permission
-    attr_accessor :refresh_token, :base_documents, :oauth_key, :expires_in
+    attr_accessor :refresh_token, :base_documents, :oauth_key, :expires_in, :flag, :ips
 
     class << self
       # Creates a new user in the API and returns a User instance from the
@@ -157,8 +157,18 @@ module SynapsePayRest
           note:              response['extra']['note'],
           supp_id:           response['extra']['supp_id'],
           is_business:       response['extra']['is_business'],
-          cip_tag:           response['extra']['cip_tag']
+          cip_tag:           response['extra']['cip_tag'],
+          flag:              nil,
+          ips:               nil
         )
+
+        if response.has_key?('flag')
+          user.flag = response['flag']
+        end
+
+        if response.has_key?('ips')
+          user.ips = response['ips']
+        end
 
         unless response['documents'].empty?
           base_documents = BaseDocument.from_response(user, response)

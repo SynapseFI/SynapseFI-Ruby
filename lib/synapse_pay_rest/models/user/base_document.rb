@@ -10,10 +10,10 @@ module SynapsePayRest
                   :entity_scope, :birth_day, :birth_month, :birth_year,
                   :address_street, :address_city, :address_subdivision,
                   :address_postal_code, :address_country_code, 
-                  :physical_documents, :social_documents, :virtual_documents
+                  :physical_documents, :social_documents, :virtual_documents, :alias, :day, :month, :year, :screening_results
     attr_reader :id, :permission_scope
 
-    class << self
+    class << self 
       # Creates a new base document in the API belonging to the provided user and
       # returns a base document instance from the response data.
       # 
@@ -95,6 +95,7 @@ module SynapsePayRest
       # @note Do not call directly (it's automatic).
       def from_response(user, response)
         base_documents_data = response['documents']
+        other_keys = base_documents_data[0].keys
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
             doc = PhysicalDocument.from_response(data)
@@ -113,14 +114,22 @@ module SynapsePayRest
           end
 
           args = {
-            user:               user,
-            id:                 base_document_data['id'],
-            name:               base_document_data['name'],
-            permission_scope:   base_document_data['permission_scope'],
-            physical_documents: physical_docs,
-            social_documents:   social_docs,
-            virtual_documents:  virtual_docs
+            user:                 user,
+            id:                   base_document_data['id'],
+            name:                 base_document_data['name'],
+            permission_scope:     base_document_data['permission_scope'],
+            physical_documents:   physical_docs,
+            social_documents:     social_docs,
+            virtual_documents:    virtual_docs
           }
+
+          for key in other_keys do
+            if base_documents_data[0].has_key?(key)
+              args[key] = base_documents_data[0][key]
+            end
+          end
+
+          print args
 
           base_doc = self.new(args)
           [physical_docs, social_docs, virtual_docs].flatten.each do |doc|
@@ -131,6 +140,8 @@ module SynapsePayRest
         end
       end
     end
+
+    #
 
     # @note It should not be necessary to call this method directly.
     def initialize(**args)
