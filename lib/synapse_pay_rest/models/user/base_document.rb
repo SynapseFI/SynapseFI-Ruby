@@ -98,6 +98,7 @@ module SynapsePayRest
         other_keys = base_documents_data[0].keys
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
+            print physical_docs
             doc = PhysicalDocument.from_response(data)
             doc.base_document = self
             doc
@@ -128,8 +129,6 @@ module SynapsePayRest
               args[key] = base_documents_data[0][key]
             end
           end
-
-          print args
 
           base_doc = self.new(args)
           [physical_docs, social_docs, virtual_docs].flatten.each do |doc|

@@ -159,7 +159,9 @@ module SynapsePayRest
           is_business:       response['extra']['is_business'],
           cip_tag:           response['extra']['cip_tag'],
           flag:              nil,
-          ips:               nil
+          ips:               nil,
+          oauth_key:         nil,
+          expires_in:        nil
         )
 
         if response.has_key?('flag')

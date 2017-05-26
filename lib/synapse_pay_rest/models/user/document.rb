@@ -8,7 +8,7 @@ module SynapsePayRest
     #   @return [SynapsePayRest::BaseDocument] the base document to which the document belongs
     # @!attribute [rw] status
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-document-status
-    attr_accessor :base_document, :status, :id, :type, :value, :last_updated
+    attr_accessor :base_document, :status, :id, :type, :value, :last_updated, :document_value
 
     class << self
       # Creates a document instance but does not submit it to the API. Use
@@ -36,11 +36,15 @@ module SynapsePayRest
       # @note Do not call this method. It is used by child classes only.
       def from_response(data)
         self.new(
-          type:         data['document_type'],
-          id:           data['id'],
-          status:       data['status'],
-          last_updated: data['last_updated']
+          type:           data['document_type'],
+          id:             data['id'],
+          status:         data['status'],
+          last_updated:   data['last_updated']
         )
+
+        # if data.has_key?('document_value')
+        #   self.document_value = data['document_value']
+        # end
       end
     end
 
