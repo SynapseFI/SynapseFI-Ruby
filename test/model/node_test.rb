@@ -473,8 +473,6 @@ class NodeTest < Minitest::Test
   def test_create_wire_us_node
     args = test_wire_us_create_args(user: @user)
     node = SynapsePayRest::WireUsNode.create(args)
-    print ''
-    puts node.inspect
 
     other_instance_vars = [:is_active, :permission, :type, :bank_name]
     not_returned = [:name_on_account, :correspondent_routing_number,
