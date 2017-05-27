@@ -8,7 +8,7 @@ class NodeTest < Minitest::Test
   def test_find
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
-    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id, full_dehydrate: 'no')
+    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
     assert_equal nodes.first.id, node.id
     assert_kind_of SynapsePayRest::BaseNode, node
@@ -450,7 +450,7 @@ class NodeTest < Minitest::Test
   def test_create_wire_int_node
     args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
-
+ 
     other_instance_vars = [:is_active, :permission, :type]
     not_returned = [:name_on_account, :correspondent_routing_number,
                     :correspondent_bank_name, :correspondent_address, :swift,
@@ -473,6 +473,8 @@ class NodeTest < Minitest::Test
   def test_create_wire_us_node
     args = test_wire_us_create_args(user: @user)
     node = SynapsePayRest::WireUsNode.create(args)
+    print ''
+    puts node.inspect
 
     other_instance_vars = [:is_active, :permission, :type, :bank_name]
     not_returned = [:name_on_account, :correspondent_routing_number,

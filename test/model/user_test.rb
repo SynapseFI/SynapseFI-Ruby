@@ -60,7 +60,7 @@ class UserTest < Minitest::Test
 
   def test_find_user_with_non_existent_id_raises_error
     assert_raises SynapsePayRest::Error::NotFound do
-      SynapsePayRest::User.find(client: test_client, id: '1234567890', full_dehydrate: 'no')
+      SynapsePayRest::User.find(client: test_client, id: '1234567890')
     end
   end
 

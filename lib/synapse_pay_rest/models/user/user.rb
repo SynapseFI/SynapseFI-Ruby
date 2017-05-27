@@ -69,11 +69,12 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if user not found or invalid client credentials
       # 
       # @return [SynapsePayRest::User]
-      def find(client:, id:, full_dehydrate:)
+      def find(client:, id:, full_dehydrate: 'no')
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         response = client.users.get(user_id: id, full_dehydrate: full_dehydrate)
+        
         from_response(client, response)
       end
 
@@ -317,6 +318,19 @@ module SynapsePayRest
       update(phone_number: phone_number)
     end
 
+    # Add a legal_name to the user.
+    # 
+    # @param legal_name [String]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
+    def add_legal_name(legal_name)
+      raise ArgumentError, 'legal_name must be a String' unless legal_name.is_a? String
+
+      update(legal_name: legal_name)
+    end
+
     # Removes a phone_number from the user.
     # 
     # @param phone_number [String]
@@ -453,6 +467,18 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)
     def create_ach_us_nodes_via_bank_login(**options)
       AchUsNode.create_via_bank_login(user: self, **options)
+    end
+
+    # Creates an Unverified Node Class node via access token, belonging to this user
+    # 
+    # @param access_token [String] 
+    # @see https://synapsepay.com/api/v3/institutions/show valid bank_name options
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [<SynapsePayRest::UnverifiedNode>] 
+    def create_ach_us_nodes_via_bank_login_mfa(**options)
+      AchUsNode.create_via_bank_login_mfa(user: self, **options)
     end
 
     # Creates an EFT-IND node.

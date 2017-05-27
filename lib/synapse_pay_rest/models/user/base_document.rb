@@ -10,7 +10,8 @@ module SynapsePayRest
                   :entity_scope, :birth_day, :birth_month, :birth_year,
                   :address_street, :address_city, :address_subdivision,
                   :address_postal_code, :address_country_code, 
-                  :physical_documents, :social_documents, :virtual_documents, :alias, :day, :month, :year, :screening_results
+                  :physical_documents, :social_documents, :virtual_documents, 
+                  :alias, :day, :month, :year, :screening_results
     attr_reader :id, :permission_scope
 
     class << self 
@@ -66,28 +67,27 @@ module SynapsePayRest
           raise ArgumentError, 'virtual_documents be empty or contain VirtualDocument(s)'
         end
 
-        base_document = BaseDocument.new(
-          user: user, 
-          email: email, 
-          phone_number: phone_number,
-          ip: ip, 
-          name: name, 
-          aka: aka, 
-          entity_type: entity_type,
-          entity_scope: entity_scope, 
-          birth_day: birth_day, 
-          birth_month: birth_month, 
-          birth_year: birth_year, 
-          address_street: address_street, 
-          address_city: address_city,
-          address_subdivision: address_subdivision, 
-          address_postal_code:  address_postal_code,
-          address_country_code: address_country_code, 
-          physical_documents: physical_documents,
-          social_documents: social_documents, 
-          virtual_documents: virtual_documents
-        )
-
+        base_document = BaseDocument.new({
+          "user"=>user,
+          "email"=>email,
+          "phone_number"=>phone_number,
+          "ip"=>ip,
+          "name"=>name,
+          "aka"=>aka,
+          "entity_type"=>entity_type,
+          "entity_scope"=>entity_scope,
+          "birth_day"=>birth_day,
+          "birth_month"=>birth_month,
+          "birth_year"=>birth_year,
+          "address_street"=>address_street,
+          "address_city"=>address_city,
+          "address_subdivision"=>address_subdivision,
+          "address_postal_code"=>address_postal_code,
+          "address_country_code"=>address_country_code,
+          "physical_documents"=>physical_documents,
+          "social_documents"=>social_documents,
+          "virtual_documents"=>virtual_documents
+        })
         base_document.submit
       end
 
@@ -95,10 +95,8 @@ module SynapsePayRest
       # @note Do not call directly (it's automatic).
       def from_response(user, response)
         base_documents_data = response['documents']
-        other_keys = base_documents_data[0].keys
         base_documents_data.map do |base_document_data|
           physical_docs = base_document_data['physical_docs'].map do |data|
-            print physical_docs
             doc = PhysicalDocument.from_response(data)
             doc.base_document = self
             doc
@@ -115,18 +113,39 @@ module SynapsePayRest
           end
 
           args = {
-            user:                 user,
-            id:                   base_document_data['id'],
-            name:                 base_document_data['name'],
-            permission_scope:     base_document_data['permission_scope'],
-            physical_documents:   physical_docs,
-            social_documents:     social_docs,
-            virtual_documents:    virtual_docs
+            "user"=>user,
+            "id"=>base_document_data['id'],
+            "name"=>base_document_data['name'],
+            "permission_scope"=>base_document_data['permission_scope'],
+            "address_city"=>nil,
+            "address_country_code"=>nil,
+            "address_postal_code"=>nil,
+            "address_street"=>nil,
+            "address_subdivision"=>nil,
+            "alias"=>nil,
+            "day"=>nil,
+            "email"=>nil,
+            "entity_scope"=>nil,
+            "entity_type"=>nil,
+            "ip"=>nil,
+            "month"=>nil,
+            "phone_number"=>nil,
+            "year"=>nil,
+            "screening_results"=>nil,
+            "physical_documents"=>physical_docs,
+            "social_documents"=>social_docs,
+            "virtual_documents"=>virtual_docs
           }
 
+          other_keys = base_document_data.keys
+
+          ["physical_docs", "social_docs", "virtual_docs"].each do |item|
+            other_keys.delete_at(other_keys.index(item))
+          end
+
           for key in other_keys do
-            if base_documents_data[0].has_key?(key)
-              args[key] = base_documents_data[0][key]
+            if base_document_data.has_key?(key)
+              args[key] = base_document_data[key]
             end
           end
 
@@ -140,31 +159,30 @@ module SynapsePayRest
       end
     end
 
-    #
-
     # @note It should not be necessary to call this method directly.
-    def initialize(**args)
-      @id                   = args[:id]
-      @permission_scope     = args[:permission_scope]
-      @user                 = args[:user]
-      @email                = args[:email]
-      @phone_number         = args[:phone_number]
-      @ip                   = args[:ip]
-      @name                 = args[:name]
-      @aka                  = args[:aka]
-      @entity_type          = args[:entity_type]
-      @entity_scope         = args[:entity_scope]
-      @birth_day            = args[:birth_day]
-      @birth_month          = args[:birth_month]
-      @birth_year           = args[:birth_year]
-      @address_street       = args[:address_street]
-      @address_city         = args[:address_city]
-      @address_subdivision  = args[:address_subdivision]
-      @address_postal_code  = args[:address_postal_code]
-      @address_country_code = args[:address_country_code]
-      @physical_documents   = args[:physical_documents]
-      @social_documents     = args[:social_documents]
-      @virtual_documents    = args[:virtual_documents]
+    def initialize(args)
+      @id                   = args["id"]
+      @permission_scope     = args["permission_scope"]
+      @user                 = args["user"]
+      @email                = args["email"]
+      @phone_number         = args["phone_number"]
+      @ip                   = args["ip"]
+      @name                 = args["name"]
+      @aka                  = args["aka"]
+      @entity_type          = args["entity_type"]
+      @entity_scope         = args["entity_scope"]
+      @birth_day            = args["birth_day"]
+      @birth_month          = args["birth_month"]
+      @birth_year           = args["birth_year"]
+      @address_street       = args["address_street"]
+      @address_city         = args["address_city"]
+      @address_subdivision  = args["address_subdivision"]
+      @address_postal_code  = args["address_postal_code"]
+      @address_country_code = args["address_country_code"]
+      @screening_results    = args["screening_results"]
+      @physical_documents   = args["physical_documents"]
+      @social_documents     = args["social_documents"]
+      @virtual_documents    = args["virtual_documents"]
     end
 
     # Submits the base document to the API.
