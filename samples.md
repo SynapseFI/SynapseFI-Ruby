@@ -57,7 +57,7 @@ users = SynapsePayRest::User.all(args)
 user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
 # => #<SynapsePayRest::User>
 
-# optional
+# full_dehydrate: 'yes' optional, see docs for response example (https://docs.synapsepay.com/docs/get-user)
 user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1', full_dehydrate: 'yes')
 ```
 
