@@ -1,5 +1,5 @@
 module SynapsePayRest
-  # Represents a subscription record and holds methods for creating subsription instances
+  # Represents a subscription record and holds methods for creating subscription instances
   # from API calls. This is built on top of the SynapsePayRest::Subscription class and
   # is intended to make it easier to use the API without knowing payload formats
   # or knowledge of REST.
@@ -21,6 +21,8 @@ module SynapsePayRest
       # @return [SynapsePayRest::Subscription]
       def create(client:, url:, scope:, **options)
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        raise ArgumentError, 'url must be a String' unless url.is_a? String
+        raise ArgumentError, 'scope must be an Array' unless scope.is_a? Array
         
         payload = payload_for_create(url: url, scope: scope, **options)
         response = client.subscriptions.create(payload: payload)
