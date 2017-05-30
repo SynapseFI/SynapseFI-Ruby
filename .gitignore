@@ -41,5 +41,5 @@ Gemfile.lock
 
 ## ENV variables and other secrets
 .env
-test.txt
 *.yml
+test.rb
