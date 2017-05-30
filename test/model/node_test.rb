@@ -454,12 +454,12 @@ class NodeTest < Minitest::Test
     other_instance_vars = [:is_active, :permission, :type]
     not_returned = [:name_on_account, :correspondent_routing_number,
                     :correspondent_bank_name, :correspondent_address, :swift,
-                    :correspondent_swift]
+                    :correspondent_swift, :bank_name, :routing_number]
     assert_instance_of SynapsePayRest::WireIntNode, node
     assert_includes @user.nodes, node
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
-      if [:account_number, :routing_number].include? var_name
+      if [:account_number].include? var_name
         refute_nil node.send(var_name)
       elsif not_returned.include? var_name
         next
