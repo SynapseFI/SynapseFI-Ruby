@@ -8,7 +8,7 @@ class NodeTest < Minitest::Test
   def test_find
     args = test_ach_us_create_via_bank_login_args(user: @user)
     nodes = SynapsePayRest::AchUsNode.create_via_bank_login(args)
-    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id, full_dehydrate: 'no')
+    node = SynapsePayRest::Node.find(user: @user, id: nodes.first.id)
 
     assert_equal nodes.first.id, node.id
     assert_kind_of SynapsePayRest::BaseNode, node
@@ -450,16 +450,16 @@ class NodeTest < Minitest::Test
   def test_create_wire_int_node
     args = test_wire_int_create_args(user: @user)
     node = SynapsePayRest::WireIntNode.create(args)
-
+ 
     other_instance_vars = [:is_active, :permission, :type]
     not_returned = [:name_on_account, :correspondent_routing_number,
                     :correspondent_bank_name, :correspondent_address, :swift,
-                    :correspondent_swift]
+                    :correspondent_swift, :bank_name, :routing_number]
     assert_instance_of SynapsePayRest::WireIntNode, node
     assert_includes @user.nodes, node
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
-      if [:account_number, :routing_number].include? var_name
+      if [:account_number].include? var_name
         refute_nil node.send(var_name)
       elsif not_returned.include? var_name
         next

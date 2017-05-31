@@ -13,7 +13,7 @@ module SynapsePayRest
     #   @return [String] https://docs.synapsepay.com/docs/user-resources#section-user-permissions
     attr_reader :client, :id, :logins, :phone_numbers, :legal_names, :note, 
                 :supp_id, :is_business, :cip_tag, :permission
-    attr_accessor :refresh_token, :base_documents, :oauth_key, :expires_in
+    attr_accessor :refresh_token, :base_documents, :oauth_key, :expires_in, :flag, :ips
 
     class << self
       # Creates a new user in the API and returns a User instance from the
@@ -74,6 +74,7 @@ module SynapsePayRest
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         response = client.users.get(user_id: id, full_dehydrate: full_dehydrate)
+        
         from_response(client, response)
       end
 
@@ -157,8 +158,20 @@ module SynapsePayRest
           note:              response['extra']['note'],
           supp_id:           response['extra']['supp_id'],
           is_business:       response['extra']['is_business'],
-          cip_tag:           response['extra']['cip_tag']
+          cip_tag:           response['extra']['cip_tag'],
+          flag:              nil,
+          ips:               nil,
+          oauth_key:         nil,
+          expires_in:        nil
         )
+
+        if response.has_key?('flag')
+          user.flag = response['flag']
+        end
+
+        if response.has_key?('ips')
+          user.ips = response['ips']
+        end
 
         unless response['documents'].empty?
           base_documents = BaseDocument.from_response(user, response)
@@ -305,6 +318,19 @@ module SynapsePayRest
       update(phone_number: phone_number)
     end
 
+    # Add a legal_name to the user.
+    # 
+    # @param legal_name [String]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::User] new instance corresponding to same API record
+    def add_legal_name(legal_name)
+      raise ArgumentError, 'legal_name must be a String' unless legal_name.is_a? String
+
+      update(legal_name: legal_name)
+    end
+
     # Removes a phone_number from the user.
     # 
     # @param phone_number [String]
@@ -441,6 +467,18 @@ module SynapsePayRest
     # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)
     def create_ach_us_nodes_via_bank_login(**options)
       AchUsNode.create_via_bank_login(user: self, **options)
+    end
+
+    # Creates an Unverified Node Class node via access token, belonging to this user
+    # 
+    # @param access_token [String] 
+    # @see https://synapsepay.com/api/v3/institutions/show valid bank_name options
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [<SynapsePayRest::UnverifiedNode>] 
+    def create_ach_us_nodes_via_bank_login_mfa(**options)
+      AchUsNode.create_via_bank_login_mfa(user: self, **options)
     end
 
     # Creates an EFT-IND node.

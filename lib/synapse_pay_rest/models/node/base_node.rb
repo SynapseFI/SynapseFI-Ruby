@@ -88,10 +88,12 @@ module SynapsePayRest
           account_class:   response['info']['class'],
           account_number:  response['info']['account_num'],
           routing_number:  response['info']['routing_num'],
-          account_id:      response['info']['account_id'],
           address:         response['info']['address'],
           swift:           response['info']['swift'],
-          ifsc:            response['info']['ifsc']
+          ifsc:            response['info']['ifsc'],
+          user_info:       nil,
+          transactions:    nil,
+          timeline:        nil
         }
 
         if response['info']['correspondent_info']
@@ -119,6 +121,21 @@ module SynapsePayRest
           extra = response['extra']
           args[:supp_id]            = extra['supp_id']
           args[:gateway_restricted] = extra['gateway_restricted']
+        end
+
+        if response['extra']['other']['info']
+          user_info = response['extra']['other']['info']
+          args[:user_info] = user_info
+        end
+
+        if response['extra']['other']['transactions']
+          transactions = response['extra']['transactions']
+          args[:transactions] = transactions
+        end
+
+        if response['timeline']
+          timeline = response['timeline']
+          args[:timeline] = timeline
         end
 
         self.new(**args)

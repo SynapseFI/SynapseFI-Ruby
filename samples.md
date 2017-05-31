@@ -44,9 +44,7 @@ args = {
   # (optional) uses API default of 20 unless specified, larger values take longer
   per_page: 50,
   # (optional) filters by name/email match
-  query:    nil,
-  # (optional) returns all KYC on user
-  full_dehydrate: yes
+  query:    nil
 }
 
 users = SynapsePayRest::User.all(args)
@@ -56,8 +54,11 @@ users = SynapsePayRest::User.all(args)
 #### Find a User by User ID
 
 ```ruby
-user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1', full_dehydrate: 'no')
+user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
 # => #<SynapsePayRest::User>
+
+# full_dehydrate: 'yes' optional, see docs for response example (https://docs.synapsepay.com/docs/get-user)
+user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1', full_dehydrate: 'yes')
 ```
 
 #### Search for a User by Name/Email
@@ -311,9 +312,12 @@ node = user.find_node(id: '1a3efa1231as2f')
 ##### b) Node#find
 
 ```ruby
-# full_dehydrate: 'yes' (optional) returns all trans data on node
-node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f', full_dehydrate: 'no')
+node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
 # => #<SynapsePayRest::EftNpNode>
+
+# full_dehydrate: 'yes' (optional) returns all trans data on node
+node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f', full_dehydrate: 'yes')
+
 ```
 
 #### Create ACH-US Node(s) via Bank Login

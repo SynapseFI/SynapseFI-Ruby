@@ -33,15 +33,14 @@ module SynapsePayRest
         end
       end
 
-      # Creates an ACH-US node via access token, belonging to user supplied.
+      # Creates an Unverified Node Class node via access token, belonging to this user
       # 
       # @param user [SynapsePayRest::User] the user to whom the node belongs 
       # @param access_token [String] user's access token 
       # 
       # @raise [SynapsePayRest::Error]
       # 
-      # @return [Array<SynapsePayRest::AchUsNode>] may contain multiple nodes (checking and/or savings)
-      
+      # @return [<SynapsePayRest::UnverifiedNode>]
       def create_via_bank_login_mfa(user:, access_token:)
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         raise ArgumentError, 'access_token must be a String' unless access_token.is_a?(String)
