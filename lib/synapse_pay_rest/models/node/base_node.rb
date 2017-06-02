@@ -75,25 +75,27 @@ module SynapsePayRest
       # @note Not meant to be accessed directly on BaseNode but through children.
       def from_response(user, response)
         args = {
-          user:            user,
-          type:            response['type'],
-          id:              response['_id'],
-          is_active:       response['is_active'],
-          permission:      response['allowed'],
-          nickname:        response['info']['nickname'],
-          name_on_account: response['info']['name_on_account'],
-          bank_long_name:  response['info']['bank_long_name'],
-          bank_name:       response['info']['bank_name'],
-          account_type:    response['info']['type'],
-          account_class:   response['info']['class'],
-          account_number:  response['info']['account_num'],
-          routing_number:  response['info']['routing_num'],
-          address:         response['info']['address'],
-          swift:           response['info']['swift'],
-          ifsc:            response['info']['ifsc'],
-          user_info:       nil,
-          transactions:    nil,
-          timeline:        nil
+          user:                 user,
+          type:                 response['type'],
+          id:                   response['_id'],
+          is_active:            response['is_active'],
+          permission:           response['allowed'],
+          nickname:             response['info']['nickname'],
+          name_on_account:      response['info']['name_on_account'],
+          bank_long_name:       response['info']['bank_long_name'],
+          bank_name:            response['info']['bank_name'],
+          account_type:         response['info']['type'],
+          account_class:        response['info']['class'],
+          account_number:       response['info']['account_num'],
+          routing_number:       response['info']['routing_num'],
+          address:              response['info']['address'],
+          swift:                response['info']['swift'],
+          ifsc:                 response['info']['ifsc'],
+          user_info:            nil,
+          transactions:         nil,
+          timeline:             nil,
+          billpay_info:         nil,
+          transaction_analysis: nil
         }
 
         if response['info']['correspondent_info']
@@ -123,14 +125,18 @@ module SynapsePayRest
           args[:gateway_restricted] = extra['gateway_restricted']
         end
 
-        if response['extra']['other']['info']
+        if response['extra']['other']
           user_info = response['extra']['other']['info']
           args[:user_info] = user_info
-        end
 
-        if response['extra']['other']['transactions']
-          transactions = response['extra']['transactions']
+          transactions = response['extra']['other']['transactions']
           args[:transactions] = transactions
+
+          billpay_info = response['extra']['other']['billpay_info']
+          args[:billpay_info] = billpay_info
+
+          transaction_analysis = response['extra']['other']['transaction_analysis']
+          args[:transaction_analysis] = transaction_analysis
         end
 
         if response['timeline']

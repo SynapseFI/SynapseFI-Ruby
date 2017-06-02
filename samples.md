@@ -250,38 +250,6 @@ base_doc = base_doc.add_virtual_documents(virtual_doc)
 # => #<SynapsePayRest::BaseDocument>
 ```
 
-##### Answer KBA Questions for Virtual Document
-
-If a Virtual Document is returned with status **SUBMITTED|MFA_PENDING**, you will need to have the user answer some questions:
-
-```ruby
-# check for any virtual docs with SUBMITTED|MFA_PENDING status
-virtual_doc = base_doc.virtual_documents.find do |doc|
-  doc.status == 'SUBMITTED|MFA_PENDING'
-end
-
-question_set = virtual_doc.question_set
-# => [#<SynapsePayRest::Question>, #<SynapsePayRest::Question>, ...]
-
-# follow this flow for each question in question_set
-question = question_set.first
-
-question_text = question.question
-# => "Which one of the following zip codes is associated with you?"
-
-question.answers
-# => {1=>"49230", 2=>"49209", 3=>"49268", 4=>"49532", 5=>"None Of The Above"}
-
-question.choice = 1
-
-# when finished answering all questions in question_set
-virtual_doc = virtual_doc.submit_kba
-
-# reassign this if you need the updated base doc
-base_doc = virtual_doc.base_document
-```
-
-
 ## Node Methods
 
 #### All Nodes for a User
