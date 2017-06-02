@@ -59,6 +59,199 @@ user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1')
 
 # full_dehydrate: 'yes' optional, see docs for response example (https://docs.synapsepay.com/docs/get-user)
 user = SynapsePayRest::User.find(client: client, id: '57e97ab786c2737f4ccd4dc1', full_dehydrate: 'yes')
+
+sample full_dehydrate response (**note some fields will be 'nil' if full_dehydrate='no'):
+
+#<SynapsePayRest: : User: 0x007fc2a2a62d88@client=
+@base_url="https://uat-api.synapsefi.com/v3.1">>>,
+@id="592f1dfa8384540026e39a95",
+@refresh_token="refresh_WHGKxqmtJLlTrEgoS316dVAz24YD0jIfQCc7iBRF",
+@logins=[
+  {
+    "email"=>"sankaet@synapsepay.com",
+    "scope"=>"READ_AND_WRITE"
+  }
+],
+@phone_numbers=[
+  "sankaet@synapsepay.com",
+  "901.942.8167"
+],
+@legal_names=[
+  "Test User"
+],
+@permission="LOCKED",
+@note="Interesting user",
+@supp_id="122eddfgbeafrfvbbb",
+@is_business=false,
+@cip_tag=1,
+@flag="NOT-FLAGGED",
+@ips=[
+  "127.0.0.1"
+],
+@oauth_key="oauth_V5jGaJMcwK4lrk0WFIZEqQXhRNPpoCSOxdUL30D9",
+@expires_in="7200",
+@base_documents=[
+  #<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0@id="189d2fc37c1ee5694aa62f302bcd7c0efaae2c0229f45bfc8bb3470f6f7ab92a",
+  @permission_scope="SEND|RECEIVE|1000|DAILY",
+  @user=#<SynapsePayRest: : User: 0x007fc2a2a62d88...>,
+  @email="test@test.com",
+  @phone_number="111-111-1111",
+  @ip="::1",
+  @name="Charlie Brown",
+  @aka=nil,
+  @entity_type="M",
+  @entity_scope="Arts & Entertainment",
+  @birth_day=nil,
+  @birth_month=nil,
+  @birth_year=nil,
+  @address_street="170 St Germain Ave",
+  @address_city="SF",
+  @address_subdivision="CA",
+  @address_postal_code="94114",
+  @address_country_code="US",
+  @screening_results={
+    "561"=>"NO_MATCH",
+    "aucl"=>"NO_MATCH",
+    "concern_location"=>"NO_MATCH",
+    "dpl"=>"NO_MATCH",
+    "dtc"=>"NO_MATCH",
+    "el"=>"NO_MATCH",
+    "eucl"=>"NO_MATCH",
+    "fatf_non_cooperative_jurisdiction"=>"NO_MATCH",
+    "fbi_bank_robbers"=>"NO_MATCH",
+    "fbi_counter_intelligence"=>"NO_MATCH",
+    "fbi_crimes_against_children"=>"NO_MATCH",
+    "fbi_criminal_enterprise_investigations"=>"NO_MATCH",
+    "fbi_cyber"=>"NO_MATCH",
+    "fbi_domestic_terrorism"=>"NO_MATCH",
+    "fbi_human_trafficking"=>"NO_MATCH",
+    "fbi_murders"=>"NO_MATCH",
+    "fbi_violent_crimes"=>"NO_MATCH",
+    "fbi_wanted_terrorists"=>"NO_MATCH",
+    "fbi_white_collar"=>"NO_MATCH",
+    "fincen_red_list"=>"NO_MATCH",
+    "fse"=>"NO_MATCH",
+    "fto_sanctions"=>"NO_MATCH",
+    "futures_sanctions"=>"NO_MATCH",
+    "hkma_sanctions"=>"NO_MATCH",
+    "hm_treasury_sanctions"=>"NO_MATCH",
+    "isn"=>"NO_MATCH",
+    "mas_sanctions"=>"NO_MATCH",
+    "monitored_location"=>"NO_MATCH",
+    "ns-isa"=>"NO_MATCH",
+    "ofac_561_list"=>"NO_MATCH",
+    "ofac_eo13645"=>"NO_MATCH",
+    "ofac_fse"=>"NO_MATCH",
+    "ofac_fse_ir"=>"NO_MATCH",
+    "ofac_fse_sy"=>"NO_MATCH",
+    "ofac_isa"=>"NO_MATCH",
+    "ofac_ns_isa"=>"NO_MATCH",
+    "ofac_plc"=>"NO_MATCH",
+    "ofac_sdn"=>"NO_MATCH",
+    "ofac_ssi"=>"NO_MATCH",
+    "ofac_syria"=>"NO_MATCH",
+    "ofac_ukraine_eo13662"=>"NO_MATCH",
+    "osfi"=>"NO_MATCH",
+    "pep"=>"NO_MATCH",
+    "plc"=>"NO_MATCH",
+    "primary_concern"=>"NO_MATCH",
+    "sdn"=>"NO_MATCH",
+    "ssi"=>"NO_MATCH",
+    "tel_sanctions"=>"NO_MATCH",
+    "ukcl"=>"NO_MATCH",
+    "uvl"=>"NO_MATCH"
+  },
+  @physical_documents=[
+    #<SynapsePayRest: : PhysicalDocument: 0x007fc2a2a61cf8@type="GOVT_ID",
+    @id="b86950c0d9fd878ef38d5193a9c2d88c2957b5817556cce2fbab2201de40baa4",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090771,
+    @document_value="https://cdn.synapsepay.com/uploads/2017/05/31/10591ef0-463a-11e7-bf7d-0230add36792.gif",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>
+  ],
+  @social_documents=[
+    #<SynapsePayRest: : SocialDocument: 0x007fc2a2a61820@type="FACEBOOK",
+    @id="0c32234c59b71311b0f3057635c206e6a0d39ecef0bc336fe2bb375c92968117",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090773,
+    @document_value="https://www.facebook.com/sankaet",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>,
+    #<SynapsePayRest: : SocialDocument: 0x007fc2a2a613c0@type="EMAIL",
+    @id="2c45158f6431ca874bbe82f63d5905567854dde4d8b81539944e5779e5eee741",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090773,
+    @document_value="test@test.com",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>,
+    #<SynapsePayRest: : SocialDocument: 0x007fc2a2a61190@type="IP",
+    @id="28d9177b22c127d9a51d8903893864accf6e553ac326704a4c0d585eaad2516a",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090773,
+    @document_value="::1",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>,
+    #<SynapsePayRest: : SocialDocument: 0x007fc2a2a60d58@type="PHONE_NUMBER",
+    @id="54522fd5748d2dedeab0034a09f91f6e1337ea2181f6aaea0515b61cd52cb576",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090773,
+    @document_value="111-111-1111",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>
+  ],
+  @virtual_documents=[
+    #<SynapsePayRest: : VirtualDocument: 0x007fc2a2a608a8@type="SSN",
+    @id="ee596c2896dddc19b76c07a184fe7d3cf5a04b8e94b9108190cac7890739017f",
+    @value=nil,
+    @status="SUBMITTED|VALID",
+    @last_updated=1496260090768,
+    @document_value="2222",
+    @meta={
+      "matches"=>{
+        "address"=>"not_found",
+        "dob"=>"not_found",
+        "identification"=>"not_found"
+      }
+    },
+    @base_document=#<SynapsePayRest: : BaseDocument: 0x007fc2a2a601f0...>>
+  ]>
+]>
 ```
 
 #### Search for a User by Name/Email
@@ -286,6 +479,516 @@ node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f')
 # full_dehydrate: 'yes' (optional) returns all trans data on node
 node = SynapsePayRest::Node.find(user: user, id: '1a3efa1231as2f', full_dehydrate: 'yes')
 
+sample full_dehydrate response (**note some fields will be 'nil' if full_dehydrate='no'):
+
+#<SynapsePayRest: : AchUsNode: 0x007f867e14b070@user=#<SynapsePayRest: 
+@type="ACH-US",
+@id="592f1e2d603964002f1b07f7",
+@is_active=true,
+@permission="LOCKED",
+@nickname="SynapsePay Test Checking Account - 8901",
+@name_on_account=" ",
+@bank_long_name="CAPITAL ONE N.A.",
+@bank_name="CAPITAL ONE N.A.",
+@account_type="BUSINESS",
+@account_class="CHECKING",
+@account_number="12345678901",
+@routing_number="031176110",
+@address="PO BOX 85139, RICHMOND, VA, US",
+@swift=nil,
+@ifsc=nil,
+@user_info={
+  "account_id"=>"fd52bf51f0354335e634940139a006ef91d7e789c665857e9821656d18e7d012",
+  "addresses"=>[
+    {
+      "city"=>"San Francisco",
+      "state"=>"CA",
+      "street"=>"3880 Castro St.",
+      "zipcode"=>"94110"
+    }
+  ],
+  "dob"=>"",
+  "emails"=>[
+    "test@synapsepay.com"
+  ],
+  "names"=>[
+    "Test User"
+  ],
+  "phone_numbers"=>[
+    "3937100934",
+    "8958226574"
+  ]
+},
+@transactions=[
+  {
+    "amount"=>233.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>212.0,
+    "date"=>1397534400.0,
+    "debit"=>false,
+    "description"=>"CITI CARDS PPD:45367278097783",
+    "pending"=>false
+  },
+  {
+    "amount"=>317.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>8970.0,
+    "date"=>1431835200.0,
+    "debit"=>true,
+    "description"=>"BK OF AM CRD PPD:42489094108452",
+    "pending"=>true
+  },
+  {
+    "amount"=>24.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>4779.0,
+    "date"=>1404187200.0,
+    "debit"=>false,
+    "description"=>"CAPITAL ONE MOBILE PMT PPD:66159733534606",
+    "pending"=>true
+  },
+  {
+    "amount"=>53.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>7000.0,
+    "date"=>1458100800.0,
+    "debit"=>false,
+    "description"=>"WF Credit Card PPD:15303774887880",
+    "pending"=>true
+  },
+  {
+    "amount"=>65.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>6400.0,
+    "date"=>1466222400.0,
+    "debit"=>false,
+    "description"=>"CITI CARDS PPD:33669559685208",
+    "pending"=>true
+  },
+  {
+    "amount"=>185.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>5726.0,
+    "date"=>1400040000.0,
+    "debit"=>true,
+    "description"=>"WF Credit Card PPD:12781852781478",
+    "pending"=>true
+  },
+  {
+    "amount"=>445.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>9337.0,
+    "date"=>1457928000.0,
+    "debit"=>true,
+    "description"=>"BK OF AM CRD PPD:66137868896167",
+    "pending"=>false
+  },
+  {
+    "amount"=>39.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>6460.0,
+    "date"=>1450242000.0,
+    "debit"=>false,
+    "description"=>"BK OF AM CRD PPD:63039795698738",
+    "pending"=>false
+  },
+  {
+    "amount"=>400.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>1732.0,
+    "date"=>1481950800.0,
+    "debit"=>false,
+    "description"=>"AMEX EPAYMENT PPD:18493222207835",
+    "pending"=>true
+  },
+  {
+    "amount"=>112.0,
+    "category"=>{
+      "primary"=>"",
+      "subcategory"=>""
+    },
+    "current_balance"=>7645.0,
+    "date"=>1417928400.0,
+    "debit"=>true,
+    "description"=>"AMEX EPAYMENT PPD:28509869400705",
+    "pending"=>false
+  }
+],
+@timeline=[
+  {
+    "date"=>1496260140541,
+    "note"=>"Node created."
+  },
+  {
+    "date"=>1496260142204,
+    "note"=>"Unable to send micro deposits as node allowed is not CREDIT."
+  },
+  {
+    "date"=>1496260420927,
+    "note"=>"User locked. Thus node 'allowed' changed to LOCKED."
+  }
+],
+@billpay_info=[
+  {
+    "amount"=>160.05,
+    "duration"=>{
+      "meta"=>{
+        "remaining_payments"=>71,
+        "total_payments"=>72
+      },
+      "type"=>"SPECIFIC_NUM_PAYMENTS"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_week"=>"TUESDAY"
+      },
+      "type"=>"WEEKLY"
+    },
+    "frequency_meta"=>{
+      "day_of_week"=>{
+        "type"=>"Weekday",
+        "value"=>2
+      }
+    },
+    "frequency_type"=>"WEEKLY",
+    "memo"=>"Payment to card ending 9990",
+    "pay_from_account"=>"254648bb700253e150a428597b8f7c0ca33e2e94257f79ecfa2a00feb422c5e2",
+    "payee"=>{
+      "account_number"=>"2507657178062104",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"1716 Castro St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"JP Morgan Chase",
+      "nickname"=>"Payment to Joe's United card",
+      "phone_number"=>"6424032051"
+    },
+    "start_date"=>"2017-11-07"
+  },
+  {
+    "amount"=>185.59,
+    "duration"=>{
+      "type"=>"UNTIL_STOPPED"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_month"=>24
+      },
+      "type"=>"EVERY_THREE_MONTHS"
+    },
+    "frequency_meta"=>{
+      "day_of_month"=>24
+    },
+    "frequency_type"=>"EVERY_THREE_MONTHS",
+    "memo"=>"Payment to card ending 7770",
+    "pay_from_account"=>"fd52bf51f0354335e634940139a006ef91d7e789c665857e9821656d18e7d012",
+    "payee"=>{
+      "account_number"=>"8609794239422625",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"7097 Castro St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"American Express",
+      "nickname"=>"Old AMEX card",
+      "phone_number"=>"3716731060"
+    },
+    "start_date"=>"2017-06-07"
+  },
+  {
+    "amount"=>165.0,
+    "duration"=>{
+      "type"=>"UNTIL_STOPPED"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_week"=>"THURSDAY"
+      },
+      "type"=>"EVERY_TWO_WEEKS"
+    },
+    "frequency_meta"=>{
+      "day_of_week"=>{
+        "type"=>"Weekday",
+        "value"=>4
+      }
+    },
+    "frequency_type"=>"EVERY_TWO_WEEKS",
+    "memo"=>"Monthly Cable Payment",
+    "pay_from_account"=>"254648bb700253e150a428597b8f7c0ca33e2e94257f79ecfa2a00feb422c5e2",
+    "payee"=>{
+      "account_number"=>"5673862380187205",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"5205 Castro St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"Comcast Cable",
+      "nickname"=>"cable at rental home",
+      "phone_number"=>"9219013643"
+    },
+    "start_date"=>"2017-08-07"
+  },
+  {
+    "amount"=>42.46,
+    "duration"=>{
+      "meta"=>{
+        "remaining_payments"=>27,
+        "total_payments"=>87
+      },
+      "type"=>"SPECIFIC_NUM_PAYMENTS"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_month"=>21
+      },
+      "type"=>"EVERY_MONTH"
+    },
+    "frequency_meta"=>{
+      "day_of_month"=>21
+    },
+    "frequency_type"=>"EVERY_MONTH",
+    "memo"=>"Payment to card ending 7770",
+    "pay_from_account"=>"fd52bf51f0354335e634940139a006ef91d7e789c665857e9821656d18e7d012",
+    "payee"=>{
+      "account_number"=>"2867054184778944",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"1022 Fulton St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"American Express",
+      "nickname"=>"Old AMEX card",
+      "phone_number"=>"4737047304"
+    },
+    "start_date"=>"2017-05-05"
+  },
+  {
+    "amount"=>233.8,
+    "duration"=>{
+      "meta"=>{
+        "remaining_payments"=>0,
+        "total_payments"=>19
+      },
+      "type"=>"SPECIFIC_NUM_PAYMENTS"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_week"=>"THURSDAY"
+      },
+      "type"=>"EVERY_TWO_WEEKS"
+    },
+    "frequency_meta"=>{
+      "day_of_week"=>{
+        "type"=>"Weekday",
+        "value"=>4
+      }
+    },
+    "frequency_type"=>"EVERY_TWO_WEEKS",
+    "memo"=>"Payment to card ending 7770",
+    "pay_from_account"=>"254648bb700253e150a428597b8f7c0ca33e2e94257f79ecfa2a00feb422c5e2",
+    "payee"=>{
+      "account_number"=>"4712680119518462",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"2681 Market St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"American Express",
+      "nickname"=>"Old AMEX card",
+      "phone_number"=>"4424477394"
+    },
+    "start_date"=>"2017-12-14"
+  },
+  {
+    "amount"=>32.64,
+    "duration"=>{
+      "meta"=>{
+        "end_date"=>"2020-08-08"
+      },
+      "type"=>"SPECIFIC_DATE"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_month"=>25
+      },
+      "type"=>"EVERY_SIX_MONTHS"
+    },
+    "frequency_meta"=>{
+      "day_of_month"=>25
+    },
+    "frequency_type"=>"EVERY_SIX_MONTHS",
+    "memo"=>"Payment to card ending 9990",
+    "pay_from_account"=>"254648bb700253e150a428597b8f7c0ca33e2e94257f79ecfa2a00feb422c5e2",
+    "payee"=>{
+      "account_number"=>"3709218202306843",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"6950 Market St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"JP Morgan Chase",
+      "nickname"=>"Payment to Joe's United card",
+      "phone_number"=>"4914993163"
+    },
+    "start_date"=>"2017-09-13"
+  },
+  {
+    "amount"=>64.89,
+    "duration"=>{
+      "meta"=>{
+        "remaining_payments"=>23,
+        "total_payments"=>78
+      },
+      "type"=>"SPECIFIC_NUM_PAYMENTS"
+    },
+    "frequency"=>{
+      "meta"=>{
+        "day_of_month"=>20
+      },
+      "type"=>"EVERY_MONTH"
+    },
+    "frequency_meta"=>{
+      "day_of_month"=>20
+    },
+    "frequency_type"=>"EVERY_MONTH",
+    "memo"=>"Payment to card ending 9990",
+    "pay_from_account"=>"fd52bf51f0354335e634940139a006ef91d7e789c665857e9821656d18e7d012",
+    "payee"=>{
+      "account_number"=>"1271243682221748",
+      "address"=>{
+        "city"=>"San Francisco",
+        "state"=>"CA",
+        "street"=>"4047 Market St.",
+        "zipcode"=>"94110"
+      },
+      "email"=>"example@email.com",
+      "entity_type"=>"BUSINESS",
+      "name"=>"JP Morgan Chase",
+      "nickname"=>"Payment to Joe's United card",
+      "phone_number"=>"3260578586"
+    },
+    "start_date"=>"2017-10-05"
+  }
+],
+@transaction_analysis={
+  "bank_fees"=>[
+    {
+      "avg_amount"=>3.75,
+      "avg_days_between_fees"=>35.0,
+      "avg_monthly_amount"=>3.75,
+      "days"=>35.0,
+      "fee"=>"ATM",
+      "fee_frequency_per_month"=>1.0
+    },
+    {
+      "avg_amount"=>362.5,
+      "avg_days_between_fees"=>3.0,
+      "avg_monthly_amount"=>3443.74,
+      "days"=>393.0,
+      "fee"=>"Wire",
+      "fee_frequency_per_month"=>12.2
+    }
+  ],
+  "cash"=>{
+    "cash_in"=>{
+      "avg_days_between_deposits"=>60.0,
+      "avg_deposit"=>500.31,
+      "avg_deposits_per_month"=>2.1,
+      "avg_monthly_deposit"=>875.54,
+      "days"=>361.0
+    },
+    "cash_out"=>{
+      "avg_days_between_withdrawals"=>14.2,
+      "avg_monthly_withdrawal"=>1677.96,
+      "avg_withdrawal"=>645.37,
+      "avg_withdrawals_per_month"=>3.2,
+      "days"=>356.0
+    }
+  },
+  "credit_cards"=>[
+    {
+      "avg_days_between_payments"=>10.0,
+      "avg_monthly_payment"=>810.56,
+      "avg_payment"=>311.76,
+      "avg_payments_per_month"=>2.8,
+      "days"=>120.0,
+      "issuer"=>"Citi"
+    },
+    {
+      "avg_days_between_payments"=>13.9,
+      "avg_monthly_payment"=>399.66,
+      "avg_payment"=>165.38,
+      "avg_payments_per_month"=>2.8,
+      "days"=>390.0,
+      "issuer"=>"Discover"
+    }
+  ],
+  "days"=>393.0,
+  "income_streams"=>[
+    {
+      "active"=>false,
+      "days"=>56.0,
+      "monthly_frequency"=>2.0,
+      "monthly_income"=>105.39,
+      "name"=>"THE COLLEGE OF NJ",
+      "period"=>14.0,
+      "period_income"=>63.24
+    }
+  ]
+},
+@email_match="match",
+@name_match="no_match",
+@phonenumber_match="no_match",
+@balance="800.00",
+@currency="USD",
+@supp_id="",
+@gateway_restricted=nil>
 ```
 
 #### Create ACH-US Node(s) via Bank Login
