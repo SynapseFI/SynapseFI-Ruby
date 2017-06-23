@@ -84,7 +84,7 @@ module SynapsePayRest
         headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
       end
 
-      response = with_error_handling { RestClient.post(full_url(path), payload.to_json, headers) }
+      response = with_error_handling { RestClient::Request.execute(:method => :post, :url => full_url(path), :payload => payload.to_json, :headers => headers, :timeout => 300) }
       p 'RESPONSE:', JSON.parse(response) if @logging
       JSON.parse(response)
     end
@@ -98,7 +98,7 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def patch(path, payload)
-      response = with_error_handling { RestClient.patch(full_url(path), payload.to_json, headers) }
+      response = with_error_handling { RestClient::Request.execute(:method => :patch, :url => full_url(path), :payload => payload.to_json, :headers => headers, :timeout => 300) }
       p 'RESPONSE:', JSON.parse(response) if @logging
       JSON.parse(response)
     end
@@ -137,6 +137,14 @@ module SynapsePayRest
 
     def with_error_handling
       yield
+    rescue RestClient::Exceptions::Timeout
+      body = {
+        error: {
+          en: "Request Timeout"
+        },
+        http_code: 504
+      }
+      raise Error.from_response(body)
     rescue RestClient::Exception => e
       if e.response.headers[:content_type] == 'application/json' 
         body = JSON.parse(e.response.body)
