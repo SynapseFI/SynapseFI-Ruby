@@ -31,6 +31,7 @@ require 'synapse_pay_rest/models/node/base_node'
 require 'synapse_pay_rest/models/node/synapse_us_node.rb'
 require 'synapse_pay_rest/models/node/synapse_ind_node.rb'
 require 'synapse_pay_rest/models/node/synapse_np_node.rb'
+require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
 # ach
 require 'synapse_pay_rest/models/node/ach_us_node.rb'
 require 'synapse_pay_rest/models/node/unverified_node.rb'

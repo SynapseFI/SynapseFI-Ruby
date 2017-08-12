@@ -581,6 +581,19 @@ module SynapsePayRest
       SynapseUsNode.create(user: self, **options)
     end
 
+    # Creates a SUBACCOUNT-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::SubaccountUsNode]
+    def create_synapse_us_node(**options)
+      SubaccountUsNode.create(user: self, **options)
+    end
+
     # Creates a TRIUMPH-SUBACCOUNT-US node.
     # 
     # @param nickname [String] nickname for the node
