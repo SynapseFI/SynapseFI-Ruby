@@ -590,7 +590,7 @@ module SynapsePayRest
     # @raise [SynapsePayRest::Error]
     # 
     # @return [SynapsePayRest::SubaccountUsNode]
-    def create_synapse_us_node(**options)
+    def create_subaccount_us_node(**options)
       SubaccountUsNode.create(user: self, **options)
     end
 
