@@ -49,6 +49,14 @@ class NodesTest < Minitest::Test
     assert_equal add_response['error_code'], '0'
 
     node_id = add_response['nodes'][0]['_id']
+    
+    resend_micro_response = @client.nodes.resend_micro(
+      user_id: @user['_id'],
+      node_id: node_id
+    )
+    
+    refute_nil resend_micro_response['_id']
+    
     microdeposit_response = @client.nodes.verify(
       user_id: @user['_id'],
       node_id: node_id,
