@@ -168,6 +168,8 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::AchUsNode.create(args)
 
     assert_equal 'CREDIT', node.permission
+    # resend microdeposits
+    node = node.resend_micro()
     # verify microdeposits
     node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permission
