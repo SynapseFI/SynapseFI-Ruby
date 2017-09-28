@@ -45,6 +45,7 @@ module SynapsePayRest
       @nodes         = Nodes.new @http_client
       @transactions  = Transactions.new @http_client
       @subscriptions = Subscriptions.new @http_client
+      @institutions = Institutions.new @http_client
     end
   end
 end
