@@ -56,6 +56,9 @@ require 'synapse_pay_rest/models/transaction/transaction'
 # subscription-related classes
 require 'synapse_pay_rest/models/subscription/subscription'
 
+# institution-related classes
+require 'synapse_pay_rest/models/institution/institution'
+
 # Namespace for all SynapsePayRest classes and modules
 module SynapsePayRest
   # Modifies the default method to print a warning when deprecated constants
