@@ -373,6 +373,15 @@ class UserTest < Minitest::Test
     assert_includes user.nodes, node
   end
 
+  def test_create_subaccount_us_node
+    user = test_user
+    args = test_subaccount_us_create_args
+    args.delete(:user)
+    node = user.create_subaccount_us_node(args)
+    assert_instance_of SynapsePayRest::SubaccountUsNode, node
+    assert_includes user.nodes, node
+  end
+
   def test_create_triumph_subaccount_us_node
     user = test_user
     args = test_synapse_us_create_args
