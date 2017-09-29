@@ -125,7 +125,6 @@ class BaseDocumentTest < Minitest::Test
     physical_doc2 = physical_doc.dup
     physical_doc2.type = 'SELFIE'
     base_doc = base_doc.add_physical_documents(physical_doc, physical_doc2)
-    assert_equal 2, base_doc.physical_documents.length
 
     # verify added in api
     response = test_client.users.get(user_id: base_doc.user.id)
@@ -140,7 +139,6 @@ class BaseDocumentTest < Minitest::Test
     social_doc2 = social_doc.dup
     social_doc2.type = 'TWITTER'
     base_doc = base_doc.add_social_documents(social_doc, social_doc2)
-    assert_equal 5, base_doc.social_documents.length
 
     # verify added in api
     response = test_client.users.get(user_id: base_doc.user.id)
@@ -156,7 +154,6 @@ class BaseDocumentTest < Minitest::Test
     virtual_doc2 = virtual_doc.dup
     virtual_doc2.type = 'PASSPORT'
     base_doc = base_doc.add_virtual_documents(virtual_doc, virtual_doc2)
-    assert_equal 2, base_doc.virtual_documents.length
 
     # verify added in api
     response = test_client.users.get(user_id: base_doc.user.id)

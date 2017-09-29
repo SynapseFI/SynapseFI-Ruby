@@ -1,62 +1,65 @@
 # client classes
-require './lib/synapse_pay_rest/client'
-require './lib/synapse_pay_rest/http_client'
+require 'synapse_pay_rest/client'
+require 'synapse_pay_rest/http_client'
 
 # base API classes
-require './lib/synapse_pay_rest/api/users'
-require './lib/synapse_pay_rest/api/nodes'
-require './lib/synapse_pay_rest/api/transactions'
-require './lib/synapse_pay_rest/api/subscriptions'
+require 'synapse_pay_rest/api/users'
+require 'synapse_pay_rest/api/nodes'
+require 'synapse_pay_rest/api/transactions'
+require 'synapse_pay_rest/api/subscriptions'
+require 'synapse_pay_rest/api/institutions'
 
 # general library classes
-require './lib/synapse_pay_rest/error'
-require './lib/synapse_pay_rest/version'
+require 'synapse_pay_rest/error'
+require 'synapse_pay_rest/version'
 
 # user-related classes
-require './lib/synapse_pay_rest/models/user/user'
-require './lib/synapse_pay_rest/models/user/base_document'
-require './lib/synapse_pay_rest/models/user/document'
-require './lib/synapse_pay_rest/models/user/physical_document'
-require './lib/synapse_pay_rest/models/user/social_document'
-require './lib/synapse_pay_rest/models/user/virtual_document'
-require './lib/synapse_pay_rest/models/user/question'
+require 'synapse_pay_rest/models/user/user'
+require 'synapse_pay_rest/models/user/base_document'
+require 'synapse_pay_rest/models/user/document'
+require 'synapse_pay_rest/models/user/physical_document'
+require 'synapse_pay_rest/models/user/social_document'
+require 'synapse_pay_rest/models/user/virtual_document'
+require 'synapse_pay_rest/models/user/question'
 
 # node-related classes
 
 # ancestor of all node classes
-require './lib/synapse_pay_rest/models/node/base_node'
+require 'synapse_pay_rest/models/node/base_node'
 
 # BaseNode subclasses
 # synapse
-require './lib/synapse_pay_rest/models/node/synapse_us_node.rb'
-require './lib/synapse_pay_rest/models/node/synapse_ind_node.rb'
-require './lib/synapse_pay_rest/models/node/synapse_np_node.rb'
+require 'synapse_pay_rest/models/node/synapse_us_node.rb'
+require 'synapse_pay_rest/models/node/synapse_ind_node.rb'
+require 'synapse_pay_rest/models/node/synapse_np_node.rb'
+require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
 
 # ach
-require './lib/synapse_pay_rest/models/node/ach_us_node.rb'
-require './lib/synapse_pay_rest/models/node/unverified_node.rb'
+require 'synapse_pay_rest/models/node/ach_us_node.rb'
+require 'synapse_pay_rest/models/node/unverified_node.rb'
 # eft
-require './lib/synapse_pay_rest/models/node/eft_ind_node.rb'
-require './lib/synapse_pay_rest/models/node/eft_np_node.rb'
+require 'synapse_pay_rest/models/node/eft_ind_node.rb'
+require 'synapse_pay_rest/models/node/eft_np_node.rb'
 # wire
-require './lib/synapse_pay_rest/models/node/wire_us_node.rb'
-require './lib/synapse_pay_rest/models/node/wire_int_node.rb'
+require 'synapse_pay_rest/models/node/wire_us_node.rb'
+require 'synapse_pay_rest/models/node/wire_int_node.rb'
 # reserve
-require './lib/synapse_pay_rest/models/node/reserve_us_node.rb'
+require 'synapse_pay_rest/models/node/reserve_us_node.rb'
 # triump subaccount
-require './lib/synapse_pay_rest/models/node/triumph_subaccount_us_node.rb'
-require './lib/synapse_pay_rest/models/node/subaccount_us_node.rb'
+require 'synapse_pay_rest/models/node/triumph_subaccount_us_node.rb'
+require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
+
 # iou
-require './lib/synapse_pay_rest/models/node/iou_node.rb'
+require 'synapse_pay_rest/models/node/iou_node.rb'
 
 # BaseNode factory
-require './lib/synapse_pay_rest/models/node/node'
+require 'synapse_pay_rest/models/node/node'
 
 # transaction-related classes
-require './lib/synapse_pay_rest/models/transaction/transaction'
+require 'synapse_pay_rest/models/transaction/transaction'
 
 # subscription-related classes
-require './lib/synapse_pay_rest/models/subscription/subscription'
+require 'synapse_pay_rest/models/subscription/subscription'
 
 # institution-related classes
 require 'synapse_pay_rest/models/institution/institution'
