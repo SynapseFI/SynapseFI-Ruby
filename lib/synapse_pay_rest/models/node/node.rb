@@ -15,6 +15,7 @@ module SynapsePayRest
       'SYNAPSE-NP'             => SynapseNpNode,
       'SYNAPSE-US'             => SynapseUsNode,
       'TRIUMPH-SUBACCOUNT-US'  => TriumphSubaccountUsNode,
+      'SUBACCOUNT-US'          => SubaccountUsNode,
       'WIRE-INT'               => WireIntNode,
       'WIRE-US'                => WireUsNode
     }.freeze

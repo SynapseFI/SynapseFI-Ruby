@@ -90,3 +90,8 @@ def test_client_with_one_subscription
   subscription = client.subscriptions.create(payload: payload)
   {client: client, subscription: subscription}
 end
+
+def test_client_with_instutitions
+  client = test_client
+  {client: client}
+end

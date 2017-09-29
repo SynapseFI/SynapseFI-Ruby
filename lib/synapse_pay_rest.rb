@@ -7,6 +7,7 @@ require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
 require 'synapse_pay_rest/api/transactions'
 require 'synapse_pay_rest/api/subscriptions'
+require 'synapse_pay_rest/api/institutions'
 
 # general library classes
 require 'synapse_pay_rest/error'
@@ -31,6 +32,8 @@ require 'synapse_pay_rest/models/node/base_node'
 require 'synapse_pay_rest/models/node/synapse_us_node.rb'
 require 'synapse_pay_rest/models/node/synapse_ind_node.rb'
 require 'synapse_pay_rest/models/node/synapse_np_node.rb'
+require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
+
 # ach
 require 'synapse_pay_rest/models/node/ach_us_node.rb'
 require 'synapse_pay_rest/models/node/unverified_node.rb'
@@ -44,6 +47,8 @@ require 'synapse_pay_rest/models/node/wire_int_node.rb'
 require 'synapse_pay_rest/models/node/reserve_us_node.rb'
 # triump subaccount
 require 'synapse_pay_rest/models/node/triumph_subaccount_us_node.rb'
+require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
+
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'
 
@@ -55,6 +60,9 @@ require 'synapse_pay_rest/models/transaction/transaction'
 
 # subscription-related classes
 require 'synapse_pay_rest/models/subscription/subscription'
+
+# institution-related classes
+require 'synapse_pay_rest/models/institution/institution'
 
 # Namespace for all SynapsePayRest classes and modules
 module SynapsePayRest

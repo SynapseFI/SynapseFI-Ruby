@@ -33,6 +33,8 @@ class ClientTest < Minitest::Test
     assert_instance_of SynapsePayRest::Users, client.users
     assert_instance_of SynapsePayRest::Nodes, client.nodes
     assert_instance_of SynapsePayRest::Transactions, client.transactions
+    assert_instance_of SynapsePayRest::Subscriptions, client.subscriptions
+    assert_instance_of SynapsePayRest::Institutions, client.institutions
     # deprecated
     assert_instance_of SynapsePayRest::Transactions, client.trans
   end
