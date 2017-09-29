@@ -1,4 +1,4 @@
 module SynapsePayRest
   # Gem version
-  VERSION = '3.2.4'.freeze
+  VERSION = '3.2.6'.freeze
 end
