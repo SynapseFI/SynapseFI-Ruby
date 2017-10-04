@@ -581,6 +581,19 @@ module SynapsePayRest
       SynapseUsNode.create(user: self, **options)
     end
 
+    # Creates a DEPOSIT-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::SynapseUsNode]
+    def create_deposit_us_node(**options)
+      SynapseUsNode.create(user: self, **options)
+    end
+
     # Creates a SUBACCOUNT-US node.
     # 
     # @param nickname [String] nickname for the node

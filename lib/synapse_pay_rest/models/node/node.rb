@@ -11,6 +11,7 @@ module SynapsePayRest
       'EFT-IND'                => EftIndNode,
       'IOU'                    => IouNode,
       'RESERVE-US'             => ReserveUsNode,
+      'DEPOSIT-US'             => DepositUsNode,
       'SYNAPSE-IND'            => SynapseIndNode,
       'SYNAPSE-NP'             => SynapseNpNode,
       'SYNAPSE-US'             => SynapseUsNode,
