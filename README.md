@@ -32,7 +32,7 @@ $ gem install synapse_pay_rest
 
 ## Contributing
 
-For minor issues, just open a pull request. For larger changes or features, please email steven@synapsepay.com. Please document and test any public constants/methods. Open an issue or email steven@synapsepay.com if you have any questions.
+For minor issues, please open a pull request. For larger changes or features, please email hello@synapsepay.com. Please document and test any public constants/methods.
 
 ## Running the Test Suite
 
