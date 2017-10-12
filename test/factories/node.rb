@@ -213,6 +213,29 @@ def test_wire_us_create_args(user: test_user,
   }
 end
 
+def test_check_us_create_args(user: test_user,
+                             type: 'CHECK-US', 
+                             nickname: 'Test CHECK-US Account',
+                             payee_name: 'Test McTest',
+                             address_street: "1 MARKET ST",
+                             address_city: "SAN FRANCISCO",
+                             address_subdivision: "CA",
+                             address_country_code: "US",
+                             address_postal_code:  "94105" 
+                             )
+  {
+  user: user,
+  type: type,
+  nickname: nickname,
+  payee_name: payee_name,
+  address_street: address_street,
+  address_city: address_city,
+  address_subdivision: address_subdivision,
+  address_country_code: address_country_code,
+  address_postal_code:    address_postal_code
+}
+end
+
 def test_ach_us_node(user: test_user)
   user.create_ach_us_node(test_ach_us_create_args(user: user))
 end
@@ -235,4 +258,9 @@ end
 def test_wire_us_node(user: test_user)
   args = test_wire_us_node_create_args(user: user)
   user.create_wire_us_node(args)
+end
+
+def test_check_us_node(user: test_user)
+  args = test_check_us_create_args(user: user)
+  user.create_check_us_node(args)
 end

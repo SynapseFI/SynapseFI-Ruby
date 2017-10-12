@@ -20,7 +20,9 @@ module SynapsePayRest
                 :correspondent_routing_number, :correspondent_bank_name,
                 :correspondent_address, :correspondent_swift, :account_id, :balance,
                 :ifsc, :swift, :bank_long_name, :type, :gateway_restricted,
-                :email_match, :name_match, :phonenumber_match
+                :email_match, :name_match, :phonenumber_match, :address_street,
+                :address_city, :address_subdivision, :address_country_code, 
+                :address_postal_code, :payee_address, :payee_name
 
     class << self
       # Creates a new node in the API associated to the provided user and
@@ -91,6 +93,7 @@ module SynapsePayRest
           address:              response['info']['address'],
           swift:                response['info']['swift'],
           ifsc:                 response['info']['ifsc'],
+          payee_name:           response['info']['payee_name'],
           user_info:            nil,
           transactions:         nil,
           timeline:             nil,
@@ -142,6 +145,15 @@ module SynapsePayRest
         if response['timeline']
           timeline = response['timeline']
           args[:timeline] = timeline
+        end
+
+        if response['info']['payee_address']
+          payee_address = response['info']['payee_address']
+          args[:address_street]        = payee_address['address_street']
+          args[:address_city]          = payee_address['address_city']
+          args[:address_subdivision]   = payee_address['address_subdivision']
+          args[:address_country_code]  = payee_address['address_country_code']
+          args[:address_postal_code]   = payee_address['address_postal_code']
         end
 
         self.new(**args)
@@ -200,6 +212,9 @@ module SynapsePayRest
         if options[:password]
           payload['info']['bank_pw'] = options[:password]
         end
+        if options[:payee_name]
+          payload['info']['payee_name'] = options[:payee_name]
+        end
 
         balance_fields = [:currency]
         balance_fields.each do |field|
@@ -214,6 +229,15 @@ module SynapsePayRest
           if options[field]
             payload['extra'] ||= {}
             payload['extra'][field.to_s] = options[field] 
+          end
+        end
+
+        payee_address_fields = [:address_street, :address_city, :address_subdivision, 
+          :address_country_code, :address_postal_code]
+        payee_address_fields.each do |field|
+          if options[field]
+            payload['info']['payee_address'] ||= {}
+            payload['info']['payee_address'][field.to_s] = options[field] if options[field]
           end
         end
 

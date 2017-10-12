@@ -591,7 +591,7 @@ module SynapsePayRest
     # 
     # @return [SynapsePayRest::SynapseUsNode]
     def create_deposit_us_node(**options)
-      SynapseUsNode.create(user: self, **options)
+      DepositUsNode.create(user: self, **options)
     end
 
     # Creates a SUBACCOUNT-US node.
@@ -662,6 +662,27 @@ module SynapsePayRest
     # @return [SynapsePayRest::WireUsNode]
     def create_wire_us_node(**options)
       WireUsNode.create(user: self, **options)
+    end
+
+    # Creates a CHECK-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param bank_name [String]
+    # @param account_number [String]
+    # @param routing_number [String]
+    # @param name_on_account [String]
+    # @param address [String]
+    # @param correspondent_routing_number [String] (optional)
+    # @param correspondent_bank_name [String] (optional)
+    # @param correspondent_address [String] (optional)
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::CheckUsNode]
+    def create_check_us_node(**options)
+      CheckUsNode.create(user: self, **options)
     end
 
     # Checks if two User instances have same id (different instances of same record).
