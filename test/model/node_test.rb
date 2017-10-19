@@ -143,6 +143,8 @@ class NodeTest < Minitest::Test
     other_instance_vars.each { |var| refute_nil node.send(var) }
 
     assert_equal 'CREDIT', node.permission
+    # resend microdeposits
+    node = node.resend_micro()
     # verify microdeposits
     node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permission
@@ -158,6 +160,8 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::AchUsNode.create(args)
 
     assert_equal 'CREDIT', node.permission
+    # resend microdeposits
+    node = node.resend_micro()
     # verify microdeposits
     assert_raises(SynapsePayRest::Error) { node.verify_microdeposits(amount1: 0.2, amount2: 0.2) }
     assert_equal 'CREDIT', node.permission
@@ -168,6 +172,8 @@ class NodeTest < Minitest::Test
     node = SynapsePayRest::AchUsNode.create(args)
 
     assert_equal 'CREDIT', node.permission
+    # resend microdeposits
+    node = node.resend_micro()
     # verify microdeposits
     node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
     assert_equal 'CREDIT-AND-DEBIT', node.permission

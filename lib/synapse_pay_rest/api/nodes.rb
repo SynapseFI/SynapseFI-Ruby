@@ -77,6 +77,22 @@ module SynapsePayRest
       path = node_path(user_id: user_id, node_id: node_id)
       client.patch(path, payload)
     end
+    
+    # Sends a PATCH request to /nodes endpoint to reinitiate microdeposits on a node, and returns the
+    # response.
+    # 
+    # @param user_id [String]
+    # @param node_id [String]
+    # 
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    # HTTP response from API
+    # 
+    # @return [Hash] API response
+    def resend_micro(user_id:, node_id:)
+      path = node_path(user_id: user_id, node_id: node_id)
+      path += '?resend_micro=YES'
+      client.patch(path, {})
+    end
 
     # Sends a DELETE request to /node endpoint to remove a node, and returns the response.
     # 
