@@ -1074,6 +1074,24 @@ node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
 # => #<SynapsePayRest::AchUsNode>
 ```
 
+#### Create CHECK-US Node
+
+```ruby
+check_info = {
+  type:                   'CHECK-US',
+  nickname:               'test check-us',
+  payee_name:             'Test McTest',
+  address_street:         '1 Market St',
+  address_city:           'San Francisco',
+  address_subdivision:    'CA',
+  address_country_code:   'US',
+  address_postal_code:    '94105'
+}
+
+node = user.create_check_us_node(check_info)
+# => #<SynapsePayRest::CheckUsNode>
+```
+
 #### Deactivate a Node
 
 This deactivates the node. It does not automatically cancel any transactions already underway.
