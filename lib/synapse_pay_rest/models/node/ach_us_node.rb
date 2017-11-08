@@ -126,16 +126,7 @@ module SynapsePayRest
       response = user.client.nodes.resend_micro(user_id: user.id, node_id: id)
       self.class.from_response(user, response)
     end
-
-    # # Reinitiate micro-deposits for an ACH-US node with AC/RT
-    # # You can reinitiate micro-deposits for one node up to 3 times.
-    # # @raise [SynapsePayRest::Error] if HTTP error
-    # # 
-    # # @return [SynapsePayRest::AchUsNode]
-    # def reinitiate_microdeposits
-    #   response = user.client.nodes.patch(user_id: user.id, node_id: id, payload: {})
-    #   self.class.from_response(user, response)
-    # end
+    
 
     private
 

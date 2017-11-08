@@ -543,4 +543,67 @@ class NodeTest < Minitest::Test
 
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
+
+  def test_create_ib_deposit_us_node
+    args = test_ib_deposit_us_create_args(user: @user)
+    node = SynapsePayRest::IbDepositUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::IbDepositUsNode, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        refute_nil node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+  
+  def test_create_ib_subaccount_us_node
+    args = test_ib_subaccount_us_create_args(user: @user)
+    node = SynapsePayRest::IbSubaccountUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::IbSubaccountUsNode, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        refute_nil node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_create_clearing_us_node
+    args = test_clearing_us_create_args(user: @user)
+    node = SynapsePayRest::ClearingUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::ClearingUsNode, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
+
+    # verify instance vars readable and mapped to values
+    args.each do |var_name, value|
+      if [:account_number, :routing_number].include? var_name
+        refute_nil node.send(var_name)
+      else
+        assert_equal value, node.send(var_name)
+      end
+    end
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
 end

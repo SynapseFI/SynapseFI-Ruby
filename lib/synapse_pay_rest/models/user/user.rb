@@ -685,6 +685,45 @@ module SynapsePayRest
       CheckUsNode.create(user: self, **options)
     end
 
+    # Creates a CLEARING-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::ClearingUsNode]
+    def create_clearing_us_node(**options)
+      ClearingUsNode.create(user: self, **options)
+    end
+
+    # Creates a IB-DEPOSIT-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::IbDepositUsNode]
+    def create_ib_deposit_us_node(**options)
+      IbDepositUsNode.create(user: self, **options)
+    end
+
+    # Creates a IB-SUBACCOUNT-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::IbSubaccountUsNode]
+    def create_ib_subaccount_us_node(**options)
+      IbSubaccountUsNode.create(user: self, **options)
+    end
+
     # Checks if two User instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id

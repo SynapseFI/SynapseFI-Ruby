@@ -431,4 +431,34 @@ class UserTest < Minitest::Test
     assert_instance_of SynapsePayRest::CheckUsNode, node
     assert_includes user.nodes, node
   end
+##
+  def test_create_ib_deposit_us_node
+    user = test_user
+    args = test_ib_deposit_us_create_args
+    args.delete(:user)
+    node = user.create_ib_deposit_us_node(args)
+
+    assert_instance_of SynapsePayRest::IbDepositUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_ib_subaccount_us_node
+    user = test_user
+    args = test_ib_subaccount_us_create_args
+    args.delete(:user)
+    node = user.create_ib_subaccount_us_node(args)
+
+    assert_instance_of SynapsePayRest::IbSubaccountUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_clearing_us_node
+    user = test_user
+    args = test_clearing_us_create_args
+    args.delete(:user)
+    node = user.create_clearing_us_node(args)
+
+    assert_instance_of SynapsePayRest::ClearingUsNode, node
+    assert_includes user.nodes, node
+  end
 end
