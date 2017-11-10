@@ -77,6 +77,13 @@ def test_user_with_two_nodes
   user
 end
 
+def test_user_with_deposit_node
+  user = test_user
+  args = test_deposit_us_create_args(user: user)
+  nodes = SynapsePayRest::DepositUsNode.create(args)
+  user
+end
+
 def test_user_with_one_base_document
   args = test_base_document_args
   args.delete(:user)

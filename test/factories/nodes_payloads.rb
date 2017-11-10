@@ -62,3 +62,12 @@ def test_synapse_us_payload
     }
   }
 end
+
+def test_deposit_us_payload
+  {
+    'type' => 'DEPOSIT-US',
+    'info' => {
+      'nickname' => 'Deposit Account'
+    }
+  }
+end

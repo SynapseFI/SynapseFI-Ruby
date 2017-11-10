@@ -302,6 +302,44 @@ module SynapsePayRest
       Transaction.find(node: self, id: id)
     end
 
+    # Creates a subnet belonging to this node and returns it as a Subnet
+    # instance.
+    # 
+    #
+    # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+    # 
+    # @return [SynapsePayRest::Transaction]
+    def create_subnet(**options)
+      Subnet.create(node: self, **options)
+    end
+
+    # Queries the API for all subnets belonging to this node and returns
+    # them as Subnet instances.
+    # 
+    # @param page [String,Integer] (optional) response will default to 1
+    # @param per_page [String,Integer] (optional) response will default to 20
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [Array<SynapsePayRest::Subnet>]
+    def subnets(**options)
+      Subnet.all(node: self, **options)
+    end
+
+    # Queries the API for a subnet belonging to this node by subnet id
+    # and returns a Subnet instance if found.
+    # 
+    # @param id [String] id of the subnet to find
+    # 
+    # @raise [SynapsePayRest::Error] if not found or other HTTP error
+    # 
+    # @return [SynapsePayRest::Subnet]
+    def find_subnet(id:)
+      raise ArgumentError, 'id must be a String' unless id.is_a?(String)
+
+      Subnet.find(node: self, id: id)
+    end
+
     # Deactivates the node. 
     # 
     # @raise [SynapsePayRest::Error]

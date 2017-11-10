@@ -269,6 +269,17 @@ def test_clearing_us_create_args(user: test_user,
   }
 end
 
+def test_deposit_us_create_args(user: test_user,
+                                type: 'DEPOSIT-US',
+                                nickname: 'Test DEPOSIT-US Account'
+                                )
+  {
+    user: user,
+    type: type,
+    nickname: nickname
+  }
+end
+
 def test_ach_us_node(user: test_user)
   user.create_ach_us_node(test_ach_us_create_args(user: user))
 end

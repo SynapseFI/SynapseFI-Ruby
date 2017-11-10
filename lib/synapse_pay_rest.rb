@@ -5,6 +5,7 @@ require 'synapse_pay_rest/http_client'
 # base API classes
 require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
+require 'synapse_pay_rest/api/subnets'
 require 'synapse_pay_rest/api/transactions'
 require 'synapse_pay_rest/api/subscriptions'
 require 'synapse_pay_rest/api/institutions'
@@ -61,6 +62,9 @@ require 'synapse_pay_rest/models/node/iou_node.rb'
 
 # BaseNode factory
 require 'synapse_pay_rest/models/node/node'
+
+# subnet-related classes
+require 'synapse_pay_rest/models/subnet/subnet'
 
 # transaction-related classes
 require 'synapse_pay_rest/models/transaction/transaction'
