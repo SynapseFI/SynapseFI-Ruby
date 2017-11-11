@@ -137,9 +137,31 @@ module SynapsePayRest
       options.each { |key, value| instance_variable_set("@#{key}", value) }
     end
 
-    #####
+    # Changes Subnet's allowed permission from 'CREDIT' to 'LOCKED'.
+    # 
+    # @param comment [String]
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [Array<SynapsePayRest::Transaction>] (self)
+    def allowed_locked
+      payload = {'allowed' => 'LOCKED'}
+      response = node.user.client.subnets.update(
+        user_id: node.user.id,
+        node_id: node.id,
+        subnet_id: id,
+        payload: payload
+      )
+      if response['subnets']
+        # api v3.1
+        self.class.from_response(node, response['subnets'])
+      else
+        # api v3.1.1
+        self.class.from_response(node, response)
+      end
+    end
 
-    # Checks if two Transaction instances have same id (different instances of same record).
+    # Checks if two Subnet instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id
     end
