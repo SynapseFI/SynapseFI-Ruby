@@ -76,14 +76,6 @@ class UsersTest < Minitest::Test
     assert_nil ssn_field['meta']
   end
 
-  def test_attach_file_kyc1
-    response = @client.users.attach_file(
-      user_id: @user['_id'],
-      file_path: fixture_path('id.png')
-    )
-    refute_nil response['_id']
-  end
-
   def test_add_documents_via_kyc2
     response = @client.users.update(
       user_id: @user['_id'],
