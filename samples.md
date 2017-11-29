@@ -1182,3 +1182,86 @@ transaction = transaction.add_comment('this is my favorite transaction')
 transaction = transaction.cancel
 # => #<SynapsePayRest::Transaction>
 ```
+
+## Subnet Methods
+
+#### All Subnets from a Node
+
+##### a) Node#subnets
+
+```ruby
+subnets = node.subnets(page: 1, per_page: 15)
+# => [#<SynapsePayRest::Subnet>, #<SynapsePayRest::Subnet>, ...]
+```
+
+##### b) Subnet#all
+
+```ruby
+subnets = SynapsePayRest::Subnet.all(node: node, page: 1, per_page: 15)
+# => [#<SynapsePayRest::Subnet>, #<SynapsePayRest::Subnet>, ...]
+```
+
+#### Find a Node's Subnet by ID
+
+##### a) Node#find_subnet
+
+```ruby
+subnet= node.find_subnet(id: '167e11516')
+# => #<SynapsePayRest::Subnet>
+```
+
+##### b) Subnet#find
+
+```ruby
+subnet = SynapsePayRest::Subnet.find(node: node, id: '57fab7d186c2733525dd7eac')
+# => #<SynapsePayRest::Subnet>
+```
+
+#### Create a Subnet
+
+##### a) Node#create_subnet
+
+```ruby
+subnet_settings = {
+  "nickname":"Test AC/RT"
+}
+
+subnet = node.create_subnet(subnet_settings)
+# => #<SynapsePayRest::Subnet>
+```
+
+##### b) Subnet#create
+
+```ruby
+subnet_settings = {
+  "nickname":"Test AC/RT"
+}
+
+subnet = SynapsePayRest::Subnet.create(subnet_settings)
+# => #<SynapsePayRest::Subnet>
+```
+
+#### To lock a Subnet
+
+```ruby
+subnet = subnet.lock
+# => #<SynapsePayRest::Subnet>
+```
+
+## Issue Public Key Method
+
+#### Issue Public Key From Client
+
+##### a) Client#issue_public_key
+
+```ruby
+public_key = client.issue_public_key(scope: ‘CLIENT|CONTROLS’)
+# => #<SynapsePayRest::Public_key>
+```
+
+##### b) Subnet#all
+
+```ruby
+public_key = SynapsePayRest::PublicKey.issue(client: client, scope: ‘CLIENT|CONTROLS')
+# => #<SynapsePayRest::Public_key>
+```
