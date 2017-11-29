@@ -17,6 +17,7 @@ class PublicKeyTest < Minitest::Test
     response = SynapsePayRest::PublicKey.issue(client: client, scope: 'CLIENT|CONTROLS')
 
     assert_equal ['CLIENT|CONTROLS'], response.scope
+    refute_nil response.public_key
   end
 
 end

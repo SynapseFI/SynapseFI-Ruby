@@ -62,5 +62,6 @@ class ClientTest < Minitest::Test
     response = client.issue_public_key(scope: 'CLIENT|CONTROLS')
 
     assert_equal ['CLIENT|CONTROLS'], response.scope
+    refute_nil response.public_key
   end
 end
