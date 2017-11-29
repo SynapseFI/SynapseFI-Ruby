@@ -14,16 +14,8 @@ module SynapsePayRest
       # Creates a new subnet in the API belonging to the provided node and
       # returns a subnet instance from the response data.
       # 
-      # @param id [String] Object ID of a transaction
-      # @param account_num [String] Account number associated with the subnet
-      # @param client_id [String] ID of the client where the transaction initiated
-      # @param client_name [String] Name of the client where the trans initiated.
-      # @param allowed [String] Denoted the subnet standing.
       # @param nickname [String] any nicknames
-      # @param node [SynapsePayRest::BaseNode] node to which the transaction belongs
-      # @param routing_num_ach [String] Routing number for ACH transfers
-      # @param routing_num_wire [String] Routing number for wire transfers
-      # @param to_type [String] node type of the receiving node
+      # @param node [SynapsePayRest::BaseNode] node to which the Subnet belongs
       # @see https://docs.synapsepay.com/docs/subnets
       #
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
@@ -72,13 +64,13 @@ module SynapsePayRest
       # Queries the API for all subnets belonging to the supplied node and returns
       # them as Subnet instances.
       # 
-      # @param node [SynapsePayRest::BaseNode] node to which the transaction belongs
+      # @param node [SynapsePayRest::BaseNode] node to which the subnet belongs
       # @param page [String,Integer] (optional) response will default to 1
       # @param per_page [String,Integer] (optional) response will default to 20
       # 
       # @raise [SynapsePayRest::Error]
       # 
-      # @return [Array<SynapsePayRest::Transaction>]
+      # @return [Array<SynapsePayRest::Subnet>]
       def all(node:, page: nil, per_page: nil)
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         [page, per_page].each do |arg|
@@ -143,8 +135,8 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [Array<SynapsePayRest::Transaction>] (self)
-    def allowed_locked
+    # @return [Array<SynapsePayRest::Subnet>] (self)
+    def lock
       payload = {'allowed' => 'LOCKED'}
       response = node.user.client.subnets.update(
         user_id: node.user.id,

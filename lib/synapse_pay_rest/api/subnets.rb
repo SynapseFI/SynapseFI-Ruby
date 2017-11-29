@@ -44,8 +44,8 @@ module SynapsePayRest
     # Sends a POST request to /subents endpoint to create a new subnet.
     # Returns the response.
     # 
-    # @param user_id [String] id of sender
-    # @param node_id [String] id of sending node
+    # @param user_id [String] user_id associated with the subnet
+    # @param node_id [String] node the subnet belongs to
     # @param payload [Hash]
     # @see https://docs.synapsepay.com/docs/create-subnet payload structure
     # 
@@ -61,8 +61,8 @@ module SynapsePayRest
     # Sends a PATCH request to /subnets endpoint to update a subnet. 
     # Returns the response.
     # 
-    # @param user_id [String]
-    # @param node_id [String] id of node
+    # @param user_id [String] id of user associated with the subnet
+    # @param node_id [String] id of node the subnet belongs to
     # @param subnet_id [String] id of subnet
     # @param payload [Hash]
     # @see https://docs.synapsepay.com/docs/subnet-1 payload structure

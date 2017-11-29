@@ -308,7 +308,7 @@ module SynapsePayRest
     #
     # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
     # 
-    # @return [SynapsePayRest::Transaction]
+    # @return [SynapsePayRest::Subnet]
     def create_subnet(**options)
       Subnet.create(node: self, **options)
     end

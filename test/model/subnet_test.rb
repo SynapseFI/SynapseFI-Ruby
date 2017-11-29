@@ -68,12 +68,12 @@ class SubnetTest < Minitest::Test
     assert_empty subnets
   end
 
-  def test_allowed_locked
+  def test_lock
     subnet = test_subnet(
       node:       @node,
       nickname:   "Subnet Test"
     )
-    subnet.allowed_locked
+    subnet.lock
 
     # verify comment added in api
     response = @user.client.subnets.get(

@@ -13,7 +13,8 @@ module SynapsePayRest
     #   @return [SynapsePayRest::Transactions]
     # @!attribute [rw] subscriptions
     #   @return [SynapsePayRest::Subscriptions]
-    attr_accessor :http_client, :users, :nodes, :subnets, :transactions, :subscriptions, :institutions
+    attr_accessor :http_client, :users, :nodes, :subnets, :transactions, :subscriptions, :institutions,
+                  :client_endpoint
 
     # Alias for #transactions (legacy name)
     alias_method :trans, :transactions
@@ -41,12 +42,19 @@ module SynapsePayRest
                                      fingerprint: fingerprint,
                                      ip_address: ip_address,
                                      **options)
-      @users         = Users.new @http_client
-      @nodes         = Nodes.new @http_client
-      @subnets       = Subnets.new @http_client
-      @transactions  = Transactions.new @http_client
-      @subscriptions = Subscriptions.new @http_client
-      @institutions  = Institutions.new @http_client
+      @users            = Users.new @http_client
+      @nodes            = Nodes.new @http_client
+      @subnets          = Subnets.new @http_client
+      @transactions     = Transactions.new @http_client
+      @subscriptions    = Subscriptions.new @http_client
+      @institutions     = Institutions.new @http_client
+      @client_endpoint  = ClientEndpoint.new @http_client
+    end
+
+  
+
+    def issue_public_key(scope: "OAUTH|POST,USERS|POST,USERS|GET,USER|GET,USER|PATCH,SUBSCRIPTIONS|GET,SUBSCRIPTIONS|POST,SUBSCRIPTION|GET,SUBSCRIPTION|PATCH,CLIENT|REPORTS,CLIENT|CONTROLS")
+      PublicKey.issue(client: self, scope: scope)
     end
   end
 end
