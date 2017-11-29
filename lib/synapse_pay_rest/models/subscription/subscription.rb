@@ -74,11 +74,11 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
       # 
       # @return [SynapsePayRest::Subscription] new instance corresponding to same API record
-      def update(client:, is_active:, url:, scope:, **options)
+      def update(client:, id:, **options)
         raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
         
-        payload = payload_for_update(is_active: is_active, url: url, scope: scope, **options)
-        response = client.subscriptions.update(payload: payload)
+        payload = payload_for_update(options)
+        response = client.subscriptions.update(subscription_id: id, payload: payload)
         from_response(response)
       end
 
