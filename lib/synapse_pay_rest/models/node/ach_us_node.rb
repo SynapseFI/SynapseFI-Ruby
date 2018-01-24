@@ -126,6 +126,7 @@ module SynapsePayRest
       response = user.client.nodes.resend_micro(user_id: user.id, node_id: id)
       self.class.from_response(user, response)
     end
+    
 
     private
 
@@ -133,5 +134,6 @@ module SynapsePayRest
     def verify_microdeposits_payload(amount1:, amount2:)
       {'micro' => [amount1, amount2]}
     end
+
   end
 end

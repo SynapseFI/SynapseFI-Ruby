@@ -5,9 +5,11 @@ require 'synapse_pay_rest/http_client'
 # base API classes
 require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
+require 'synapse_pay_rest/api/subnets'
 require 'synapse_pay_rest/api/transactions'
 require 'synapse_pay_rest/api/subscriptions'
 require 'synapse_pay_rest/api/institutions'
+require 'synapse_pay_rest/api/client'
 
 # general library classes
 require 'synapse_pay_rest/error'
@@ -37,6 +39,8 @@ require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
 # ach
 require 'synapse_pay_rest/models/node/ach_us_node.rb'
 require 'synapse_pay_rest/models/node/unverified_node.rb'
+#check
+require 'synapse_pay_rest/models/node/check_us_node.rb'
 # eft
 require 'synapse_pay_rest/models/node/eft_ind_node.rb'
 require 'synapse_pay_rest/models/node/eft_np_node.rb'
@@ -50,11 +54,18 @@ require 'synapse_pay_rest/models/node/triumph_subaccount_us_node.rb'
 require 'synapse_pay_rest/models/node/subaccount_us_node.rb'
 require 'synapse_pay_rest/models/node/deposit_us_node.rb'
 
+require 'synapse_pay_rest/models/node/clearing_us_node.rb'
+require 'synapse_pay_rest/models/node/ib_deposit_us_node.rb'
+require 'synapse_pay_rest/models/node/ib_subaccount_us_node.rb'
+
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'
 
 # BaseNode factory
 require 'synapse_pay_rest/models/node/node'
+
+# subnet-related classes
+require 'synapse_pay_rest/models/subnet/subnet'
 
 # transaction-related classes
 require 'synapse_pay_rest/models/transaction/transaction'
@@ -64,6 +75,10 @@ require 'synapse_pay_rest/models/subscription/subscription'
 
 # institution-related classes
 require 'synapse_pay_rest/models/institution/institution'
+
+require 'synapse_pay_rest/models/client/issue_public_key'
+
+
 
 # Namespace for all SynapsePayRest classes and modules
 module SynapsePayRest

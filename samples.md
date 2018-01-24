@@ -1074,6 +1074,24 @@ node = node.verify_microdeposits(amount1: 0.1, amount2: 0.1)
 # => #<SynapsePayRest::AchUsNode>
 ```
 
+#### Create CHECK-US Node
+
+```ruby
+check_info = {
+  type:                   'CHECK-US',
+  nickname:               'test check-us',
+  payee_name:             'Test McTest',
+  address_street:         '1 Market St',
+  address_city:           'San Francisco',
+  address_subdivision:    'CA',
+  address_country_code:   'US',
+  address_postal_code:    '94105'
+}
+
+node = user.create_check_us_node(check_info)
+# => #<SynapsePayRest::CheckUsNode>
+```
+
 #### Deactivate a Node
 
 This deactivates the node. It does not automatically cancel any transactions already underway.
@@ -1163,4 +1181,87 @@ transaction = transaction.add_comment('this is my favorite transaction')
 ```ruby
 transaction = transaction.cancel
 # => #<SynapsePayRest::Transaction>
+```
+
+## Subnet Methods
+
+#### All Subnets from a Node
+
+##### a) Node#subnets
+
+```ruby
+subnets = node.subnets(page: 1, per_page: 15)
+# => [#<SynapsePayRest::Subnet>, #<SynapsePayRest::Subnet>, ...]
+```
+
+##### b) Subnet#all
+
+```ruby
+subnets = SynapsePayRest::Subnet.all(node: node, page: 1, per_page: 15)
+# => [#<SynapsePayRest::Subnet>, #<SynapsePayRest::Subnet>, ...]
+```
+
+#### Find a Node's Subnet by ID
+
+##### a) Node#find_subnet
+
+```ruby
+subnet= node.find_subnet(id: '167e11516')
+# => #<SynapsePayRest::Subnet>
+```
+
+##### b) Subnet#find
+
+```ruby
+subnet = SynapsePayRest::Subnet.find(node: node, id: '57fab7d186c2733525dd7eac')
+# => #<SynapsePayRest::Subnet>
+```
+
+#### Create a Subnet
+
+##### a) Node#create_subnet
+
+```ruby
+subnet_settings = {
+  "nickname":"Test AC/RT"
+}
+
+subnet = node.create_subnet(subnet_settings)
+# => #<SynapsePayRest::Subnet>
+```
+
+##### b) Subnet#create
+
+```ruby
+subnet_settings = {
+  "nickname":"Test AC/RT"
+}
+
+subnet = SynapsePayRest::Subnet.create(subnet_settings)
+# => #<SynapsePayRest::Subnet>
+```
+
+#### To lock a Subnet
+
+```ruby
+subnet = subnet.lock
+# => #<SynapsePayRest::Subnet>
+```
+
+## Issue Public Key Method
+
+#### Issue Public Key From Client
+
+##### a) Client#issue_public_key
+
+```ruby
+public_key = client.issue_public_key(scope: ‘CLIENT|CONTROLS’)
+# => #<SynapsePayRest::Public_key>
+```
+
+##### b) Subnet#all
+
+```ruby
+public_key = SynapsePayRest::PublicKey.issue(client: client, scope: ‘CLIENT|CONTROLS')
+# => #<SynapsePayRest::Public_key>
 ```

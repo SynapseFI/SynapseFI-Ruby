@@ -84,6 +84,23 @@ def test_client_with_two_transactions
   {client: client, user: user, nodes: nodes, transactions: [trans1, trans2]}
 end
 
+def test_client_with_subnet
+  test_values = test_client_with_user
+  client = test_values[:client]
+  user = test_values[:user]
+  nodes = client.nodes.add(
+    user_id: user['_id'],
+    payload: test_deposit_us_payload
+  )['nodes']
+
+  subnet = client.subnets.create(
+    user_id: user['_id'],
+    node_id: nodes.first['_id'],
+    payload: test_subnet_payload
+    )
+  {client: client, user: user, node: nodes.first, subnet: subnet}
+end
+
 def test_client_with_one_subscription
   client = test_client
   payload  = test_subscription_payload

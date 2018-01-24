@@ -18,7 +18,11 @@ module SynapsePayRest
       'TRIUMPH-SUBACCOUNT-US'  => TriumphSubaccountUsNode,
       'SUBACCOUNT-US'          => SubaccountUsNode,
       'WIRE-INT'               => WireIntNode,
-      'WIRE-US'                => WireUsNode
+      'WIRE-US'                => WireUsNode,
+      'CHECK-US'               => CheckUsNode,
+      'CLEARING-US'            => ClearingUsNode,
+      'IB-DEPOSIT-US'          => IbDepositUsNode,
+      'IB-SUBACCOUNT-US'       => IbSubaccountUsNode
     }.freeze
 
     class << self
