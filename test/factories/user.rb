@@ -90,3 +90,25 @@ def test_user_with_one_base_document
   base_doc = test_user.create_base_document(args)
   user = base_doc.user
 end
+
+def test_user_with_base_doc
+      args = {
+      email:                'test@synapsepay.com',
+      phone_number:         '415-555-5555',
+      ip:                   '127.0.0.1',
+      name:                 'test tester',
+      aka:                  'test tester',
+      entity_type:          'NOT_KNOWN',
+      entity_scope:         'Doctor',
+      birth_day:            3,
+      birth_month:          19,
+      birth_year:           1912,
+      address_street:       '123 Synapse St',
+      address_city:         'San Francisco',
+      address_subdivision:  'CA',
+      address_postal_code:  '94114',
+      address_country_code: 'US'
+      }
+  base_doc = test_user.create_base_document(args)
+  user = base_doc.user
+end

@@ -57,6 +57,7 @@ require 'synapse_pay_rest/models/node/deposit_us_node.rb'
 require 'synapse_pay_rest/models/node/clearing_us_node.rb'
 require 'synapse_pay_rest/models/node/ib_deposit_us_node.rb'
 require 'synapse_pay_rest/models/node/ib_subaccount_us_node.rb'
+require 'synapse_pay_rest/models/node/interchange_us_node.rb'
 
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'

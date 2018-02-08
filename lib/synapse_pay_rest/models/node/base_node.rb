@@ -22,7 +22,8 @@ module SynapsePayRest
                 :ifsc, :swift, :bank_long_name, :type, :gateway_restricted,
                 :email_match, :name_match, :phonenumber_match, :address_street,
                 :address_city, :address_subdivision, :address_country_code, 
-                :address_postal_code, :payee_address, :payee_name
+                :address_postal_code, :payee_address, :payee_name, :other, :network,
+                :document_id, :card_type
 
     class << self
       # Creates a new node in the API associated to the provided user and
@@ -94,6 +95,9 @@ module SynapsePayRest
           swift:                response['info']['swift'],
           ifsc:                 response['info']['ifsc'],
           payee_name:           response['info']['payee_name'],
+          document_id:          response['info']['document_id'],
+          network:              response['info']['network'],
+          card_type:            response['info']['type'],
           user_info:            nil,
           transactions:         nil,
           timeline:             nil,
@@ -171,7 +175,7 @@ module SynapsePayRest
         }
 
         info_fields = [
-          :swift, :name_on_account, :bank_name, :address, :ifsc,:nickname,
+          :swift, :name_on_account, :bank_name, :address, :ifsc, :nickname,
           :bank_name
         ]
         info_fields.each do |field|
@@ -215,6 +219,15 @@ module SynapsePayRest
         if options[:payee_name]
           payload['info']['payee_name'] = options[:payee_name]
         end
+        if options[:card_number]
+          payload['info']['card_number'] = options[:card_number]
+        end
+        if options[:exp_date]
+          payload['info']['exp_date'] = options[:exp_date]
+        end
+        if options[:document_id]
+          payload['info']['document_id'] = options[:document_id]
+        end
 
         balance_fields = [:currency]
         balance_fields.each do |field|
@@ -224,7 +237,7 @@ module SynapsePayRest
           end
         end
 
-        extra_fields = [:supp_id, :gateway_restricted]
+        extra_fields = [:supp_id, :gateway_restricted, :other]
         extra_fields.each do |field|
           if options[field]
             payload['extra'] ||= {}

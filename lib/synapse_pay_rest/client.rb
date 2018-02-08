@@ -33,7 +33,7 @@ module SynapsePayRest
       base_url = if development_mode
                    'https://uat-api.synapsefi.com/v3.1'
                  else
-                   'https://synapsepay.com/api/3'
+                   'https://api.synapsepfi.com/v3.1'
                  end
 
       @http_client  = HTTPClient.new(base_url: base_url,

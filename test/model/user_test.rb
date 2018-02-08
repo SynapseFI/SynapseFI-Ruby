@@ -461,4 +461,20 @@ class UserTest < Minitest::Test
     assert_instance_of SynapsePayRest::ClearingUsNode, node
     assert_includes user.nodes, node
   end
+
+  def test_interchange_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+
+    args2 = {
+            nickname: 'Debit Card',
+            card_number: "iY4Z2SDX7z6sBv3p6S7XDR71Nbpet3ge/XYol5MnJxBd/RaWg5kMLtax5jxoKQwMc6KNAJK3OhMAUq2S6/04Ramic5f5QVEMqcIEZd+L/gPCPfZHsXh5QoQuaEhc5Yu8bO4ZLDkJPhQebr9Dfao1QN3MZm0eO/4hrxq1jlN6bsKuz7rpDRJgW7m/VhNiH2THizwl9vjFQZqCTC1exCkP6YOVovZHIya+b6OVRs/kcSS8kRyYRKn1KO++PT6vW/ysTAI2HeyC0G+3GXhSelv087iw1ulbkpo26cTXzjPyYoeXmpavzOgCYRJOHj/niXMK3gF7Ij7sxZ3nC3UW8s07Lw==",
+            exp_date: "ctA4Zj1CP0WCiMefPYsyewVbIHNilfwA09X9NSCyWxft4WGwFZmZkhsBJh51QL751/iFkUHbd09ZpDYjS86PqyNPZ5LkBueGHDIghLwWyzH1l99RiIs8urOW9c4g3L1USD+kzzRAqG1DBkW47FAX6AhPSi3YgQd94ery1H+asaqDrP79ayzoJ+nRXeEqe83FIgNUk/J5+EcAz3JYnoBmp1sfz7a4zHkvk0eKCxQWLETdqvONyCZyXdC/4CkaCxJ/87VsN3i4+ToULtSluRv8xr1NpRhzipKiEKTYW1nvNDAaJQezTVP/+GxmTmQfnfpVNDpJbXjNrOTej1HgMFpg4w==",
+            document_id: id
+          }
+    node = user.create_interchange_us_node(args2)
+
+    assert_instance_of SynapsePayRest::InterchangeUsNode, node
+    assert_includes user.nodes, node
+  end
 end
