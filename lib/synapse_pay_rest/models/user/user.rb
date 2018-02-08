@@ -724,6 +724,19 @@ module SynapsePayRest
       IbSubaccountUsNode.create(user: self, **options)
     end
 
+    # Creates a INTERCHANGE-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::InterchangeUsNode]
+    def create_interchange_us_node(**options)
+      InterchangeUsNode.create(user: self, **options)
+    end
+
     # Checks if two User instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id

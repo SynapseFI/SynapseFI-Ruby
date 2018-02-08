@@ -443,6 +443,25 @@ base_doc = base_doc.add_virtual_documents(virtual_doc)
 # => #<SynapsePayRest::BaseDocument>
 ```
 
+#### Add and verify email and phone number 2fa
+
+```ruby
+social_doc = SynapsePayRest::SocialDocument.create(
+  type:  'EMAIL_2FA',
+  value: '1111111111'
+)
+
+# reassign base_doc to the output because it returns a new instance
+base_doc = base_doc.add_social_documents(social_doc)
+# => #<SynapsePayRest::BaseDocument>
+
+# find the social doc with the same doc type
+social_doc_email = base_doc.social_documents.find { |doc| doc.type == 'EMAIL_2FA' }
+
+#verify the mfa_answer sent
+social_doc_email.verify_2fa(mfa_answer: '123456' , value: '1111111111')
+```
+
 ## Node Methods
 
 #### All Nodes for a User
@@ -1090,6 +1109,20 @@ check_info = {
 
 node = user.create_check_us_node(check_info)
 # => #<SynapsePayRest::CheckUsNode>
+```
+
+#### Create INTERCHANGE-US Node
+
+```ruby
+node_info = {
+  nickname:               'my debit card',
+  card_number:            [string of encrypted card number],
+  exp_date:               [string of encrypted exp date (YYYYMM)],
+  document_id:            [string of base doc id],
+}
+
+node = user.create_interchange_us_node(node_info)
+# => #<SynapsePayRest::InterchangeUsNode>
 ```
 
 #### Deactivate a Node

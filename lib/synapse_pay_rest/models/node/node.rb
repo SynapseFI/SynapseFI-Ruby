@@ -22,7 +22,8 @@ module SynapsePayRest
       'CHECK-US'               => CheckUsNode,
       'CLEARING-US'            => ClearingUsNode,
       'IB-DEPOSIT-US'          => IbDepositUsNode,
-      'IB-SUBACCOUNT-US'       => IbSubaccountUsNode
+      'IB-SUBACCOUNT-US'       => IbSubaccountUsNode,
+      'INTERCHANGE-US'         => InterchangeUsNode
     }.freeze
 
     class << self
