@@ -23,7 +23,7 @@ module SynapsePayRest
                 :email_match, :name_match, :phonenumber_match, :address_street,
                 :address_city, :address_subdivision, :address_country_code, 
                 :address_postal_code, :payee_address, :payee_name, :other, :network,
-                :document_id, :card_type
+                :document_id, :card_type, :card_hash, :is_international
 
     class << self
       # Creates a new node in the API associated to the provided user and
@@ -98,6 +98,8 @@ module SynapsePayRest
           document_id:          response['info']['document_id'],
           network:              response['info']['network'],
           card_type:            response['info']['type'],
+          card_hash:            response['info']['card_hash'],
+          is_international:     response['info']['is_international'],
           user_info:            nil,
           transactions:         nil,
           timeline:             nil,

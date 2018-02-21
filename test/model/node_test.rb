@@ -623,7 +623,7 @@ class NodeTest < Minitest::Test
     assert_equal user, node.user
     assert_includes user.nodes, node
 
-    other_instance_vars = [:is_active, :permission, :type, :card_type, :network, :document_id]
+    other_instance_vars = [:is_active, :permission, :type, :card_type, :network, :document_id, :card_hash, :is_international]
 
 
     # verify instance vars readable and mapped to values
