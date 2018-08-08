@@ -727,7 +727,7 @@ module SynapsePayRest
     # Creates a INTERCHANGE-US node.
     # 
     # @param nickname [String] nickname for the node
-    # @param supp_id [String] (optional)
+    # @param document_id [String] Document ID of user's base document that the card is associated with
     # @param gateway_restricted [Boolean] (optional)
     # 
     # @raise [SynapsePayRest::Error]
@@ -735,6 +735,45 @@ module SynapsePayRest
     # @return [SynapsePayRest::InterchangeUsNode]
     def create_interchange_us_node(**options)
       InterchangeUsNode.create(user: self, **options)
+    end
+
+    # Creates a CARD-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param document_id [String] Document ID of user's base document that the card is associated with
+    # @param card_type[String] PHYSICAL or VIRTUAL
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::CardUsNode]
+    def create_card_us_node(**options)
+      CardUsNode.create(user: self, **options)
+    end
+
+    # Creates a SUBCARD-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param document_id [String] Document ID of user's base document that the card is associated with
+    # @param card_type[String] PHYSICAL or VIRTUAL
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::SubcardUsNode]
+    def create_subcard_us_node(**options)
+      SubcardUsNode.create(user: self, **options)
+    end
+
+    # Creates a BTC-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::BtcUsNode]
+    def create_crypto_us_node(**options)
+      CryptoUsNode.create(user: self, **options)
     end
 
     # Checks if two User instances have same id (different instances of same record).

@@ -464,17 +464,58 @@ class UserTest < Minitest::Test
 
   def test_interchange_us_node
     user = test_user_with_base_doc
+    sleep(15)
     id = user.base_documents[0].id
 
     args2 = {
             nickname: 'Debit Card',
-            card_number: "iY4Z2SDX7z6sBv3p6S7XDR71Nbpet3ge/XYol5MnJxBd/RaWg5kMLtax5jxoKQwMc6KNAJK3OhMAUq2S6/04Ramic5f5QVEMqcIEZd+L/gPCPfZHsXh5QoQuaEhc5Yu8bO4ZLDkJPhQebr9Dfao1QN3MZm0eO/4hrxq1jlN6bsKuz7rpDRJgW7m/VhNiH2THizwl9vjFQZqCTC1exCkP6YOVovZHIya+b6OVRs/kcSS8kRyYRKn1KO++PT6vW/ysTAI2HeyC0G+3GXhSelv087iw1ulbkpo26cTXzjPyYoeXmpavzOgCYRJOHj/niXMK3gF7Ij7sxZ3nC3UW8s07Lw==",
+            card_number: "Zoo8g2vBUjt7TwmEpRW8f6eQT3AOEEYePw2LkoxD+mO9lOT5OemHlGwgamgLGUbrmWu3DPwnEr2IqDy5YMFVgvQWP3w9nLOFzFFSW43auDgsVAqZScoRf8nI+6/B9KvOEV4XI8JeyXT+O+y3p3RtbiXGmYQNJ56Hy3hs2E5O+yn+3fpLfJQpVvNc38V+aE21VEsJuXFFNtS/8r4jJ6Dx/etTEaE/rtcEUEbwLLHFHjPiOWaHWZPuhXFLtyYrR9zG8FWSJVFwNTG/mEpv2O7We1iCB+9WoEKqdHyGwjjBcVgkUlU5huJIXv9xj53RGNvmHkDFTqgrlHpKkb0E/Ot0Zg==",
             exp_date: "ctA4Zj1CP0WCiMefPYsyewVbIHNilfwA09X9NSCyWxft4WGwFZmZkhsBJh51QL751/iFkUHbd09ZpDYjS86PqyNPZ5LkBueGHDIghLwWyzH1l99RiIs8urOW9c4g3L1USD+kzzRAqG1DBkW47FAX6AhPSi3YgQd94ery1H+asaqDrP79ayzoJ+nRXeEqe83FIgNUk/J5+EcAz3JYnoBmp1sfz7a4zHkvk0eKCxQWLETdqvONyCZyXdC/4CkaCxJ/87VsN3i4+ToULtSluRv8xr1NpRhzipKiEKTYW1nvNDAaJQezTVP/+GxmTmQfnfpVNDpJbXjNrOTej1HgMFpg4w==",
             document_id: id
           }
     node = user.create_interchange_us_node(args2)
 
     assert_instance_of SynapsePayRest::InterchangeUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_card_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(10)
+    args2 = {
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = user.create_card_us_node(args2)
+
+    assert_instance_of SynapsePayRest::CardUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_subcard_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(10)
+    args2 = {
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = user.create_subcard_us_node(args2)
+
+    assert_instance_of SynapsePayRest::SubcardUsNode, node
+    assert_includes user.nodes, node
+  end
+
+  def test_create_crypto_us_node
+    user = test_user
+    args = test_crypto_us_create_args
+    args.delete(:user)
+    node = user.create_crypto_us_node(args)
+
+    assert_instance_of SynapsePayRest::CryptoUsNode, node
     assert_includes user.nodes, node
   end
 end

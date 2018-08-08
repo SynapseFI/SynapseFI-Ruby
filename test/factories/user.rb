@@ -101,7 +101,7 @@ def test_user_with_base_doc
       entity_type:          'NOT_KNOWN',
       entity_scope:         'Doctor',
       birth_day:            3,
-      birth_month:          19,
+      birth_month:          1,
       birth_year:           1912,
       address_street:       '123 Synapse St',
       address_city:         'San Francisco',

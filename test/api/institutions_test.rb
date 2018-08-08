@@ -6,7 +6,7 @@ class InstitutionsTest < Minitest::Test
     @client       = test_values[:client]
   end
 
-  def test_subscriptions_get
+  def test_institutions_get
     institutions_response = @client.institutions.get()
     assert_equal '0', institutions_response['error_code']
     assert_equal '200', institutions_response['http_code']

@@ -4,22 +4,17 @@ module SynapsePayRest
   # is intended to make it easier to use the API without knowing payload formats
   # or knowledge of REST.
   # 
-  # @todo use mixins to remove duplication between Node and BaseNode.
   class Institution
-    attr_reader :id, :is_active, :scope, :url
+    attr_reader :client, :bank_code, :bank_name, :features, :forgotten_password, :is_active, :logo, :tx_history_months
 
     class << self
-      def all(client:)
-        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
-        response = client.institutions.get()
-        multiple_from_response(response['banks'])
-      end
 
       # Creates an Institution from a response hash.
       # 
       # @note Shouldn't need to call this directly.
-      def from_response(response)
+      def from_response(client, response)
         args = {
+          client:                       client,
           bank_code:                    response['bank_code'],
           bank_name:                    response['bank_name'],
           features:                     response['features'],
@@ -31,14 +26,25 @@ module SynapsePayRest
         self.new(args)
       end
 
-      # Calls from_response on each member of a response collection.
-      def multiple_from_response(response)
-        return [] if response.empty?
-        response.map { |institution_data| from_response(institution_data)}
+      def all(client:)
+        raise ArgumentError, 'client must be a SynapsePayRest::Client' unless client.is_a?(Client)
+        response = client.institutions.get()
+        multiple_from_response(client, response['banks'])
       end
 
-      private
+      # Calls from_response on each member of a response collection.
+      def multiple_from_response(client, response)
+        return [] if response.empty?
+        response.map { |institution_data| from_response(client.dup, institution_data)}
+      end
 
     end
+
+    # @note Do not call directly. Use other class method
+    #   to instantiate via API action.
+    def initialize(**options)
+      options.each { |key, value| instance_variable_set("@#{key}", value) }
+    end
+
   end
 end

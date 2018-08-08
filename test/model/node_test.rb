@@ -609,11 +609,12 @@ class NodeTest < Minitest::Test
 
   def test_create_interchange_us_node
     user = test_user_with_base_doc
+    sleep(15)
     id = user.base_documents[0].id
     args = {
             user: user,
             nickname: 'Debit Card',
-            card_number: "iY4Z2SDX7z6sBv3p6S7XDR71Nbpet3ge/XYol5MnJxBd/RaWg5kMLtax5jxoKQwMc6KNAJK3OhMAUq2S6/04Ramic5f5QVEMqcIEZd+L/gPCPfZHsXh5QoQuaEhc5Yu8bO4ZLDkJPhQebr9Dfao1QN3MZm0eO/4hrxq1jlN6bsKuz7rpDRJgW7m/VhNiH2THizwl9vjFQZqCTC1exCkP6YOVovZHIya+b6OVRs/kcSS8kRyYRKn1KO++PT6vW/ysTAI2HeyC0G+3GXhSelv087iw1ulbkpo26cTXzjPyYoeXmpavzOgCYRJOHj/niXMK3gF7Ij7sxZ3nC3UW8s07Lw==",
+            card_number: "Zoo8g2vBUjt7TwmEpRW8f6eQT3AOEEYePw2LkoxD+mO9lOT5OemHlGwgamgLGUbrmWu3DPwnEr2IqDy5YMFVgvQWP3w9nLOFzFFSW43auDgsVAqZScoRf8nI+6/B9KvOEV4XI8JeyXT+O+y3p3RtbiXGmYQNJ56Hy3hs2E5O+yn+3fpLfJQpVvNc38V+aE21VEsJuXFFNtS/8r4jJ6Dx/etTEaE/rtcEUEbwLLHFHjPiOWaHWZPuhXFLtyYrR9zG8FWSJVFwNTG/mEpv2O7We1iCB+9WoEKqdHyGwjjBcVgkUlU5huJIXv9xj53RGNvmHkDFTqgrlHpKkb0E/Ot0Zg==",
             exp_date: "ctA4Zj1CP0WCiMefPYsyewVbIHNilfwA09X9NSCyWxft4WGwFZmZkhsBJh51QL751/iFkUHbd09ZpDYjS86PqyNPZ5LkBueGHDIghLwWyzH1l99RiIs8urOW9c4g3L1USD+kzzRAqG1DBkW47FAX6AhPSi3YgQd94ery1H+asaqDrP79ayzoJ+nRXeEqe83FIgNUk/J5+EcAz3JYnoBmp1sfz7a4zHkvk0eKCxQWLETdqvONyCZyXdC/4CkaCxJ/87VsN3i4+ToULtSluRv8xr1NpRhzipKiEKTYW1nvNDAaJQezTVP/+GxmTmQfnfpVNDpJbXjNrOTej1HgMFpg4w==",
             document_id: id
           }
@@ -623,10 +624,182 @@ class NodeTest < Minitest::Test
     assert_equal user, node.user
     assert_includes user.nodes, node
 
-    other_instance_vars = [:is_active, :permission, :type, :card_type, :network, :document_id, :card_hash, :is_international]
+    other_instance_vars = [:is_active, :permission, :type, :interchange_type, :network, :document_id, :card_hash, :is_international]
 
 
     # verify instance vars readable and mapped to values
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_create_card_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::CardUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::CardUsNode, node
+    assert_equal user, node.user
+    assert_includes user.nodes, node
+
+    other_instance_vars = [:is_active, :permission, :type, :document_id, :allow_foreign_transactions, :atm_withdrawal_limit, :max_pin_attempts, :pos_withdrawal_limit, :security_alerts, :card_type]
+
+
+    # verify instance vars readable and mapped to values
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_create_subcard_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::SubcardUsNode.create(args)
+
+    assert_instance_of SynapsePayRest::SubcardUsNode, node
+    assert_equal user, node.user
+    assert_includes user.nodes, node
+
+    other_instance_vars = [:is_active, :permission, :type, :document_id, :allow_foreign_transactions, :atm_withdrawal_limit, :max_pin_attempts, :pos_withdrawal_limit, :security_alerts, :card_type]
+
+
+    # verify instance vars readable and mapped to values
+    other_instance_vars.each { |var| refute_nil node.send(var) }
+  end
+
+  def test_update_allowed_subcard_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::SubcardUsNode.create(args)
+
+    node = node.update_allowed(allowed:'PENDING')
+
+    assert_equal 'PENDING', node.permission
+  end
+
+  def test_update_allowed_card_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::CardUsNode.create(args)
+
+    node = node.update_allowed(allowed:'PENDING')
+
+    assert_equal 'PENDING', node.permission
+  end
+
+  def test_update_preferences_subcard_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::SubcardUsNode.create(args)
+
+    args2 = {
+              max_pin_attempts: 4
+            }
+
+    node = node.update_preferences(args2)
+
+    assert_equal 4, node.max_pin_attempts
+  end
+
+  def test_update_preferences_card_us_node
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::CardUsNode.create(args)
+
+    args2 = {
+              max_pin_attempts: 4
+            }
+
+    node = node.update_preferences(args2)
+
+    assert_equal 4, node.max_pin_attempts
+  end
+
+  def test_reissue_card
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::CardUsNode.create(args)
+    sleep(5)
+
+    node = node.reissue_card
+
+    assert_equal 'PENDING', node.permission
+  end
+
+  def test_reorder_card
+    user = test_user_with_base_doc
+    id = user.base_documents[0].id
+    sleep(15)
+    args = {
+            user: user,
+            nickname: 'Debit Card',
+            document_id: id,
+            card_type: 'PHYSICAL'
+          }
+    node = SynapsePayRest::CardUsNode.create(args)
+    sleep(5)
+
+    node = node.reorder_card
+
+    assert_equal 'CREDIT-AND-DEBIT', node.permission
+  end
+
+
+  def test_create_crypto_us_node
+    args = test_crypto_us_create_args(user: @user)
+    node = SynapsePayRest::CryptoUsNode.create(args)
+
+    other_instance_vars = [:is_active, :permission, :type, :access_token, :portfolio_BTC, :portfolio_ETH]
+
+    assert_instance_of SynapsePayRest::CryptoUsNode, node
+    assert_equal @user, node.user
+    assert_includes @user.nodes, node
+
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
 end

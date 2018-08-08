@@ -24,7 +24,7 @@ class ClientTest < Minitest::Test
   def test_endpoint_changes_when_development_mode_false
     @options[:development_mode] = false
     client = SynapsePayRest::Client.new(@options)
-    assert_equal client.client.base_url, 'https://synapsepay.com/api/3'
+    assert_equal client.client.base_url, 'https://api.synapsefi.com/v3.1'
   end
 
   def test_instance_reader_methods
@@ -63,5 +63,12 @@ class ClientTest < Minitest::Test
 
     assert_equal ['CLIENT|CONTROLS'], response.scope
     refute_nil response.public_key
+  end
+
+  def test_crypto_quote
+    client = SynapsePayRest::Client.new(@options)
+    response = client.get_crypto_quotes
+
+    refute_nil response.btcusd
   end
 end

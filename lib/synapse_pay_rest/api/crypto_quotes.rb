@@ -1,6 +1,6 @@
 module SynapsePayRest
-  # Wrapper class for /institutions endpoints
-  class Institutions
+  # Wrapper class for /client endpoint
+  class CryptoQuotes
 
     # @!attribute [rw] client
     #   @return [SynapsePayRest::HTTPClient]
@@ -10,22 +10,21 @@ module SynapsePayRest
     def initialize(client)
       @client = client
     end
-
-    # Sends a GET request to /v3.1/institutions endpoint. 
+    
+    # Sends a GET request to /crypto-quotes endpoint to get btc exchange rate and returns the
+    # response.
     # 
+    # @param scope [String]
     # 
     # @raise [SynapsePayRest::Error] may return subclasses of error based on 
     # HTTP response from API
     # 
     # @return [Hash] API response
-    # 
-    # @todo Probably should use CGI or RestClient's param builder instead of
-    # rolling our own, probably error-prone and untested version
-    # https://github.com/rest-client/rest-client#usage-raw-url
     def get()
-      path = '/institutions'
+      path = '/nodes/crypto-quotes'
       client.get(path)
     end
+    private
     
   end
 end
