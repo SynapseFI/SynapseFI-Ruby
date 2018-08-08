@@ -12,16 +12,6 @@ class Crypto_QuotesTest < Minitest::Test
     @user = test_user
   end
 
-  # def test_crypto_quote_get
-  # 	client = SynapsePayRest::Client.new(@options)
-
-  #   args = test_btc_us_create_args(user: @user)
-  #   node = SynapsePayRest::BtcUsNode.create(args)
-
-  #   crypto_quotes_response = client.crypto_quotes.get(node_id: node, user_id: @user.id)
-  #   refute_nil crypto_quotes_response['funding']
-  # end
-
   def test_crypto_quote_get
     client = SynapsePayRest::Client.new(@options)
 

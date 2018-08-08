@@ -12,23 +12,7 @@ class CryptoQuoteTest < Minitest::Test
     @user = test_user 
   end
 
-  # def test_get_crypto_quote
-  #   client = SynapsePayRest::Client.new(@options)
-
-  #   args = test_btc_us_create_args(user: @user)
-  #   node = SynapsePayRest::BtcUsNode.create(args)
-
-  #   crypto_quote = node.crypto_quotes
-    
-  #   assert_instance_of SynapsePayRest::CryptoQuote, crypto_quote
-
-  #   other_instance_vars = [:client, :funding_exchange_rate, :funding_from, :funding_to, :unfunding_exchange_rate,
-  #               :unfunding_from, :unfunding_to]
-
-  #   other_instance_vars.each { |var| refute_nil crypto_quote.send(var) }
-  # end
-
-    def test_get_crypto_quote
+  def test_get_crypto_quote
     client = SynapsePayRest::Client.new(@options)
     crypto_quote = SynapsePayRest::CryptoQuote.get(client: client)
     
