@@ -1168,6 +1168,7 @@ card_prefs = {
 
 node = node.update_preferences(card_prefs)
 # => #<SynapsePayRest::CardUsNode>
+```
 
 #### Deactivate a Node
 
@@ -1389,7 +1390,8 @@ atm_info = {
    }
 
 atms = SynapsePayRest::Atm.locate(atm_info)
-# => [#<SynapsePayRest::Atm>, #<SynapsePayRest::Atm>, ...]```
+# => [#<SynapsePayRest::Atm>, #<SynapsePayRest::Atm>, ...]
+```
 
 ##### b) ATM#locate
 
