@@ -47,7 +47,7 @@ module SynapsePayRest
         self.class.from_response(user, response)
       end
 
-      # Reorders Dbit Card on a node
+      # Reorders Debit Card on a node
       # Use Reorder if the user wishes to keep the same card number but want to order a new plastic. 
       #Can be used in scenarios where the user's card was destroyed.
       # 
