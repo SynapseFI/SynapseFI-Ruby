@@ -12,7 +12,7 @@ module SynapsePayRest
     attr_reader :node, :id, :amount, :currency, :client_id, :client_name, :created_on,
                 :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
                 :recent_status, :timeline, :from, :to, :to_type, :to_id,
-                :fee_amount, :fee_note, :fee_to_id
+                :fee_amount, :fee_note, :fee_to_id , :asset, :same_day
 
     class << self
       # Creates a new transaction in the API belonging to the provided node and
@@ -130,6 +130,7 @@ module SynapsePayRest
           latlon:        response['extra']['latlon'],
           note:          response['extra']['note'],
           process_on:    response['extra']['process_on'],
+          same_day:      response['extra']['same_day'],
           supp_id:       response['extra']['supp_id'],
           webhook:       response['extra']['webhook'],
           fees:          response['fees'],
@@ -166,6 +167,8 @@ module SynapsePayRest
           }
         }
         # optional payload fields
+        payload['extra']['asset']      = options[:asset] if options[:asset]
+        payload['extra']['same_day']   = options[:same_day] if options[:same_day]
         payload['extra']['supp_id']    = options[:supp_id] if options[:supp_id]
         payload['extra']['note']       = options[:note] if options[:note]
         payload['extra']['process_on'] = options[:process_in] if options[:process_in]

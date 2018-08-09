@@ -10,6 +10,8 @@ require 'synapse_pay_rest/api/transactions'
 require 'synapse_pay_rest/api/subscriptions'
 require 'synapse_pay_rest/api/institutions'
 require 'synapse_pay_rest/api/client'
+require 'synapse_pay_rest/api/atms'
+require 'synapse_pay_rest/api/crypto_quotes'
 
 # general library classes
 require 'synapse_pay_rest/error'
@@ -58,6 +60,9 @@ require 'synapse_pay_rest/models/node/clearing_us_node.rb'
 require 'synapse_pay_rest/models/node/ib_deposit_us_node.rb'
 require 'synapse_pay_rest/models/node/ib_subaccount_us_node.rb'
 require 'synapse_pay_rest/models/node/interchange_us_node.rb'
+require 'synapse_pay_rest/models/node/card_us_node.rb'
+require 'synapse_pay_rest/models/node/subcard_us_node.rb'
+require 'synapse_pay_rest/models/node/crypto_us_node.rb'
 
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'
@@ -79,6 +84,9 @@ require 'synapse_pay_rest/models/institution/institution'
 
 require 'synapse_pay_rest/models/client/issue_public_key'
 
+require 'synapse_pay_rest/models/atm/atm'
+
+require 'synapse_pay_rest/models/crypto_quote/crypto_quote'
 
 
 # Namespace for all SynapsePayRest classes and modules

@@ -14,7 +14,7 @@ module SynapsePayRest
     # @!attribute [rw] subscriptions
     #   @return [SynapsePayRest::Subscriptions]
     attr_accessor :http_client, :users, :nodes, :subnets, :transactions, :subscriptions, :institutions,
-                  :client_endpoint
+                  :client_endpoint, :atms, :crypto_quotes
 
     # Alias for #transactions (legacy name)
     alias_method :trans, :transactions
@@ -49,6 +49,8 @@ module SynapsePayRest
       @subscriptions    = Subscriptions.new @http_client
       @institutions     = Institutions.new @http_client
       @client_endpoint  = ClientEndpoint.new @http_client
+      @atms             = Atms.new @http_client
+      @crypto_quotes    = CryptoQuotes.new @http_client
     end
 
   
@@ -56,5 +58,10 @@ module SynapsePayRest
     def issue_public_key(scope: "OAUTH|POST,USERS|POST,USERS|GET,USER|GET,USER|PATCH,SUBSCRIPTIONS|GET,SUBSCRIPTIONS|POST,SUBSCRIPTION|GET,SUBSCRIPTION|PATCH,CLIENT|REPORTS,CLIENT|CONTROLS")
       PublicKey.issue(client: self, scope: scope)
     end
+
+    def get_crypto_quotes()
+      CryptoQuote.get(client: self)
+    end
+
   end
 end

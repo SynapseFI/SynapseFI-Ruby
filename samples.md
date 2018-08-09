@@ -1125,6 +1125,51 @@ node = user.create_interchange_us_node(node_info)
 # => #<SynapsePayRest::InterchangeUsNode>
 ```
 
+#### Create CARD-US Node
+
+```ruby
+id = base_document.id
+
+node_info = {
+  nickname: 'Debit Card',
+  document_id: id,
+  card_type: 'PHYSICAL',
+  card_style_id: '550' #optional -- only pass this in if there are multiple styles
+}
+
+card_node = user.create_card_us_node(node_info)
+# => #<SynapsePayRest::CardUsNode>
+```
+
+#### Reorder CARD-US Node
+
+```ruby
+node = card_node.reorder_card
+# => #<SynapsePayRest::CardUsNode>
+```
+
+#### Reissue CARD-US Node
+
+```ruby
+node = card_node.reissue_card
+# => #<SynapsePayRest::CardUsNode>
+```
+
+#### Update CARD-US Preferences
+
+```ruby
+card_prefs = {
+    allow_foreign_transactions: true,
+    atm_withdrawal_limit: 6000,
+    max_pin_attempts: 4,
+    pos_withdrawal_limit: 100,
+    security_alerts: false
+}
+
+node = node.update_preferences(card_prefs)
+# => #<SynapsePayRest::CardUsNode>
+```
+
 #### Deactivate a Node
 
 This deactivates the node. It does not automatically cancel any transactions already underway.
@@ -1292,9 +1337,73 @@ public_key = client.issue_public_key(scope: ‘CLIENT|CONTROLS’)
 # => #<SynapsePayRest::Public_key>
 ```
 
-##### b) Subnet#all
+##### b) PublicKey#issue
 
 ```ruby
 public_key = SynapsePayRest::PublicKey.issue(client: client, scope: ‘CLIENT|CONTROLS')
 # => #<SynapsePayRest::Public_key>
+```
+
+## Crypto Quote Method
+
+#### Get Crypto Quote From Client
+
+##### a) Client#get_crypto_quotes
+
+```ruby
+crypto_quotes = client.get_crypto_quotes
+# => #<SynapsePayRest::CryptoQuote>
+```
+
+##### b) CryptoQuote#get
+
+```ruby
+crypto_quote = SynapsePayRest::CryptoQuote.get(client: client)
+# => #<SynapsePayRest::CryptoQuote>
+```
+
+## Institution Method
+
+#### Get Institutions
+
+##### a) Institutions#all
+
+```ruby
+institutions = SynapsePayRest::Institution.all(client: client)
+# => [#<SynapsePayRest::Institution>, #<SynapsePayRest::Institution>, ...]
+```
+
+## Locate ATM Method
+
+#### Locate nearby ATMs with lat/lon or zipcode
+
+##### a) ATM#locate
+
+```ruby
+atm_info = {
+  client: client,
+  lat: '37.764832',
+  lon: '-122.419304',
+  radius: '5',
+  page: 1,
+  per_page: 10
+   }
+
+atms = SynapsePayRest::Atm.locate(atm_info)
+# => [#<SynapsePayRest::Atm>, #<SynapsePayRest::Atm>, ...]
+```
+
+##### b) ATM#locate
+
+```ruby
+atm_args = {
+  client: client,
+  zip: '95131',
+  radius: '10',
+  page: 1,
+  per_page: 10
+   }
+
+atms = SynapsePayRest::Atm.locate(atm_args)
+# => [#<SynapsePayRest::Atm>, #<SynapsePayRest::Atm>, ...]
 ```
