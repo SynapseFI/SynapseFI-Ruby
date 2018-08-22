@@ -53,7 +53,7 @@ module SynapsePayRest
       # 
       # @raise [SynapsePayRest::Error] if wrong guess or HTTP error
       # 
-      # @return [SynapsePayRest::CardUsNode]
+      # @return [SynapsePayRest::cardUsNode]
       def reorder_card()
         response = user.client.nodes.reorder_card(user_id: user.id, node_id: id)
         self.class.from_response(user, response)
