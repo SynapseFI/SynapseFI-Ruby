@@ -552,7 +552,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency, :monthly_withdrawals_remaining]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
@@ -573,7 +573,7 @@ class NodeTest < Minitest::Test
     assert_equal @user, node.user
     assert_includes @user.nodes, node
 
-    other_instance_vars = [:is_active, :permission, :type, :balance, :currency]
+    other_instance_vars = [:is_active, :permission, :type, :balance, :currency, :monthly_withdrawals_remaining]
 
     # verify instance vars readable and mapped to values
     args.each do |var_name, value|
