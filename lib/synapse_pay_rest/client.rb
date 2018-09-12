@@ -14,7 +14,7 @@ module SynapsePayRest
     # @!attribute [rw] subscriptions
     #   @return [SynapsePayRest::Subscriptions]
     attr_accessor :http_client, :users, :nodes, :subnets, :transactions, :subscriptions, :institutions,
-                  :client_endpoint, :atms, :crypto_quotes
+                  :client_endpoint, :atms, :crypto_quotes, :statements
 
     # Alias for #transactions (legacy name)
     alias_method :trans, :transactions
@@ -51,6 +51,7 @@ module SynapsePayRest
       @client_endpoint  = ClientEndpoint.new @http_client
       @atms             = Atms.new @http_client
       @crypto_quotes    = CryptoQuotes.new @http_client
+      @statements       = Statements.new @http_client
     end
 
   

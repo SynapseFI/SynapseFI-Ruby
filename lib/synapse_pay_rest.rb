@@ -12,6 +12,7 @@ require 'synapse_pay_rest/api/institutions'
 require 'synapse_pay_rest/api/client'
 require 'synapse_pay_rest/api/atms'
 require 'synapse_pay_rest/api/crypto_quotes'
+require 'synapse_pay_rest/api/statements'
 
 # general library classes
 require 'synapse_pay_rest/error'
@@ -87,6 +88,8 @@ require 'synapse_pay_rest/models/client/issue_public_key'
 require 'synapse_pay_rest/models/atm/atm'
 
 require 'synapse_pay_rest/models/crypto_quote/crypto_quote'
+
+require 'synapse_pay_rest/models/statement/statement'
 
 
 # Namespace for all SynapsePayRest classes and modules

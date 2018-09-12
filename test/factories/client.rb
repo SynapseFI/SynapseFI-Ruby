@@ -113,6 +113,11 @@ def test_client_with_instutitions
   {client: client}
 end
 
+def test_client_with_statements
+  client = test_client
+  {client: client}
+end
+
 def test_client_with_crypto_quote
   client = test_client
   {client: client}

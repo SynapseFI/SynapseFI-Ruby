@@ -768,7 +768,7 @@ class NodeTest < Minitest::Test
 
     node = node.reissue_card
 
-    assert_equal 'PENDING', node.permission
+    assert_equal 'INACTIVE', node.permission
   end
 
   def test_reorder_card
@@ -786,7 +786,7 @@ class NodeTest < Minitest::Test
 
     node = node.reorder_card
 
-    assert_equal 'CREDIT-AND-DEBIT', node.permission
+    assert_equal 'INACTIVE', node.permission
   end
 
 
