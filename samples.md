@@ -1407,3 +1407,29 @@ atm_args = {
 atms = SynapsePayRest::Atm.locate(atm_args)
 # => [#<SynapsePayRest::Atm>, #<SynapsePayRest::Atm>, ...]
 ```
+
+## Get Statement Method
+
+#### Get Statement By User or Node
+
+##### a) Statement#by_user
+
+```ruby
+user = SynapsePayRest::User.find(client: client, id: '5b5f95dc83403300fbc76')
+
+statements = SynapsePayRest::Statement.by_user(client: client, user: user)
+# => [#<SynapsePayRest::Statement>, #<SynapsePayRest::Statement>, ...]
+```
+
+##### b) Statement#by_node
+
+```ruby
+user = SynapsePayRest::User.find(client: client, id: '5b5f95dc83403300fbc76')
+
+node = user.find_node(id: '5b634a241jngjnei04c7b39b1')
+
+
+
+statements = SynapsePayRest::Statement.by_node(client: client, node: node)
+# => [#<SynapsePayRest::Statement>, #<SynapsePayRest::Statement>, ...]
+```
