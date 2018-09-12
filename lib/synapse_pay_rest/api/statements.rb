@@ -18,12 +18,13 @@ module SynapsePayRest
     # Sends a GET request /node or /user statments endpoint to retrieve statements, and returns the
     # response.
     # 
-    # @param scope [String]
+    # @param user_id [String]
+    # @param node_id [String] optional
     # 
     # @raise [SynapsePayRest::Error] may return subclasses of error based on 
     # HTTP response from API
     # 
-    # @return [Hash] API responsea
+    # @return [Hash] API response
     def get(user_id:, node_id: nil, **options)
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
