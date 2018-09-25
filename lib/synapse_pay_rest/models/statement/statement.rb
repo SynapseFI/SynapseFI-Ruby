@@ -4,7 +4,7 @@ module SynapsePayRest
   # is intended to make it easier to use the API without knowing payload formats
   # or knowledge of REST.
   class Statement
-    attr_reader :client, :id, :date_end, :date_start, :csv_url, :pdf_url, :user, :node
+    attr_reader :client, :id, :date_end, :date_start, :csv_url, :pdf_url, :json_url, :user, :node
 
     class << self
       # Creates a statements instance from a response hash.
@@ -16,7 +16,8 @@ module SynapsePayRest
           date_end:                 response['date_end'],
           date_start:               response['date_start'],
           csv_url:                  response['urls']['csv'],
-          pdf_url:                  response['urls']['pdf']
+          pdf_url:                  response['urls']['pdf'],
+          json_url:                 response['urls']['json']
         }
         self.new(args)
       end

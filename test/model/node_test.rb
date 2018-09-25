@@ -802,4 +802,22 @@ class NodeTest < Minitest::Test
 
     other_instance_vars.each { |var| refute_nil node.send(var) }
   end
+
+  def test_user_get_statement
+    @options = {
+      client_id:        ENV.fetch('TEST_CLIENT_ID'),
+      client_secret:    ENV.fetch('TEST_CLIENT_SECRET'),
+      ip_address:       '127.0.0.1',
+      fingerprint:      ENV.fetch('FINGERPRINT'),
+      development_mode: true
+    } 
+    client = SynapsePayRest::Client.new(@options)
+    user = SynapsePayRest::User.find(client: client, id: '5a271c2592571b0034c0d9d8')
+    node = user.find_node(id: '5a399beece31670034632427')
+    response = node.get_statement()
+
+    refute_nil response[1].pdf_url
+    refute_nil response[1].csv_url
+    refute_nil response[1].json_url
+  end
 end

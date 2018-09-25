@@ -384,6 +384,16 @@ module SynapsePayRest
       Subnet.find(node: self, id: id)
     end
 
+    # Get statement for node
+    # Only available for native synapse nodes
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::Statement]
+    def get_statement()
+      Statement.by_node(client: self.user.client, node: self)
+    end
+
     # Deactivates the node. 
     # 
     # @raise [SynapsePayRest::Error]

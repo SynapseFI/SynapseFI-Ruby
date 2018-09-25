@@ -1433,3 +1433,20 @@ node = user.find_node(id: '5b634a241jngjnei04c7b39b1')
 statements = SynapsePayRest::Statement.by_node(client: client, node: node)
 # => [#<SynapsePayRest::Statement>, #<SynapsePayRest::Statement>, ...]
 ```
+##### c) User#get_statement
+
+```ruby
+user = SynapsePayRest::User.find(client: client, id: '5b5f95dc83403300fbc76')
+
+statements = user.get_statement()
+# => [#<SynapsePayRest::Statement>, #<SynapsePayRest::Statement>, ...]
+```
+##### d) Node#get_statement
+
+```ruby
+user = SynapsePayRest::User.find(client: client, id: '5b5f95dc83403300fbc76')
+node = user.find_node(id: '5b634a241jngjnei04c7b39b1')
+
+statements = node.get_statement()
+# => [#<SynapsePayRest::Statement>, #<SynapsePayRest::Statement>, ...]
+```
