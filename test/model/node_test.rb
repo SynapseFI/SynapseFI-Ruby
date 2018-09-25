@@ -808,7 +808,7 @@ class NodeTest < Minitest::Test
       client_id:        ENV.fetch('TEST_CLIENT_ID'),
       client_secret:    ENV.fetch('TEST_CLIENT_SECRET'),
       ip_address:       '127.0.0.1',
-      fingerprint:      'c7e516361e6e5453de96223616d73a7b',
+      fingerprint:      ENV.fetch('FINGERPRINT'),
       development_mode: true
     } 
     client = SynapsePayRest::Client.new(@options)
