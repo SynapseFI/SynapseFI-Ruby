@@ -776,6 +776,18 @@ module SynapsePayRest
       CryptoUsNode.create(user: self, **options)
     end
 
+
+    # Gets statement for user
+    # 
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::Statement]
+
+    def get_statement()
+      Statement.by_user(client: self.client, user:self)
+    end
+
     # Checks if two User instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id

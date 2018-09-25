@@ -518,4 +518,21 @@ class UserTest < Minitest::Test
     assert_instance_of SynapsePayRest::CryptoUsNode, node
     assert_includes user.nodes, node
   end
+
+  def test_user_get_statement
+    @options = {
+      client_id:        ENV.fetch('TEST_CLIENT_ID'),
+      client_secret:    ENV.fetch('TEST_CLIENT_SECRET'),
+      ip_address:       '127.0.0.1',
+      fingerprint:      'c7e516361e6e5453de96223616d73a7b',
+      development_mode: true
+    } 
+    client = SynapsePayRest::Client.new(@options)
+    user = SynapsePayRest::User.find(client: client, id: '5a271c2592571b0034c0d9d8')
+    response = user.get_statement()
+
+    refute_nil response[1].pdf_url
+    refute_nil response[1].csv_url
+    refute_nil response[1].json_url
+  end
 end
