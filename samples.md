@@ -26,6 +26,8 @@ args = {
   logging:          true,
   # (optional) file path to write logs to
   log_to:           nil
+  # (optional) URL used to proxy outbound requests
+  proxy_url:        nil
 }
 
 client = SynapsePayRest::Client.new(args)

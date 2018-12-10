@@ -10,6 +10,10 @@ module SynapsePayRest
     #   @return [Hash] various settings related to request headers
     attr_accessor :base_url, :config
 
+    # @!attribute [rw] proxy_url
+    #   @return [String] the url which is used to proxy outboard requests
+    attr_reader :proxy_url
+
     # @param base_url [String] the base url of the API (production or sandbox)
     # @param client_id [String]
     # @param client_secret [String]
@@ -17,11 +21,15 @@ module SynapsePayRest
     # @param ip_address [String]
     # @param logging [Boolean] (optional) logs to stdout when true
     # @param log_to [String] (optional) file path to log to file (logging must be true)
+    # @param proxy_url [String] (optional) proxy url which is used to proxy outbound requests
     def initialize(base_url:, client_id:, fingerprint:, ip_address:,
                    client_secret:, **options)
       log_to         = options[:log_to] || 'stdout'
       RestClient.log = log_to if options[:logging]
       @logging       = options[:logging]
+
+      RestClient.proxy = options[:proxy_url] if options[:proxy_url]
+      @proxy_url = options[:proxy_url]
 
       @config = {
         client_id:     client_id,
