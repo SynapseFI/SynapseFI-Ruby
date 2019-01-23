@@ -763,7 +763,7 @@ module SynapsePayRest
       SubcardUsNode.create(user: self, **options)
     end
 
-    # Creates a BTC-US node.
+    # Creates a CRYPTO-US node.
     # 
     # @param nickname [String] nickname for the node
     # @param supp_id [String] (optional)
@@ -771,9 +771,22 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [SynapsePayRest::BtcUsNode]
+    # @return [SynapsePayRest::CryptoUsNode]
     def create_crypto_us_node(**options)
       CryptoUsNode.create(user: self, **options)
+    end
+
+    # Creates a CUSTODY-US node.
+    # 
+    # @param nickname [String] nickname for the node
+    # @param supp_id [String] (optional)
+    # @param gateway_restricted [Boolean] (optional)
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [SynapsePayRest::CustodyUsNode]
+    def create_custody_us_node(**options)
+      CustodyUsNode.create(user: self, **options)
     end
 
 

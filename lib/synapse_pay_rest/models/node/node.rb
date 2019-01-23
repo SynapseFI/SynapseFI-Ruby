@@ -26,7 +26,8 @@ module SynapsePayRest
       'INTERCHANGE-US'         => InterchangeUsNode,
       'CARD-US'                => CardUsNode,
       'SUBCARD-US'             => SubcardUsNode,
-      'CRYPTO-US'              => CryptoUsNode
+      'CRYPTO-US'              => CryptoUsNode,
+      "CUSTODY-US"             => CustodyUsNode
     }.freeze
 
     class << self

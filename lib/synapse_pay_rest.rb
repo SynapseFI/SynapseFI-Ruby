@@ -64,6 +64,7 @@ require 'synapse_pay_rest/models/node/interchange_us_node.rb'
 require 'synapse_pay_rest/models/node/card_us_node.rb'
 require 'synapse_pay_rest/models/node/subcard_us_node.rb'
 require 'synapse_pay_rest/models/node/crypto_us_node.rb'
+require 'synapse_pay_rest/models/node/custody_us_node.rb'
 
 # iou
 require 'synapse_pay_rest/models/node/iou_node.rb'
