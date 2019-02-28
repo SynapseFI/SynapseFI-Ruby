@@ -6,9 +6,9 @@ module SynapsePayRest
   # 
   class Subnet
     # @!attribute [rw] node
-    attr_reader :id, :account_num, :allowed, :client_id, :client_name, :nickname, :node, :routing_num_ach, 
-                :routing_num_wire
-                
+    attr_reader :id, :account_num, :account_class, :allowed, :client_id, :client_name, :nickname, :node,
+                :routing_num_ach, :routing_num_wire, :status
+
 
     class << self
       # Creates a new subnet in the API belonging to the provided node and
@@ -97,6 +97,7 @@ module SynapsePayRest
           node:               node,
           id:                 response['_id'],
           account_num:        response['account_num'],
+          account_class:      response['account_class'],
           allowed:            response['allowed'],
           client_id:          response['client']['id'],
           client_name:        response['client']['name'],
@@ -104,6 +105,7 @@ module SynapsePayRest
           node_id:            response['node_id'],
           routing_num_ach:    response['routing_num']['ach'],
           routing_num_wire:   response['routing_num']['wire'],
+          status:             response['status'],
           user_id:            response['user_id']
         }
         self.new(args)
