@@ -9,7 +9,7 @@ module SynapsePayRest
     attr_accessor :user, :email, :phone_number, :ip, :name, :aka, :entity_type,
                   :entity_scope, :birth_day, :birth_month, :birth_year,
                   :address_street, :address_city, :address_subdivision,
-                  :address_postal_code, :address_country_code, 
+                  :address_postal_code, :address_country_code, :id_score,
                   :physical_documents, :social_documents, :virtual_documents, 
                   :alias, :screening_results
     attr_reader :id, :permission_scope
@@ -46,7 +46,7 @@ module SynapsePayRest
       def create(user:, email:, phone_number:, ip:, name:,
         aka:, entity_type:, entity_scope:, birth_day:, birth_month:, birth_year:,
         address_street:, address_city:, address_subdivision:, address_postal_code:,
-        address_country_code:, physical_documents: [], social_documents: [],
+        address_country_code:, id_score:, physical_documents: [], social_documents: [],
         virtual_documents: [])
         raise ArgumentError, 'user must be a User object' unless user.is_a?(User)
         [email, phone_number, ip, name, aka, entity_type, entity_scope, 
@@ -54,6 +54,7 @@ module SynapsePayRest
          address_country_code].each do |arg|
            raise ArgumentError, "#{arg} must be a String" unless arg.is_a?(String)
         end
+        raise ArgumentError, 'id_score must be a Float' unless id_score.is_a?(Float)
         [physical_documents, social_documents, virtual_documents].each do |arg|
           raise ArgumentError, "#{arg} must be an Array" unless arg.is_a?(Array)
         end
@@ -84,6 +85,7 @@ module SynapsePayRest
           "address_subdivision"=>address_subdivision,
           "address_postal_code"=>address_postal_code,
           "address_country_code"=>address_country_code,
+          "id_score"=>id_score,
           "physical_documents"=>physical_documents,
           "social_documents"=>social_documents,
           "virtual_documents"=>virtual_documents
@@ -122,6 +124,7 @@ module SynapsePayRest
             "address_postal_code"=>base_documents_data.first['address_postal_code'],
             "address_street"=>base_documents_data.first['address_street'],
             "address_subdivision"=>base_documents_data.first['address_subdivision'],
+            "id_score"=>base_documents_data.first['id_score'],
             "alias"=>base_documents_data.first['alias'],
             "birth_day"=>base_documents_data.first['day'],
             "email"=>base_documents_data.first['email'],
@@ -179,6 +182,7 @@ module SynapsePayRest
       @address_subdivision  = args["address_subdivision"]
       @address_postal_code  = args["address_postal_code"]
       @address_country_code = args["address_country_code"]
+      @id_score             = args["id_score"]
       @screening_results    = args["screening_results"]
       @physical_documents   = args["physical_documents"]
       @social_documents     = args["social_documents"]
