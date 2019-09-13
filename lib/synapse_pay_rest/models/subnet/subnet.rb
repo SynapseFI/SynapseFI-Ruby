@@ -7,8 +7,8 @@ module SynapsePayRest
   class Subnet
     # @!attribute [rw] node
     attr_reader :id, :account_num, :account_class, :allowed, :client_id, :client_name, :nickname, :node,
-                :routing_num_ach, :routing_num_wire, :status
-
+                :routing_num_ach, :routing_num_wire, :status, :account_class, :card_hash, :card_number,
+                :cvc, :exp, :card_style_id
 
     class << self
       # Creates a new subnet in the API belonging to the provided node and
@@ -96,18 +96,17 @@ module SynapsePayRest
         args = {
           node:               node,
           id:                 response['_id'],
-          account_num:        response['account_num'],
           account_class:      response['account_class'],
           allowed:            response['allowed'],
           client_id:          response['client']['id'],
           client_name:        response['client']['name'],
           nickname:           response['nickname'],
           node_id:            response['node_id'],
-          routing_num_ach:    response['routing_num']['ach'],
-          routing_num_wire:   response['routing_num']['wire'],
           status:             response['status'],
           user_id:            response['user_id']
         }
+        additional_args = response['account_class'] == "CHECKING" ? args_for_checking_subnet(response) : args_for_card_subnet(response)
+        args.merge(additional_args)
         self.new(args)
       end
 
@@ -117,11 +116,31 @@ module SynapsePayRest
         payload = {
           'nickname' => nickname
         }
+        payload['account_class'] = options[:account_class] if options[:account_class].present?
+        payload
       end
 
       def multiple_from_response(node, response)
         return [] if response.empty?
         response.map { |subnets_data| from_response(node, subnets_data) }
+      end
+
+      def args_for_checking_subnet(response)
+        {
+          account_num:        response['account_num'],
+          routing_num_ach:    response['routing_num']['ach'],
+          routing_num_wire:   response['routing_num']['wire']
+        }
+      end
+
+      def args_for_card_subnet(response)
+        {
+          card_hash:          response['card_hash'],
+          card_number:        response['card_number'],
+          card_style_id:      response['card_style_id'],
+          cvc:                response['cvc'],
+          exp:                response['exp']
+        }
       end
     end
 
