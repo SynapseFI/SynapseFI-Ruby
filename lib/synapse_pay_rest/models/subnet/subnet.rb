@@ -174,6 +174,45 @@ module SynapsePayRest
       end
     end
 
+    # Provisions a card
+    # 
+    # @param fee_node_id [String] Id of the Node to be charged for the fee
+    # @param cardholder_name [String] Name of the cardholder
+    # @param **options [Hash] Options to pass to Synapse's API
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [Array<SynapsePayRest::Subnet>] (self)
+    def ship_card(fee_node_id, cardholder_name, **options)
+      payload = {
+        'fee_node_id' => fee_node_id,
+        'cardholder_name' => cardholder_name,
+        'expedite' => false
+      }
+
+      if options['expedite'].present?
+        payload['expedite'] = options['expedite']
+      end
+
+      if options['card_style_id'].present?
+        payload['card_style_id'] = options['card_style_id']
+      end
+
+      response = node.user.client.subnets.ship(
+        user_id: node.user.id,
+        node_id: node.id,
+        subnet_id: id,
+        payload: payload
+      )
+      if response['subnets']
+        # api v3.1
+        self.class.from_response(node, response['subnets'])
+      else
+        # api v3.1.1
+        self.class.from_response(node, response)
+      end
+    end
+
     # Checks if two Subnet instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id
