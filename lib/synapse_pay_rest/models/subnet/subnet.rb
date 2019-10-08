@@ -204,13 +204,25 @@ module SynapsePayRest
         subnet_id: id,
         payload: payload
       )
-      if response['subnets']
-        # api v3.1
-        self.class.from_response(node, response['subnets'])
+
+      if response['error']
+        args = {
+          error: {
+            code:           response['error']['code'],
+            message:        response['error']['en'],
+            error_code:     response['error_code'],
+            http_code:      response['http_code']
+          }
+        }
       else
-        # api v3.1.1
-        self.class.from_response(node, response)
+        args = {
+          transaction_id:   response['transaction_id'],
+          node_id:          response['node_id'],
+          subnet_id:        response['subnet_id']
+        }
       end
+      
+      args
     end
 
     # Checks if two Subnet instances have same id (different instances of same record).
