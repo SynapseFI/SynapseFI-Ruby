@@ -275,7 +275,7 @@ module SynapsePayRest
         user_id: node.user.id,
         node_id: node.id,
         subnet_id: id,
-        payload: payload_for_card_update(options)
+        payload: self.class.payload_for_card_update(options)
       )
       # return an updated subnet instance
       self.class.from_response(client, response)
