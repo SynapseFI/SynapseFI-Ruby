@@ -271,7 +271,7 @@ module SynapsePayRest
           status, preferences[:allow_foreign_transactions],
           preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
       end
-      response = client.subnets.update(
+      response = node.user.client.subnets.update(
         user_id: node.user.id,
         node_id: node.id,
         subnet_id: id,
