@@ -142,6 +142,28 @@ module SynapsePayRest
           exp:                response['exp']
         }
       end
+
+      # Converts #update args into API payload structure for CARD subnets.
+      def payload_for_card_update(**options)
+        payload = {}
+        # must have one of these
+        payload['card_pin']     = options[:card_pin] if options[:card_pin]
+        payload['status']       = options[:status] if options[:status]
+
+        if options[:preferences][:allow_foreign_transactions]
+          payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
+        end
+
+        if options[:preferences][:daily_atm_withdrawal_limit]
+          payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
+        end
+
+        if options[:preferences][:daily_transaction_limit]
+          payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
+        end
+
+        payload
+      end
     end
 
     # @note Do not call directly. Use Subnet.create or other class
@@ -228,6 +250,32 @@ module SynapsePayRest
       
       args
     end
+
+    # Updates the given key value pairs.
+    # 
+    # @param card_pin [String]
+    # @param status [String]
+    # @param preferences [Hash]:
+    #   {
+    #     allow_foreign_transactions [Boolean],
+    #     daily_atm_withdrawal_limit [String, Integer],
+    #     daily_transaction_limit [String, Integer]
+    #   }
+    # 
+    # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+    # 
+    # @return [SynapsePayRest::Subnet] new instance corresponding to same API record
+    def update(**options)
+      if options.empty?
+        raise ArgumentError, 'must provide a key-value pair to update. keys: card_pin,
+          status, preferences[:allow_foreign_transactions],
+          preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
+      end
+      response = client.subnets.update(subnet_id: id, payload: payload_for_card_update(options))
+      # return an updated subnet instance
+      self.class.from_response(client, response)
+    end
+
 
     # Checks if two Subnet instances have same id (different instances of same record).
     def ==(other)
