@@ -274,16 +274,18 @@ module SynapsePayRest
       payload['card_pin']     = options[:card_pin] if options[:card_pin]
       payload['status']       = options[:status] if options[:status]
 
-      if options[:preferences][:allow_foreign_transactions]
-        payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
-      end
+      if options[:preferences]
+        if options[:preferences][:allow_foreign_transactions]
+          payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
+        end
 
-      if options[:preferences][:daily_atm_withdrawal_limit]
-        payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
-      end
+        if options[:preferences][:daily_atm_withdrawal_limit]
+          payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
+        end
 
-      if options[:preferences][:daily_transaction_limit]
-        payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
+        if options[:preferences][:daily_transaction_limit]
+          payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
+        end
       end
 
       payload
