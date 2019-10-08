@@ -182,7 +182,11 @@ module SynapsePayRest
     # 
     # @raise [SynapsePayRest::Error]
     # 
-    # @return [Array<SynapsePayRest::Subnet>] (self)
+    # @return [Hash] {
+    #   node_id [String]
+    #   subnet_id [String]
+    #   transaction_id [String]
+    # }
     def ship_card(fee_node_id, cardholder_name, **options)
       payload = {
         'fee_node_id' => fee_node_id,
