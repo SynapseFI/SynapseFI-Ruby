@@ -142,28 +142,6 @@ module SynapsePayRest
           exp:                response['exp']
         }
       end
-
-      # Converts #update args into API payload structure for CARD subnets.
-      def payload_for_card_update(**options)
-        payload = {}
-        # must have one of these
-        payload['card_pin']     = options[:card_pin] if options[:card_pin]
-        payload['status']       = options[:status] if options[:status]
-
-        if options[:preferences][:allow_foreign_transactions]
-          payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
-        end
-
-        if options[:preferences][:daily_atm_withdrawal_limit]
-          payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
-        end
-
-        if options[:preferences][:daily_transaction_limit]
-          payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
-        end
-
-        payload
-      end
     end
 
     # @note Do not call directly. Use Subnet.create or other class
@@ -275,7 +253,7 @@ module SynapsePayRest
         user_id: node.user.id,
         node_id: node.id,
         subnet_id: id,
-        payload: self.class.payload_for_card_update(options)
+        payload: payload_for_card_update(options)
       )
       # return an updated subnet instance
       self.class.from_response(client, response)
@@ -285,6 +263,30 @@ module SynapsePayRest
     # Checks if two Subnet instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id
+    end
+
+    private
+
+    # Converts #update args into API payload structure for CARD subnets.
+    def payload_for_card_update(**options)
+      payload = {}
+      # must have one of these
+      payload['card_pin']     = options[:card_pin] if options[:card_pin]
+      payload['status']       = options[:status] if options[:status]
+
+      if options[:preferences][:allow_foreign_transactions]
+        payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
+      end
+
+      if options[:preferences][:daily_atm_withdrawal_limit]
+        payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
+      end
+
+      if options[:preferences][:daily_transaction_limit]
+        payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
+      end
+
+      payload
     end
   end
 end
