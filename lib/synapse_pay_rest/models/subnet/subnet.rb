@@ -265,13 +265,18 @@ module SynapsePayRest
     # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
     # 
     # @return [SynapsePayRest::Subnet] new instance corresponding to same API record
-    def update(**options)
+    def update(user_id:, node_id:, **options)
       if options.empty?
         raise ArgumentError, 'must provide a key-value pair to update. keys: card_pin,
           status, preferences[:allow_foreign_transactions],
           preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
       end
-      response = client.subnets.update(subnet_id: id, payload: payload_for_card_update(options))
+      response = client.subnets.update(
+        user_id: user_id,
+        node_id: node_id,
+        subnet_id: id,
+        payload: payload_for_card_update(options)
+      )
       # return an updated subnet instance
       self.class.from_response(client, response)
     end
