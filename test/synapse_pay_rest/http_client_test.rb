@@ -8,6 +8,7 @@ class HTTPClientTest < Minitest::Test
 
   def teardown
     RestClient.proxy = nil
+    RestClient.ssl_cert_store = nil
   end
 
   def test_base_url
@@ -56,5 +57,18 @@ class HTTPClientTest < Minitest::Test
     client_with_proxy = test_client(proxy_url: proxy_url)
     assert_equal client_with_proxy.http_client.proxy_url, proxy_url
     assert_equal RestClient.proxy, proxy_url
+  end
+
+  def test_ssl_cert_store
+    cert_store = OpenSSL::X509::Store.new
+    cert_store.set_default_paths
+
+    client_without_store = test_client
+    assert_nil client_without_store.http_client.ssl_cert_store
+    assert_nil RestClient.ssl_cert_store
+
+    client_with_store = test_client(ssl_cert_store: cert_store)
+    assert_equal client_with_store.http_client.ssl_cert_store, cert_store
+    assert_equal RestClient.ssl_cert_store, cert_store
   end
 end
