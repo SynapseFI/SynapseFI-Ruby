@@ -5,7 +5,8 @@ def test_client(client_id: ENV.fetch('TEST_CLIENT_ID'),
                 development_mode: true,
                 logging: false,
                 log_to: nil,
-                proxy_url: nil)
+                proxy_url: nil,
+                ssl_cert_store: nil)
 
   SynapsePayRest::Client.new(
     client_id: client_id,
@@ -15,7 +16,8 @@ def test_client(client_id: ENV.fetch('TEST_CLIENT_ID'),
     ip_address: ip_address,
     logging: logging,
     log_to: log_to,
-    proxy_url: proxy_url
+    proxy_url: proxy_url,
+    ssl_cert_store: ssl_cert_store
   )
 end
 

@@ -14,6 +14,9 @@ module SynapsePayRest
     #   @return [String] the url which is used to proxy outboard requests
     attr_reader :proxy_url
 
+    # @!attribute [rw] ssl_cert_store
+    #   @return [OpenSSL::X509::Store] the customized CA cert store
+
     # @param base_url [String] the base url of the API (production or sandbox)
     # @param client_id [String]
     # @param client_secret [String]
@@ -22,6 +25,7 @@ module SynapsePayRest
     # @param logging [Boolean] (optional) logs to stdout when true
     # @param log_to [String] (optional) file path to log to file (logging must be true)
     # @param proxy_url [String] (optional) proxy url which is used to proxy outbound requests
+    # @param ssl_cert_store [OpenSSL::X509::Store] (optional) a custom store of allowed CA certs
     def initialize(base_url:, client_id:, fingerprint:, ip_address:,
                    client_secret:, **options)
       log_to         = options[:log_to] || 'stdout'
@@ -30,6 +34,9 @@ module SynapsePayRest
 
       RestClient.proxy = options[:proxy_url] if options[:proxy_url]
       @proxy_url = options[:proxy_url]
+
+      RestClient.ssl_cert_store = options[:ssl_cert_store] if options[:ssl_cert_store]
+      @ssl_cert_store = options[:ssl_cert_store]
 
       @config = {
         client_id:     client_id,

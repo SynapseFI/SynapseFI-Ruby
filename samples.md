@@ -25,9 +25,11 @@ args = {
   # (optional) if true logs requests to stdout
   logging:          true,
   # (optional) file path to write logs to
-  log_to:           nil
+  log_to:           nil,
   # (optional) URL used to proxy outbound requests
-  proxy_url:        nil
+  proxy_url:        nil,
+  # (optional) a [OpenSSL::X509::Store](https://ruby-doc.org/stdlib-2.5.0/libdoc/openssl/rdoc/OpenSSL/X509/Store.html) of allowed CA certs
+  ssl_cert_store:   nil,
 }
 
 client = SynapsePayRest::Client.new(args)
