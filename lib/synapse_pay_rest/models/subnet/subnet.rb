@@ -231,7 +231,7 @@ module SynapsePayRest
 
     # Updates the given key value pairs.
     # 
-    # @param card_pin [String]
+    # @param pin [String]
     # @param status [String]
     # @param preferences [Hash]:
     #   {
@@ -244,11 +244,6 @@ module SynapsePayRest
     # 
     # @return [SynapsePayRest::Subnet] new instance corresponding to same API record
     def update(**options)
-      if options.empty?
-        raise ArgumentError, 'must provide a key-value pair to update. keys: card_pin,
-          status, preferences[:allow_foreign_transactions],
-          preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
-      end
       response = node.user.client.subnets.update(
         user_id: node.user.id,
         node_id: node.id,
@@ -271,20 +266,20 @@ module SynapsePayRest
     def payload_for_card_update(**options)
       payload = {}
       # must have one of these
-      payload['card_pin']     = options[:card_pin] if options[:card_pin]
-      payload['status']       = options[:status] if options[:status]
+      payload['pin']     = options[:pin] if options[:pin]
+      payload['status']  = options[:status] if options[:status]
+
+      unless payload['pin'] || payload['status']
+        raise ArgumentError, 'must provide a key-value pair to update. keys: pin,
+          status, preferences[:allow_foreign_transactions],
+          preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
+      end
 
       if options[:preferences]
-        if options[:preferences][:allow_foreign_transactions]
-          payload['preferences']['allow_foreign_transactions']  = options[:preferences][:allow_foreign_transactions]
-        end
+        payload['preferences'] = {}
 
-        if options[:preferences][:daily_atm_withdrawal_limit]
-          payload['preferences']['daily_atm_withdrawal_limit']  = options[:preferences][:daily_atm_withdrawal_limit]
-        end
-
-        if options[:preferences][:daily_transaction_limit]
-          payload['preferences']['daily_transaction_limit']  = options[:preferences][:daily_transaction_limit]
+        options[:preferences].each do |key ,value|
+          payload['preferences'][key.to_s] = value
         end
       end
 
