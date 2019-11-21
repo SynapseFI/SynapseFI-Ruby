@@ -174,9 +174,116 @@ module SynapsePayRest
       end
     end
 
+    # Provisions a card
+    # 
+    # @param fee_node_id [String] Id of the Node to be charged for the fee
+    # @param cardholder_name [String] Name of the cardholder
+    # @param **options [Hash] Options to pass to Synapse's API
+    # 
+    # @raise [SynapsePayRest::Error]
+    # 
+    # @return [Hash] {
+    #   node_id [String]
+    #   subnet_id [String]
+    #   transaction_id [String]
+    # }
+    def ship_card(fee_node_id, cardholder_name, **options)
+      payload = {
+        'fee_node_id' => fee_node_id,
+        'cardholder_name' => cardholder_name,
+        'expedite' => false
+      }
+
+      if options['expedite'].present?
+        payload['expedite'] = options['expedite']
+      end
+
+      if options['card_style_id'].present?
+        payload['card_style_id'] = options['card_style_id']
+      end
+
+      response = node.user.client.subnets.ship(
+        user_id: node.user.id,
+        node_id: node.id,
+        subnet_id: id,
+        payload: payload
+      )
+
+      if response['error']
+        args = {
+          error: {
+            code:           response['error']['code'],
+            message:        response['error']['en'],
+            error_code:     response['error_code'],
+            http_code:      response['http_code']
+          }
+        }
+      else
+        args = {
+          transaction_id:   response['transaction_id'],
+          node_id:          response['node_id'],
+          subnet_id:        response['subnet_id']
+        }
+      end
+      
+      args
+    end
+
+    # Updates the given key value pairs.
+    # 
+    # @param pin [String]
+    # @param status [String]
+    # @param preferences [Hash]:
+    #   {
+    #     allow_foreign_transactions [Boolean],
+    #     daily_atm_withdrawal_limit [String, Integer],
+    #     daily_transaction_limit [String, Integer]
+    #   }
+    # 
+    # @raise [SynapsePayRest::Error] if HTTP error or invalid argument format
+    # 
+    # @return [SynapsePayRest::Subnet] new instance corresponding to same API record
+    def update(**options)
+      response = node.user.client.subnets.update(
+        user_id: node.user.id,
+        node_id: node.id,
+        subnet_id: id,
+        payload: payload_for_card_update(options)
+      )
+      # return an updated subnet instance
+      self.class.from_response(node, response)
+    end
+
+
     # Checks if two Subnet instances have same id (different instances of same record).
     def ==(other)
       other.instance_of?(self.class) && !id.nil? && id == other.id
+    end
+
+    private
+
+    # Converts #update args into API payload structure for CARD subnets.
+    def payload_for_card_update(**options)
+      payload = {}
+      # must have one of these
+      payload['pin']     = options[:pin] if options[:pin]
+      payload['status']  = options[:status] if options[:status]
+
+      unless payload['pin'] || payload['status']
+        raise ArgumentError, 'must provide a key-value pair to update. keys: pin,
+          status, preferences[:allow_foreign_transactions],
+          preferences[:daily_atm_withdrawal_limit], preferences[:daily_transaction_limit]'
+      end
+
+      if options[:preferences]
+        payload['preferences'] = {}
+
+        options[:preferences].each do |key ,value|
+          payload['preferences'][key.to_s] = value
+        end
+      end
+
+      payload
     end
   end
 end
