@@ -824,7 +824,7 @@ module SynapsePayRest
       payload['update']['remove_legal_name']   = options[:remove_legal_name] if options[:remove_legal_name]
       payload['extra']['cip_tag']              = options[:cip_tag] if options[:cip_tag]
       payload['extra']['supp_id']              = options[:supp_id] if options[:supp_id]
-      payload['extra']['is_business']          = options[:supp_id] if options[:is_business]
+      payload['extra']['is_business']          = options[:is_business] if options[:is_business]
       payload
     end
 
