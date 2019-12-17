@@ -812,7 +812,8 @@ module SynapsePayRest
     def payload_for_update(**options)
       payload = {
         'refresh_token' => refresh_token,
-        'update' => {}
+        'update' => {},
+        'extra' => {}
       }
       # must have one of these
       payload['update']['login']               = options[:login] if options[:login]
@@ -821,7 +822,9 @@ module SynapsePayRest
       payload['update']['phone_number']        = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload['update']['remove_legal_name']   = options[:remove_legal_name] if options[:remove_legal_name]
-      payload['update']['cip_tag']             = options[:cip_tag] if options[:cip_tag]
+      payload['extra']['cip_tag']              = options[:cip_tag] if options[:cip_tag]
+      payload['extra']['supp_id']              = options[:supp_id] if options[:supp_id]
+      payload['extra']['is_business']          = options[:is_business] if options[:is_business]
       payload
     end
 
