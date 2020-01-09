@@ -135,7 +135,6 @@ module SynapsePayRest
 
       def args_for_card_subnet(response)
         {
-          card_hash:          response['card_hash'],
           card_number:        response['card_number'],
           card_style_id:      response['card_style_id'],
           cvc:                response['cvc'],
