@@ -106,8 +106,7 @@ module SynapsePayRest
           user_id:            response['user_id']
         }
         additional_args = response['account_class'] == "CHECKING" ? args_for_checking_subnet(response) : args_for_card_subnet(response)
-        args.merge(additional_args)
-        self.new(args)
+        self.new(args.merge(additional_args))
       end
 
       private
