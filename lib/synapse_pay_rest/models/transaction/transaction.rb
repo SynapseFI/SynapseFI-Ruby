@@ -11,8 +11,8 @@ module SynapsePayRest
     #   @return [SynapsePayRest::Node] the node to which the transaction belongs
     attr_reader :node, :id, :amount, :currency, :client_id, :client_name, :created_on,
                 :ip, :latlon, :note, :process_on, :supp_id, :webhook, :fees,
-                :recent_status, :timeline, :from, :to, :to_type, :to_id,
-                :fee_amount, :fee_note, :fee_to_id , :asset, :same_day
+                :recent_status, :timeline, :from, :to, :to_type, :to_id, :asset,
+                :fee_amount, :fee_note, :fee_to_id, :same_day, :dispute_form, :disputed
 
     class << self
       # Creates a new transaction in the API belonging to the provided node and
@@ -139,7 +139,9 @@ module SynapsePayRest
           from:          response['from'],
           to:            response['to'],
           to_type:       response['to']['type'],
-          to_id:         response['to']['id']
+          to_id:         response['to']['id'],
+          dispute_form:  response['extra']['other']['dispute_form'],
+          disputed:      response['extra']['other']['disputed']
         }
         if response['fees'].any?
           args[:fee_amount] = response['fees'].first['fee']
@@ -239,6 +241,24 @@ module SynapsePayRest
       )
       self.class.from_response(node, response)
     end
+
+    # Starts a dispute for this transaction
+    #
+    # @raise [SynapsePayRest::Error]
+    #
+    # @return [Hash] {
+    #   "dispute_form": url_string,
+    #   "provisional_credit_tran": txn_id,
+    #   "success": true
+    # }
+    def dispute
+      node.user.client.trans.dispute(
+          user_id: node.user.id,
+          node_id: node.id,
+          trans_id: id
+      )
+    end
+
 
     # Checks if two Transaction instances have same id (different instances of same record).
     def ==(other)

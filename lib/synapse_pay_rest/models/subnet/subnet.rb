@@ -9,7 +9,7 @@ module SynapsePayRest
     attr_reader :id, :account_num, :account_class, :allowed, :client_id, :client_name, :nickname, :node,
                 :routing_num_ach, :routing_num_wire, :status, :account_class, :card_hash, :card_number,
                 :cvc, :exp, :card_style_id
-
+    
     class << self
       # Creates a new subnet in the API belonging to the provided node and
       # returns a subnet instance from the response data.
