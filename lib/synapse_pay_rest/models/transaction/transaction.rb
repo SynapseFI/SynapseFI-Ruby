@@ -251,11 +251,12 @@ module SynapsePayRest
     #   "provisional_credit_tran": txn_id,
     #   "success": true
     # }
-    def dispute
+    def dispute(options)
       node.user.client.trans.dispute(
           user_id: node.user.id,
           node_id: node.id,
-          trans_id: id
+          trans_id: id,
+          payload: options
       )
     end
 
