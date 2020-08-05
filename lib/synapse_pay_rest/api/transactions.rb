@@ -96,6 +96,23 @@ module SynapsePayRest
       client.delete(path)
     end
 
+    # Sends a PATCH request to users/user_id/nodes/node_id/trans/trans_id/dispute to dispute transaction.
+    # Returns the response.
+    #
+    # @param user_id [String]
+    # @param node_id [String] id of the from node
+    # @param trans_id [String] id of a transaction to dispute
+    #
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on
+    # HTTP response from API
+    #
+    # @return [Hash] API response
+    def dispute(user_id:, node_id:, trans_id:, payload:)
+      path = create_transaction_path(user_id: user_id, node_id: node_id, trans_id: trans_id)
+      path += "/disputes"
+      client.patch(path, payload)
+    end
+
     private
 
     def create_transaction_path(user_id:, node_id:, trans_id: nil)
@@ -103,5 +120,6 @@ module SynapsePayRest
       path += "/#{trans_id}" if trans_id
       path
     end
+
   end
 end
