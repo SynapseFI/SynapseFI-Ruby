@@ -109,7 +109,7 @@ module SynapsePayRest
     # @return [Hash] API response
     def dispute(user_id:, node_id:, trans_id:, payload:)
       path = create_transaction_path(user_id: user_id, node_id: node_id, trans_id: trans_id)
-      path += "/disputes"
+      path += "/dispute"
       client.patch(path, payload)
     end
 
