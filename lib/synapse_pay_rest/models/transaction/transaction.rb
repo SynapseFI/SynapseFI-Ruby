@@ -168,6 +168,19 @@ module SynapsePayRest
             'ip' => ip
           }
         }
+
+        # Support for Synapse RDC API, see https://docs.synapsefi.com/reference#create-rdc-transaction
+        # check_front and check_back must be base64 encoded, e.g. data:image/png;base64,SUQs=
+        if (from_type = options[:from_type]) && from_type == 'RDC'
+          payload['from'] = {
+            'type' => 'RDC',
+            'meta' => {
+              'check_front' => options[:from][:meta][:check_front],
+              'check_back' => options[:from][:meta][:check_back]
+            }
+          }
+        end
+
         # optional payload fields
         payload['extra']['asset']      = options[:asset] if options[:asset]
         payload['extra']['same_day']   = options[:same_day] if options[:same_day]
