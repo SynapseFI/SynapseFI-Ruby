@@ -10,10 +10,6 @@ module SynapsePayRest
     #   @return [Hash] various settings related to request headers
     attr_accessor :base_url, :config
 
-    # @!attribute [rw] proxy_url
-    #   @return [String] the url which is used to proxy outboard requests
-    attr_reader :proxy_url
-
     # @param base_url [String] the base url of the API (production or sandbox)
     # @param client_id [String]
     # @param client_secret [String]
@@ -28,8 +24,10 @@ module SynapsePayRest
       RestClient.log = log_to if options[:logging]
       @logging       = options[:logging]
 
-      RestClient.proxy = options[:proxy_url] if options[:proxy_url]
-      @proxy_url = options[:proxy_url]
+      @sandbox_url = options[:sandbox_url]
+      @live_url = options[:live_url]
+
+      puts "URLs:\n#{@sandbox_url}\n#{@live_url}" if @logging
 
       @config = {
         client_id:     client_id,
@@ -47,13 +45,23 @@ module SynapsePayRest
     def headers
       user    = "#{config[:oauth_key]}|#{config[:fingerprint]}"
       gateway = "#{config[:client_id]}|#{config[:client_secret]}"
-      headers = {
+
+      access_control_headers = {
+        'Access-Control-Allow-Methods' => 'GET,PUT,POST,DELETE,OPTIONS',
+        'Access-Control-Allow-Headers' => 'X-Requested-With,Content-type,Accept,X-Access-Token,X-Key',
+        'Access-Control-Allow-Origin' => '*'
+      }
+
+      request_headers = {
         :content_type  => :json,
         :accept        => :json,
         'X-SP-GATEWAY' => gateway,
         'X-SP-USER'    => user,
         'X-SP-USER-IP' => config[:ip_address]
       }
+
+      request_headers.merge!(access_control_headers) if @proxy_url
+      request_headers
     end
     # Alias for #headers (legacy name)
     alias_method :get_headers, :headers
@@ -77,6 +85,22 @@ module SynapsePayRest
       nil
     end
 
+    def ssl_certicate
+      pem = @development_mode ? Vgs::SANDBOX_PEM : Vgs::LIVE_PEM
+      OpenSSL::X509::Certificate.new(pem)
+    end
+
+    def proxy_url
+      @development_mode ? @sandbox_url : @live_url
+    end
+
+    def with_vgs_tunnel
+      puts "Proxy URL: #{proxy_url}"
+      RestClient.proxy = proxy_url
+      yield
+      RestClient.proxy = nil
+    end
+
     # Sends a POST request to the given path with the given payload.
     # 
     # @param path [String]
@@ -87,13 +111,24 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def post(path, payload, **options)
+      puts '-- POST --------' if @logging
       headers = get_headers
+      puts "Headers: #{headers}" if @logging
+      puts "Options: #{options}" if @logging
+
       if options[:idempotency_key]
         headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
       end
 
-      response = with_error_handling { RestClient::Request.execute(:method => :post, :url => full_url(path), :payload => payload.to_json, :headers => headers, :timeout => 300) }
-      p 'RESPONSE:', JSON.parse(response) if @logging
+      response = RestClient::Request.execute(method: :post,
+                                             url: full_url(path),
+                                             payload: payload.to_json,
+                                             ssl_client_cert: ssl_certicate,
+                                             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+                                             proxy: @sandbox_url,
+                                             headers: headers)
+      puts "Response: #{response}" if @logging
+      puts '-- POST --------' if @logging
       JSON.parse(response)
     end
 
@@ -119,8 +154,18 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def get(path)
-      response = with_error_handling { RestClient.get(full_url(path), headers) }
-      p 'RESPONSE:', JSON.parse(response) if @logging
+      puts '-- Request: GET ------------'
+      puts "URI: #{full_url(path)}"
+
+      response = RestClient::Request.execute(method: :get,
+                                             url: full_url(path),
+                                             ssl_client_cert: ssl_certicate,
+                                             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+                                             proxy: @sandbox_url,
+                                             headers: headers)
+
+      p 'RESPONSE:', JSON.parse(response) #if @logging
+      puts '-- Request: GET ------------'
       JSON.parse(response)
     end
 

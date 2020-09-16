@@ -30,7 +30,8 @@ module SynapsePayRest
     # @param log_to [String] (optional) file path to log to file (logging must be true)
     def initialize(client_id:, client_secret:, ip_address:, fingerprint: nil,
                    development_mode: true, **options)
-      base_url = if development_mode
+      @development_mode = development_mode
+      base_url = if @development_mode
                    'https://uat-api.synapsefi.com/v3.1'
                  else
                    'https://api.synapsefi.com/v3.1'
@@ -53,8 +54,6 @@ module SynapsePayRest
       @crypto_quotes    = CryptoQuotes.new @http_client
       @statements       = Statements.new @http_client
     end
-
-  
 
     def issue_public_key(scope: "OAUTH|POST,USERS|POST,USERS|GET,USER|GET,USER|PATCH,SUBSCRIPTIONS|GET,SUBSCRIPTIONS|POST,SUBSCRIPTION|GET,SUBSCRIPTION|PATCH,CLIENT|REPORTS,CLIENT|CONTROLS")
       PublicKey.issue(client: self, scope: scope)

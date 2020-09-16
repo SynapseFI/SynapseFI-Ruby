@@ -74,6 +74,8 @@ module SynapsePayRest
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         response = client.users.get(user_id: id, full_dehydrate: full_dehydrate)
+
+        puts "Find Response: #{response}"
         
         from_response(client, response)
       end

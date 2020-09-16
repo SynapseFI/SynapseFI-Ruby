@@ -31,7 +31,7 @@ module SynapsePayRest
     # @return [Hash] API response
     # 
     def get(user_id:, node_id:, subnet_id: nil, **options)
-      path = create_subnet_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
+      path = subnets_resource_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
 
       params = VALID_QUERY_PARAMS.map do |p|
         options[p] ? "#{p}=#{options[p]}" : nil
@@ -54,7 +54,7 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def create(user_id:, node_id:, payload:)
-      path = create_subnet_path(user_id: user_id, node_id: node_id)
+      path = subnets_resource_path(user_id: user_id, node_id: node_id)
       client.post(path, payload)
     end
 
@@ -72,7 +72,7 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def update(user_id:, node_id:, subnet_id:, payload:)
-      path = create_subnet_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
+      path = subnets_resource_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
       client.patch(path, payload)
     end
 
@@ -88,16 +88,14 @@ module SynapsePayRest
 
     private
 
-    def create_subnet_path(user_id:, node_id:, subnet_id: nil)
+    def subnets_resource_path(user_id:, node_id:, subnet_id: nil)
       path = "/users/#{user_id}/nodes/#{node_id}/subnets"
       path += "/#{subnet_id}" if subnet_id
       path
     end
 
     def ship_card_path(user_id:, node_id:, subnet_id: nil)
-      path = create_subnet_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
-      path += "/ship"
-      path
+      subnets_resource_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id) + '/ship'
     end
   end
 end

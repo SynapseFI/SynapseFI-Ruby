@@ -17,6 +17,7 @@ require 'synapse_pay_rest/api/statements'
 # general library classes
 require 'synapse_pay_rest/error'
 require 'synapse_pay_rest/version'
+require 'synapse_pay_rest/vgs'
 
 # user-related classes
 require 'synapse_pay_rest/models/user/user'
