@@ -171,10 +171,12 @@ module SynapsePayRest
       end
     end
 
-    # Provisions a card
+    # Ship a physical card
     # 
-    # @param fee_node_id [String] Id of the Node to be charged for the fee
+    # @param fee_node_id [String] ID of the Node to be charged for printing/shipping costs
     # @param cardholder_name [String] Name of the cardholder
+    # @param shipping_speed [String] Sets shipping speed of card
+    # @param card_style_id [String] The numeric value representing the design style of the card
     # @param **options [Hash] Options to pass to Synapse's API
     # 
     # @raise [SynapsePayRest::Error]
@@ -184,20 +186,15 @@ module SynapsePayRest
     #   subnet_id [String]
     #   transaction_id [String]
     # }
-    def ship_card(fee_node_id, cardholder_name, **options)
+    def ship_card(fee_node_id, cardholder_name, shipping_speed, card_style_id, **options)
       payload = {
-        'fee_node_id' => fee_node_id,
-        'cardholder_name' => cardholder_name,
-        'expedite' => false
+          fee_node_id: fee_node_id,
+          cardholder_name: cardholder_name,
+          delivery: shipping_speed,
+          card_style_id: card_style_id
       }
 
-      if options['expedite'].present?
-        payload['expedite'] = options['expedite']
-      end
-
-      if options['card_style_id'].present?
-        payload['card_style_id'] = options['card_style_id']
-      end
+      payload['secondary_label'] = options['secondary_label'] if options['secondary_label'].present?
 
       response = node.user.client.subnets.ship(
         user_id: node.user.id,
