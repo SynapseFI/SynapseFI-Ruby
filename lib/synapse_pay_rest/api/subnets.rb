@@ -81,6 +81,11 @@ module SynapsePayRest
       client.patch(path, payload)
     end
 
+    def view_shipment_info(user_id:, node_id:, subnet_id:)
+      path = ship_card_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
+      client.get(path)
+    end
+
     private
 
     def create_subnet_path(user_id:, node_id:, subnet_id: nil)
