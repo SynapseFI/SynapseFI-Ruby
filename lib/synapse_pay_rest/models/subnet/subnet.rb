@@ -223,6 +223,27 @@ module SynapsePayRest
       args
     end
 
+    def get_card_shipment_info
+      response = node.user.client.subnets.view_shipment_info(
+          user_id: node.user.id,
+          node_id: node.id,
+          subnet_id: id
+      )
+      if response['error']
+        args = {
+            error: {
+                code:           response['error']['code'],
+                message:        response['error']['en'],
+                error_code:     response['error_code'],
+                http_code:      response['http_code']
+            }
+        }
+      else
+        args = response['ships']
+      end
+      
+      args
+    end
     # Updates the given key value pairs.
     # 
     # @param pin [String]
