@@ -27,8 +27,6 @@ module SynapsePayRest
       @sandbox_url = options[:sandbox_url]
       @live_url = options[:live_url]
 
-      puts "URLs:\n#{@sandbox_url}\n#{@live_url}" if @logging
-
       @config = {
         client_id:     client_id,
         client_secret: client_secret,
@@ -111,10 +109,9 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def post(path, payload, **options)
-      puts '-- POST --------' if @logging
+      Rails.logger.info('-- Request: POST -----------') if @logging
       headers = get_headers
-      puts "Headers: #{headers}" if @logging
-      puts "Options: #{options}" if @logging
+      Rails.logger.info("Headers: #{headers}") if @logging
 
       if options[:idempotency_key]
         headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
@@ -127,8 +124,8 @@ module SynapsePayRest
                                              verify_ssl: OpenSSL::SSL::VERIFY_NONE,
                                              proxy: @sandbox_url,
                                              headers: headers)
-      puts "Response: #{response}" if @logging
-      puts '-- POST --------' if @logging
+      Rails.logger.info("Response: #{response}") if @logging
+      Rails.logger.info('-- POST --------------------') if @logging
       JSON.parse(response)
     end
 
@@ -154,8 +151,8 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def get(path)
-      puts '-- Request: GET ------------'
-      puts "URI: #{full_url(path)}"
+      Rails.logger.info('-- Request: GET ------------') if @logging
+      Rails.logger.info( "URI: #{full_url(path)}") if @logging
 
       response = RestClient::Request.execute(method: :get,
                                              url: full_url(path),
@@ -164,8 +161,8 @@ module SynapsePayRest
                                              proxy: @sandbox_url,
                                              headers: headers)
 
-      p 'RESPONSE:', JSON.parse(response) #if @logging
-      puts '-- Request: GET ------------'
+      Rails.logger.info("Response: #{response}") if @logging
+      Rails.logger.info('-- Request: GET ------------') if @logging
       JSON.parse(response)
     end
 
