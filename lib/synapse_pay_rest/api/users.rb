@@ -75,10 +75,7 @@ module SynapsePayRest
     def refresh(user_id:, payload:)
       path = "/oauth/#{user_id}"
       response = client.post(path, payload)
-      puts '-- Refresh -----------' if @logging
-      puts "Response: #{response}" if @logging
       client.update_headers(oauth_key: response['oauth_key']) if response['oauth_key']
-      puts '-- Refresh -----------' if @logging
       response
     end
 

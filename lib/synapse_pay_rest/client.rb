@@ -30,18 +30,16 @@ module SynapsePayRest
     # @param log_to [String] (optional) file path to log to file (logging must be true)
     def initialize(client_id:, client_secret:, ip_address:, fingerprint: nil,
                    development_mode: true, **options)
-      @development_mode = development_mode
-      base_url = if @development_mode
-                   'https://uat-api.synapsefi.com/v3.1'
-                 else
-                   'https://api.synapsefi.com/v3.1'
-                 end
+      base_url = development_mode ? 'https://uat-api.synapsefi.com/v3.1' : 'https://api.synapsefi.com/v3.1'
+      vgs_url = development_mode ? options[:sandbox_url] : options[:live_url]
 
       @http_client  = HTTPClient.new(base_url: base_url,
                                      client_id: client_id,
                                      client_secret: client_secret,
                                      fingerprint: fingerprint,
                                      ip_address: ip_address,
+                                     development_mode: development_mode,
+                                     vgs_url: vgs_url,
                                      **options)
       @users            = Users.new @http_client
       @nodes            = Nodes.new @http_client

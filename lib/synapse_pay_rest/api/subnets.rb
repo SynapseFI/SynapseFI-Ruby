@@ -38,7 +38,8 @@ module SynapsePayRest
       end.compact
 
       path += '?' + params.join('&') if params.any?
-      client.get(path)
+      tunnel = options[:full_dehydrate] == true
+      client.get(path, tunnel: tunnel)
     end
 
     # Sends a POST request to /subents endpoint to create a new subnet.
