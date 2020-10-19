@@ -10,10 +10,6 @@ module SynapsePayRest
     #   @return [Hash] various settings related to request headers
     attr_accessor :base_url, :config
 
-    # @!attribute [rw] proxy_url
-    #   @return [String] the url which is used to proxy outboard requests
-    attr_reader :proxy_url
-
     # @param base_url [String] the base url of the API (production or sandbox)
     # @param client_id [String]
     # @param client_secret [String]
@@ -23,13 +19,15 @@ module SynapsePayRest
     # @param log_to [String] (optional) file path to log to file (logging must be true)
     # @param proxy_url [String] (optional) proxy url which is used to proxy outbound requests
     def initialize(base_url:, client_id:, fingerprint:, ip_address:,
-                   client_secret:, **options)
+                   client_secret:, development_mode:, vgs_url:, **options)
       log_to         = options[:log_to] || 'stdout'
       RestClient.log = log_to if options[:logging]
       @logging       = options[:logging]
+      @development_mode = development_mode
 
-      RestClient.proxy = options[:proxy_url] if options[:proxy_url]
-      @proxy_url = options[:proxy_url]
+      @vgs_url = vgs_url
+      @vgs_sandbox_pem = options[:sandbox_pem]
+      @vgs_live_pem = options[:live_pem]
 
       @config = {
         client_id:     client_id,
@@ -47,13 +45,23 @@ module SynapsePayRest
     def headers
       user    = "#{config[:oauth_key]}|#{config[:fingerprint]}"
       gateway = "#{config[:client_id]}|#{config[:client_secret]}"
-      headers = {
+
+      access_control_headers = {
+        'Access-Control-Allow-Methods' => 'GET,PUT,POST,DELETE,OPTIONS',
+        'Access-Control-Allow-Headers' => 'X-Requested-With,Content-type,Accept,X-Access-Token,X-Key',
+        'Access-Control-Allow-Origin' => '*'
+      }
+
+      request_headers = {
         :content_type  => :json,
         :accept        => :json,
         'X-SP-GATEWAY' => gateway,
         'X-SP-USER'    => user,
         'X-SP-USER-IP' => config[:ip_address]
       }
+
+      request_headers.merge!(access_control_headers) if @vgs_url
+      request_headers
     end
     # Alias for #headers (legacy name)
     alias_method :get_headers, :headers
@@ -77,6 +85,31 @@ module SynapsePayRest
       nil
     end
 
+    def ssl_certicate
+      pem = @development_mode ? @vgs_sandbox_pem : @vgs_live_pem
+      OpenSSL::X509::Certificate.new(pem)
+    end
+
+    def tunnel_params
+      {
+        ssl_client_cert: ssl_certicate,
+        verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        proxy: @vgs_url
+      }
+    end
+
+    def request_params(method, url:, payload: nil, tunnel: false)
+      params = {
+        method: method,
+        url: url,
+        headers: headers
+      }
+
+      params[:payload] = payload.to_json if payload.present?
+      params.merge!(tunnel_params) if tunnel
+      params
+    end
+
     # Sends a POST request to the given path with the given payload.
     # 
     # @param path [String]
@@ -87,13 +120,25 @@ module SynapsePayRest
     # 
     # @return [Hash] API response
     def post(path, payload, **options)
+      tunnel = options.delete(:tunnel) || false
+      Rails.logger.info('-- Request: POST -----------') if @logging
       headers = get_headers
+      Rails.logger.info("URI: #{full_url(path)}") if @logging
+      Rails.logger.info("Headers: #{headers}") if @logging
+
       if options[:idempotency_key]
         headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
       end
 
-      response = with_error_handling { RestClient::Request.execute(:method => :post, :url => full_url(path), :payload => payload.to_json, :headers => headers, :timeout => 300) }
-      p 'RESPONSE:', JSON.parse(response) if @logging
+      params = request_params(:post,
+                              url: full_url(path),
+                              payload: payload,
+                              tunnel: tunnel)
+
+      response = RestClient::Request.execute(**params)
+
+      Rails.logger.info("Response: #{response}") if @logging
+      Rails.logger.info('-- POST --------------------') if @logging
       JSON.parse(response)
     end
 
@@ -118,9 +163,17 @@ module SynapsePayRest
     # @raise [SynapsePayRest::Error] subclass depends on HTTP response
     # 
     # @return [Hash] API response
-    def get(path)
-      response = with_error_handling { RestClient.get(full_url(path), headers) }
-      p 'RESPONSE:', JSON.parse(response) if @logging
+    def get(path, tunnel: false)
+      Rails.logger.info('-- Request: GET ------------') if @logging
+      Rails.logger.info("URI: #{full_url(path)}") if @logging
+      Rails.logger.info("Tunneled: #{@vgs_url}") if @logging && tunnel
+
+      response = with_error_handling do
+        RestClient::Request.execute(**request_params(:get, url: full_url(path), tunnel: tunnel))
+      end
+
+      Rails.logger.info("Response: #{response}") if @logging
+      Rails.logger.info('-- Request: GET ------------') if @logging
       JSON.parse(response)
     end
 

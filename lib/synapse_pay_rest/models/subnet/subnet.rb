@@ -48,14 +48,15 @@ module SynapsePayRest
       # @raise [SynapsePayRest::Error] if not found or other HTTP error
       # 
       # @return [SynapsePayRest::Subnet]
-      def find(node:, id:)
+      def find(node:, id:, full_dehydrate: false)
         raise ArgumentError, 'node must be a type of BaseNode object' unless node.is_a?(BaseNode)
         raise ArgumentError, 'id must be a String' unless id.is_a?(String)
 
         response = node.user.client.subnets.get(
           user_id: node.user.id,
           node_id: node.id,
-          subnet_id: id
+          subnet_id: id,
+          full_dehydrate: full_dehydrate
         )
         from_response(node, response)
       end
