@@ -1,0 +1,32 @@
+RSpec.describe SynapsePayRest::Transaction do
+  describe "create" do
+    it "does" do
+      ip = "127.0.0.1"
+      client = SynapsePayRest::Client.new(client_id: '1', client_secret: '2', ip_address: ip)
+      # http_client = SynapsePayRest::HTTPClient.new(base_url: 'http://api.foo.com', fingerprint: '123', client_id: '1', client_secret: '2', ip_address: ip)
+      user = SynapsePayRest::User.new(client: client)
+      node = SynapsePayRest::BaseNode.new(user: user)
+      to_type = "ach_us"
+      to_id = "123"
+      idempotency_key = "foo"
+
+      stub_request(:post, "https://uat-api.synapsefi.com/v3.1/users//nodes//trans").
+        with(body: "{\"to\":{\"type\":\"ach_us\",\"id\":\"123\"},\"amount\":{\"amount\":10.12,\"currency\":\"USD\"},\"extra\":{\"ip\":\"127.0.0.1\"}}",
+             headers: {
+          'Accept'=>'application/json',
+          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length'=>'105',
+          'Content-Type'=>'application/json',
+          'Host'=>'uat-api.synapsefi.com',
+          'User-Agent'=>'rest-client/2.1.0 (darwin18.2.0 x86_64) ruby/2.6.0p0',
+          'X-Sp-Gateway'=>'1|2',
+          'X-Sp-Idempotency-Key'=>'foo',
+          'X-Sp-User'=>'|',
+          'X-Sp-User-Ip'=>'127.0.0.1'
+        }).
+        to_return(status: 200, body: "", headers: {})
+
+        SynapsePayRest::Transaction.create(node: node, to_type: to_type, to_id: to_id, amount: 10.12, currency: "USD", ip: ip, idempotency_key: idempotency_key)
+    end
+  end
+end

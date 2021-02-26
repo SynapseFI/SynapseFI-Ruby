@@ -44,3 +44,5 @@ Gemfile.lock
 *.yml
 test.rb
 *.txt
+
+.byebug_history
