@@ -34,6 +34,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 3.10'
   s.add_development_dependency 'rspec-mocks', '~> 3.10'
   s.add_development_dependency 'byebug'
-  s.add_development_dependency 'vcr', '~> 6.0'
   s.add_development_dependency 'webmock', '~> 3.12'
 end
