@@ -99,14 +99,15 @@ module SynapsePayRest
     end
 
     def request_params(method, url:, payload: nil, tunnel: false, idempotency_key: nil)
+      request_headers = headers
       if idempotency_key
-        headers = get_headers.merge({'X-SP-IDEMPOTENCY-KEY' => idempotency_key})
+        request_headers.merge!({'X-SP-IDEMPOTENCY-KEY' => idempotency_key})
       end
 
       params = {
         method: method,
         url: url,
-        headers: headers
+        headers: request_headers
       }
 
       params[:payload] = payload.to_json if payload.present?
