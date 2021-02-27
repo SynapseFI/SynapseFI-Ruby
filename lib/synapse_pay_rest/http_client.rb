@@ -98,7 +98,11 @@ module SynapsePayRest
       }
     end
 
-    def request_params(method, url:, payload: nil, tunnel: false)
+    def request_params(method, url:, payload: nil, tunnel: false, idempotency_key: nil)
+      if idempotency_key
+        headers = get_headers.merge({'X-SP-IDEMPOTENCY-KEY' => idempotency_key})
+      end
+
       params = {
         method: method,
         url: url,
@@ -122,18 +126,15 @@ module SynapsePayRest
     def post(path, payload, **options)
       tunnel = options.delete(:tunnel) || false
       Rails.logger.info('-- Request: POST -----------') if @logging
-      headers = get_headers
       Rails.logger.info("URI: #{full_url(path)}") if @logging
-      Rails.logger.info("Headers: #{headers}") if @logging
-
-      if options[:idempotency_key]
-        headers = headers.merge({'X-SP-IDEMPOTENCY-KEY' => options[:idempotency_key]})
-      end
 
       params = request_params(:post,
                               url: full_url(path),
                               payload: payload,
-                              tunnel: tunnel)
+                              tunnel: tunnel,
+                              idempotency_key: options[:idempotency_key])
+
+      Rails.logger.info("Headers: #{params[:headers]}") if @logging
 
       response = RestClient::Request.execute(**params)
 
