@@ -43,7 +43,6 @@ RSpec.describe SynapsePayRest::Transaction do
           'Content-Length'=>'105',
           'Content-Type'=>'application/json',
           'Host'=>'uat-api.synapsefi.com',
-          'User-Agent'=>'rest-client/2.1.0 (darwin18.2.0 x86_64) ruby/2.6.0p0',
           'X-Sp-Gateway'=>'1|2',
           'X-Sp-Idempotency-Key'=>'6308897764d23f10e8e6',
           'X-Sp-User'=>'|',
