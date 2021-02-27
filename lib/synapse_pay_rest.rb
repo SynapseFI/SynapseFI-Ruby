@@ -1,3 +1,6 @@
+require "active_support"
+require "active_support/core_ext/object/blank"
+
 # client classes
 require 'synapse_pay_rest/client'
 require 'synapse_pay_rest/http_client'
