@@ -73,11 +73,11 @@ RSpec.describe SynapsePayRest::User do
       it "makes PATCH request with appropriate headers, " do
         stub_refresh_token
         stub_request(:patch, "https://uat-api.synapsefi.com/v3.1/users/123").with({
-          body: "{\"refresh_token\":null,\"update\":{\"permission\":\"CLOSED\",\"permission_code\":\"PLATFORM_REQUEST\"},\"extra\":{}}",
+          body: "{\"refresh_token\":null,\"update\":{},\"extra\":{},\"permission\":\"CLOSED\",\"permission_code\":\"PLATFORM_REQUEST\"}",
           headers: {
             'Accept'=>'application/json',
             'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Content-Length'=>'103',
+            'Content-Length'=>'104',
             'Content-Type'=>'application/json',
             'Host'=>'uat-api.synapsefi.com',
             'User-Agent'=>'rest-client/2.1.0 (darwin18.2.0 x86_64) ruby/2.6.0p0',

@@ -822,8 +822,8 @@ module SynapsePayRest
       payload['update']['phone_number']        = options[:phone_number] if options[:phone_number]
       payload['update']['remove_phone_number'] = options[:remove_phone_number] if options[:remove_phone_number]
       payload['update']['remove_legal_name']   = options[:remove_legal_name] if options[:remove_legal_name]
-      payload['update']['permission']          = options[:permission] if options[:permission]
-      payload['update']['permission_code']     = options[:permission_code] if options[:permission_code]
+      payload['permission']                    = options[:permission] if options[:permission]
+      payload['permission_code']               = options[:permission_code] if options[:permission_code]
       payload['extra']['cip_tag']              = options[:cip_tag] if options[:cip_tag]
       payload['extra']['supp_id']              = options[:supp_id] if options[:supp_id]
       payload['extra']['is_business']          = !!options[:is_business] if options.key?(:is_business)
