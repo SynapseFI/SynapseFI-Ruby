@@ -6,6 +6,7 @@ require 'synapse_pay_rest/http_client'
 require 'synapse_pay_rest/api/users'
 require 'synapse_pay_rest/api/nodes'
 require 'synapse_pay_rest/api/subnets'
+require 'synapse_pay_rest/api/shipments'
 require 'synapse_pay_rest/api/transactions'
 require 'synapse_pay_rest/api/subscriptions'
 require 'synapse_pay_rest/api/institutions'
@@ -74,6 +75,9 @@ require 'synapse_pay_rest/models/node/node'
 
 # subnet-related classes
 require 'synapse_pay_rest/models/subnet/subnet'
+
+# shipment-related classes
+require 'synapse_pay_rest/models/shipment/shipment'
 
 # transaction-related classes
 require 'synapse_pay_rest/models/transaction/transaction'
