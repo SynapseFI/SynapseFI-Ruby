@@ -172,16 +172,17 @@ module SynapsePayRest
       end
     end
 
+    # TODO: remove once ENG-5682 is on Production
     # Ship a physical card
-    # 
+    #
     # @param fee_node_id [String] ID of the Node to be charged for printing/shipping costs
     # @param cardholder_name [String] Name of the cardholder
     # @param shipping_speed [String] Sets shipping speed of card
     # @param card_style_id [String] The numeric value representing the design style of the card
     # @param **options [Hash] Options to pass to Synapse's API
-    # 
+    #
     # @raise [SynapsePayRest::Error]
-    # 
+    #
     # @return [Hash] {
     #   node_id [String]
     #   subnet_id [String]
@@ -189,38 +190,38 @@ module SynapsePayRest
     # }
     def ship_card(fee_node_id, cardholder_name, shipping_speed, card_style_id, **options)
       payload = {
-          fee_node_id: fee_node_id,
-          cardholder_name: cardholder_name,
-          delivery: shipping_speed,
-          card_style_id: card_style_id
+        fee_node_id: fee_node_id,
+        cardholder_name: cardholder_name,
+        delivery: shipping_speed,
+        card_style_id: card_style_id,
       }
 
-      payload['secondary_label'] = options['secondary_label'] if options['secondary_label'].present?
+      payload["secondary_label"] = options["secondary_label"] if options["secondary_label"].present?
 
       response = node.user.client.subnets.ship(
         user_id: node.user.id,
         node_id: node.id,
         subnet_id: id,
-        payload: payload
+        payload: payload,
       )
 
-      if response['error']
+      if response["error"]
         args = {
           error: {
-            code:           response['error']['code'],
-            message:        response['error']['en'],
-            error_code:     response['error_code'],
-            http_code:      response['http_code']
-          }
+            code: response["error"]["code"],
+            message: response["error"]["en"],
+            error_code: response["error_code"],
+            http_code: response["http_code"],
+          },
         }
       else
         args = {
-          transaction_id:   response['transaction_id'],
-          node_id:          response['node_id'],
-          subnet_id:        response['subnet_id']
+          transaction_id: response["transaction_id"],
+          node_id: response["node_id"],
+          subnet_id: response["subnet_id"],
         }
       end
-      
+
       args
     end
 

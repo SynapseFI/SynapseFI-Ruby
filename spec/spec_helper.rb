@@ -19,12 +19,14 @@
 # require 'action_mailer'
 # require 'active_suppo'
 
-require 'byebug'
-require 'synapse_pay_rest'
+require "byebug"
+require "synapse_pay_rest"
+require "support/user_mocks"
 
-require 'webmock/rspec'
+require "webmock/rspec"
 
 RSpec.configure do |config|
+  config.include UserMocks
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

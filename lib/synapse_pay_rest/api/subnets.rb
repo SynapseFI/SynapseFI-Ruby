@@ -44,39 +44,40 @@ module SynapsePayRest
 
     # Sends a POST request to /subents endpoint to create a new subnet.
     # Returns the response.
-    # 
+    #
     # @param user_id [String] user_id associated with the subnet
     # @param node_id [String] node the subnet belongs to
     # @param payload [Hash]
     # @see https://docs.synapsepay.com/docs/create-subnet payload structure
-    # 
-    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    #
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on
     # HTTP response from API
-    # 
+    #
     # @return [Hash] API response
     def create(user_id:, node_id:, payload:)
       path = subnets_resource_path(user_id: user_id, node_id: node_id)
       client.post(path, payload)
     end
 
-    # Sends a PATCH request to /subnets endpoint to update a subnet. 
+    # Sends a PATCH request to /subnets endpoint to update a subnet.
     # Returns the response.
-    # 
+    #
     # @param user_id [String] id of user associated with the subnet
     # @param node_id [String] id of node the subnet belongs to
     # @param subnet_id [String] id of subnet
     # @param payload [Hash]
     # @see https://docs.synapsepay.com/docs/subnet-1 payload structure
-    # 
-    # @raise [SynapsePayRest::Error] may return subclasses of error based on 
+    #
+    # @raise [SynapsePayRest::Error] may return subclasses of error based on
     # HTTP response from API
-    # 
+    #
     # @return [Hash] API response
     def update(user_id:, node_id:, subnet_id:, payload:)
       path = subnets_resource_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
       client.patch(path, payload)
     end
 
+    # TODO: remove once ENG-5682 is on Production
     def ship(user_id:, node_id:, subnet_id:, payload:)
       path = ship_card_path(user_id: user_id, node_id: node_id, subnet_id: subnet_id)
       client.patch(path, payload)
