@@ -16,7 +16,24 @@ module SynapsePayRest
     end
 
     class << self
-      # Queries the API for a Shipment and returns a Subnet n instance if found.
+      # Queries the API for a Subnet's shipments and returns a collection of Shipments
+      #
+      # @param client [SynapsePayRest::Client]
+      # @param user_id [String] id of the user to which the Shipment belongs
+      # @param node_id [String] id of the node to which the Shipment belongs
+      # @param subnet_id [String] id of the subnet to which the Shipment belongs
+      #
+      # @raise [SynapsePayRest::Error] if not found or other HTTP error
+      #
+      # @return [Array<SynapsePayRest::Shipment>]
+      def all(client:, user_id:, node_id:, subnet_id:)
+        response = client.shipments.get(user_id: user_id,
+                                        node_id: node_id,
+                                        subnet_id: subnet_id)
+        multiple_from_response(response['ships'])
+      end
+
+      # Queries the API for a Shipment and returns a Shipment instance if found.
       #
       # @param client [SynapsePayRest::Client]
       # @param user_id [String] id of the user to which the Shipment belongs
@@ -70,6 +87,11 @@ module SynapsePayRest
       #
       def from_response(response)
         new(response.except("_id").merge(id: response["_id"]))
+      end
+
+      def multiple_from_response(response)
+        return [] if response.empty?
+        response.map { |shipment| from_response(shipment) }
       end
     end
   end

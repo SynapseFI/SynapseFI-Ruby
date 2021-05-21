@@ -24,7 +24,7 @@ module SynapsePayRest
     #
     # @return [Hash] API response
     #
-    def get(user_id:, node_id:, subnet_id:, id:)
+    def get(user_id:, node_id:, subnet_id:, id: nil)
       path = shipments_resource_path(user_id: user_id,
                                      node_id: node_id,
                                      subnet_id: subnet_id,
