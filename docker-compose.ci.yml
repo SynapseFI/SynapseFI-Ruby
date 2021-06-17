@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  app:
+    image: "ruby:2.6.6-buster"
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile-ci

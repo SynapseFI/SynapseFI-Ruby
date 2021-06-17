@@ -1,0 +1,7 @@
+steps:
+  - label: "specs"
+    command: bundle exec rspec
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: docker-compose.ci.yml

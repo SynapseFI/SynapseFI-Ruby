@@ -1,0 +1,12 @@
+FROM ruby:2.6.6-buster
+
+# Install dependencies
+
+COPY Gemfile synapse_pay_rest.gemspec /app/
+COPY lib/synapse_pay_rest/version.rb /app/lib/synapse_pay_rest/
+WORKDIR /app
+
+RUN gem install bundler --version 2.1.4
+RUN bundle install
+
+ADD . /app
