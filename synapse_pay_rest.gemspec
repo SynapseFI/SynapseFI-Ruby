@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rest-client', '~> 2.0'
   s.add_dependency 'activesupport', '>= 4.2'
 
-  s.add_development_dependency 'bundler', '~> 1.10'
+  s.add_development_dependency 'bundler', '~> 2.0'
   s.add_development_dependency 'rake', '~> 10.0'
   s.add_development_dependency 'minitest', '~> 5.8.2'
   s.add_development_dependency 'minitest-reporters', '~> 1.1.5'
