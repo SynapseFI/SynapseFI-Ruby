@@ -39,17 +39,6 @@ RSpec.describe SynapsePayRest::User do
         stub_request(:patch, "https://uat-api.synapsefi.com/v3.1/users/user_id_123").
           with({
             body: "{\"refresh_token\":null,\"update\":{},\"extra\":{},\"permission\":\"CLOSED\",\"permission_code\":\"PLATFORM_REQUEST\"}",
-            headers: {
-              "Accept" => "application/json",
-              "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-              "Content-Length" => "104",
-              "Content-Type" => "application/json",
-              "Host" => "uat-api.synapsefi.com",
-              "User-Agent" => "rest-client/2.1.0 (darwin20.3.0 x86_64) ruby/2.6.6p146",
-              "X-Sp-Gateway" => "1|2",
-              "X-Sp-User" => "|",
-              "X-Sp-User-Ip" => "127.0.0.1",
-            },
           }).
           to_return(status: 200, body: user_response_body, headers: {})
 
