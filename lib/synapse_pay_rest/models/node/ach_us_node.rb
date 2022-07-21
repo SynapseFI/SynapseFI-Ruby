@@ -61,7 +61,7 @@ module SynapsePayRest
           account_type:   account_type,
           account_class:  account_class
         }.merge(options)
-        super(args)
+        super(**args)
       end
 
       def payload_for_create_via_bank_login(bank_name:, username:, password:)

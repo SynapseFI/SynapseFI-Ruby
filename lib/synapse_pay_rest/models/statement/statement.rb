@@ -19,7 +19,7 @@ module SynapsePayRest
           pdf_url:                  response['urls']['pdf'],
           json_url:                 response['urls']['json']
         }
-        self.new(args)
+        self.new(**args)
       end
 
       # Gets statement by node or user.

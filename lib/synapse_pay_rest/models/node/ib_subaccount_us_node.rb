@@ -9,7 +9,7 @@ module SynapsePayRest
           type: 'IB-SUBACCOUNT-US',
           nickname: nickname
         }.merge(options)
-        super(args)
+        super(**args)
       end
     end
   end
